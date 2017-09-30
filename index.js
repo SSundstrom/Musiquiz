@@ -124,12 +124,13 @@ function stopRound() {
 }
 
 function hostReset() {
-  stopRound()
   players = []
-  hostSocket = null
-  leader = null
-  selectedSong = null
+  hostSocket = false
+  leader = false
+  selectedSong = false
   score = []
+  guesses = 0
+  gamestate = 'pregame'
   sendStatus()
 }
 
