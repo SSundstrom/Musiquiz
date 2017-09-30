@@ -134,7 +134,7 @@ function hostReset() {
   hostSocket = false
   leader = false
   selectedSong = false
-  score = []
+  score = {}
   guesses = 0
   gamestate = 'pregame'
   sendStatus()
@@ -157,8 +157,9 @@ io.on('connection', function(socket){
   var nickname;
 
   socket.on('join', function(name) {
-    console.log('got join')
+    console.log('got join from')
     nickname = name;
+    console.log(nickname)
     score[nickname] = 0
     addNewPlayer(nickname)
   });
