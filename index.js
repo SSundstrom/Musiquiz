@@ -107,10 +107,11 @@ function pickLeader() {
 
 function startRound() {
   console.log('startRound')
+  const timer = 30000
   if (gamestate == 'choose') {
     gamestate = 'midgame'
-    io.emit('startRound')
-    setTimeout(stopRound, 30000)
+    io.emit('startRound', timer)
+    setTimeout(stopRound, timer)
   }
 }
 
