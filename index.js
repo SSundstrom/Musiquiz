@@ -53,12 +53,9 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
-<<<<<<< HEAD
 var guesses
 var scores = {}
-=======
 var selectedSong
->>>>>>> 75e71aca982ab228e5b42da74b6ef6147a979cd6
 
 function addNewPlayer(nick) {
   if (host) {
@@ -155,12 +152,8 @@ io.on('connection', function(socket){
   })
 
   socket.on('hostStartGame', function() {
-<<<<<<< HEAD
     gamestate = 'choose'
     sendStatus()
-=======
-
->>>>>>> 75e71aca982ab228e5b42da74b6ef6147a979cd6
   })
 
   socket.on('hostReset', function() {
