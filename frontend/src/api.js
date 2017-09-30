@@ -22,10 +22,14 @@ function emit(event, data, callback) {
 
 function search(song, callback) {
   song = encodeURIComponent(song);
-
+  console.log('search')
   fetch(api + '/search/' + song).then(function(response) {
+    console.log('fetch')
     return response.json();
-  }).then(callback);
+  }).then((res) => callback(res.body.tracks.items))
+  .catch((e) => {
+    console.log(e)
+  });
 }
 
 export { on, emit, search };

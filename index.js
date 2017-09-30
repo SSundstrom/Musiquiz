@@ -40,15 +40,11 @@ app.use(function (req, res, next) {
 app.get('/search/:name', function(req, res) {
     spotifyApi.searchTracks(req.params.name)
         .then(function(data) {
-            res.emit(data)
+            res.send(data)
         }, function(err) {
         console.error(err);
         });
 })
-
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/file.html');
-});
 
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')

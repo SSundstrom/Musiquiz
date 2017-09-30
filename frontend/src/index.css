@@ -17,6 +17,18 @@ body {
   padding: 20px;
 }
 
+.trackitem {
+  border-bottom: 1px black solid;
+}
+
+.trackname{
+
+}
+
+.trackartists{
+  
+}
+
 .navbar {
   padding: 20px;
   text-align: center;

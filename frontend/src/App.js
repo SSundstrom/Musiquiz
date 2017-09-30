@@ -45,10 +45,12 @@ class App extends Component {
       } else if (data.gamestate === 'choose') {
         state.guessTimer = 0;
         state.started = true;
+        state.hasHost = true;
       } else if (data.gamestate === 'midgame') {
-        // ?
+        state.hasHost = true;
       } else if (data.gamestate === 'finished') {
         state.guessTimer = 0;
+        state.hasHost = true;
       }
 
       this.setState(state);

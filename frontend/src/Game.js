@@ -15,7 +15,7 @@ class Game extends Component {
     const { started, nickname, isHost } = this.props;
 
     // if the game has not yet started and we have not become host or entered nickname
-    if (!started && !nickname && !isHost) {
+    if (!nickname && !isHost) {
       return this.renderJoin();
     } 
 
