@@ -6,7 +6,8 @@ class PlayerGuess extends Component {
     super(props);
 
     this.state = {
-      value: ''
+      value: '',
+      results: []
     };
   }
 
@@ -21,6 +22,13 @@ class PlayerGuess extends Component {
               value={this.state.value}
             />
           </label>
+          {this.state.results.map(track => (
+            <button className="trackitem" onClick={() => this.props.onGuess(track.uri)}>
+              <img src={track.al}/>
+              <div className="trackname"> {track.name} </div>
+              <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
+            </button>
+          ))}
       </div>
     );
   }
@@ -45,9 +53,9 @@ class PlayerGuess extends Component {
         results: []
       });
     }
-
-    trackSearch(value, function(results) {
+    trackSearch(value, (results) => {
       console.log(results);
+      this.setState({results:results})
     });
   }
 }
