@@ -13,16 +13,23 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 
-spotifyApi.clientCredentialsGrant()
-.then(function(data) {
-  console.log('The access token expires in ' + data.body['expires_in']);
-  console.log('The access token is ' + data.body['access_token']);
+function getToken() {
+  spotifyApi.clientCredentialsGrant()
+  .then(function(data) {
+    console.log('The access token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
 
-  // Save the access token so that it's used in future calls
-  spotifyApi.setAccessToken(data.body['access_token']);
-}, function(err) {
-      console.log('Something went wrong when retrieving an access token', err);
-});
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+  }, function(err) {
+        console.log('Something went wrong when retrieving an access token', err);
+  });
+}
+
+getToken()
+
+// Refresh token before 1h.
+setInterval(getToken, 3598000)
 
 app.get('/search/:name', function(req, res) {
     spotifyApi.searchTracks(req.params.name)
@@ -44,8 +51,8 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+http.listen(8888, function () {
+  console.log('Example app listening on port 8888!')
 })
 
 // --------------------------- Functions ---------------------------------
