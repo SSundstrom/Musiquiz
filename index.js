@@ -79,26 +79,24 @@ function pickLeader() {
   }
 };
 
-function chooseSong() {
-  io.send({players:players, leader:leader})
-  console.log('chooseSong')
-}
-
 function sendStatus() {
   io.send('status', {score:score, players:players, gamestate:gamestate})
-  console.log('chooseSong')
+  console.log('sendStatus')
 }
 
 function hostPlaySong(uri) {
   io.send('hostPlaySong', uri)
+  console.log('hostPlaySong')
 }
 
 function correctSong() {
   io.send('correctSong', correctSong)
+  console.log('correctSong')
 }
 
 function leader() {
   io.send('leader', leader)
+  console.log('leader')
 }
 
 function startRound() {
@@ -130,7 +128,7 @@ function startChoose() {
 
 io.on('connection', function(socket){
   console.log('a user connected');
-
+  sendStatus()
   var nickname;
 
   socket.on('join', function(name) {
@@ -168,10 +166,11 @@ io.on('connection', function(socket){
 
   socket.on('hostReset', function() {
     stopRound()
-    players = null
+    players = []
     hostSocket = null
     leader = null
     selectedSong = null
+    score = []
     sendStatus()
     
   })
