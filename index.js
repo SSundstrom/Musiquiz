@@ -73,14 +73,7 @@ function setHost(socket) {
   hostSocket = socket
 };
 
-function pickLeader() {
-  if (!leader){
-    leader = players[0]
-  } else {
-    leader = players[players.indexOf(leader)+1]
-  }
-  leader()
-};
+
 
 function sendStatus() {
   io.emit('status', {score:score, players:players, gamestate:gamestate})
@@ -97,10 +90,19 @@ function correctSong() {
   console.log('correctSong')
 }
 
-function leader() {
+function sendLeader() {
   io.emit('leader', leader)
   console.log('leader')
 }
+
+function pickLeader() {
+  if (!leader){
+    leader = players[0]
+  } else {
+    leader = players[players.indexOf(leader)+1]
+  }
+  sendLeader()
+};
 
 function startRound() {
   console.log('startRound')
