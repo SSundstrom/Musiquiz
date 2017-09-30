@@ -23,7 +23,7 @@ class PlayerGuess extends Component {
           {!this.props.guessed && (
             <div>
               <label>
-                Enter a song name
+                Guess the song name
               <input
                   type="text"
                   onChange={(e) => this.onChange(e.currentTarget.value)}

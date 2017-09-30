@@ -3,7 +3,6 @@ import Game from './Game';
 import { on, emit, search } from './api';
 import Layout from './components/Layout';
 
-const GUESS_TIMER = 30;
 const CORRECT_SONG_TIMER = 10;
 
 class App extends Component {
@@ -17,7 +16,7 @@ class App extends Component {
       players: [],
       started: false,
       score: {},
-      guessTimer: GUESS_TIMER,
+      guessTimer: 0,
       correctSongTimer: CORRECT_SONG_TIMER,
       leader: false,
       isLeader: false,
@@ -83,7 +82,7 @@ class App extends Component {
       this.setState({
         correctSong: false,
         guessed: false,
-        guessTimer: GUESS_TIMER
+        guessTimer: data / 1000
       });
 
       var interval = setInterval(() => {
@@ -170,7 +169,7 @@ class App extends Component {
           correctSongTimer={this.state.correctSongTimer}
           songToPlay={this.state.songToPlay}
           guessed={this.state.guessed}
-          
+
           onStartGame={() => this.startGame()}
           onJoinAsPlayer={(nickname) => this.joinAsPlayer(nickname)}
           onJoinAsHost={() => this.joinAsHost()}
