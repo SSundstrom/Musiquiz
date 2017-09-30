@@ -24,11 +24,6 @@ spotifyApi.clientCredentialsGrant()
       console.log('Something went wrong when retrieving an access token', err);
 });
 
-
-app.get('/', function (req, res) {
-    res.send('Hello World!')  
-})
-
 app.get('/search/:name', function(req, res) {
     spotifyApi.searchTracks(req.params.name)
         .then(function(data) {
@@ -38,21 +33,17 @@ app.get('/search/:name', function(req, res) {
         });
 })
 
-
-app.get('/io', function(req, res){
-  res.send('<h1> HEJSAN </h1>');
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
 });
 
-app.listen(3000, function () {
+http.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
-
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
-
