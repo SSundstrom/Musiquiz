@@ -59,10 +59,8 @@ var selectedSong
 var gamestate = 'pregame'
 
 function addNewPlayer(nick) {
-  if (host) {
-    players.push(nick)
-    sendStatus()
-  }
+  players.push(nick)
+  sendStatus()
 };
 
 function setHost(socket) {
@@ -119,10 +117,11 @@ function stopRound() {
 }
 
 function startChoose() {
-  if (gamestate == 'lobby' && gamestate == 'finished')
-  gamestate = 'choose'
-  pickLeader()
-  sendStatus()
+  if (gamestate == 'lobby' && gamestate == 'finished') {
+    gamestate = 'choose'
+    pickLeader()
+    sendStatus()
+  }
 }
   
 // -------------- IO - Events --------------
@@ -133,13 +132,17 @@ io.on('connection', function(socket){
   var nickname;
 
   socket.on('join', function(name) {
-    nickname = name;
+    if (gamestate != 'pregame') {
+      nickname = name;
+      addNewPlayer(nickname)
+    }
   });
 
   socket.on('hostjoin', function() {
     if (gamestate == 'pregame') {
       gamestate = 'lobby'
       hostSocket = socket
+      sendStatus()
     }
   })
 
