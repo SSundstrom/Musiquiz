@@ -121,9 +121,19 @@ function stopRound() {
   }
 }
 
+function hostReset() {
+  stopRound()
+  players = []
+  hostSocket = null
+  leader = null
+  selectedSong = null
+  score = []
+  sendStatus()
+}
+
 function startChoose() {
   console.log('startChoose')
-  if (gamestate == 'lobby' && gamestate == 'finished') {
+  if (gamestate == 'lobby' || gamestate == 'finished') {
     gamestate = 'choose'
     pickLeader()
     sendStatus()
@@ -148,6 +158,7 @@ io.on('connection', function(socket){
     if (gamestate == 'pregame') {
       gamestate = 'lobby'
       hostSocket = socket
+      hostSocket.on('disconnect', hostReset)
       sendStatus()
     }
   })
@@ -177,14 +188,7 @@ io.on('connection', function(socket){
 
   socket.on('hostReset', function() {
     console.log('got hostReset')
-    stopRound()
-    players = []
-    hostSocket = null
-    leader = null
-    selectedSong = null
-    score = []
-    sendStatus()
-    
+    hostReset()
   })
 
   socket.on('disconnect', function(){
