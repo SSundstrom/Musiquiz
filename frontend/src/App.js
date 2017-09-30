@@ -23,7 +23,7 @@ class App extends Component {
       correctSong: false,
       songToPlay: false,
       guessed: false,
-      selectedSong: false
+      selectedSong: false,
     }
   }
 

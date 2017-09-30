@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Scores from '../components/Scores'
-
+import Track from '../components/Track'
 
 class ShowCorrectSong extends Component {
   render() {
@@ -10,14 +10,8 @@ class ShowCorrectSong extends Component {
       <div>
         <h1>{this.props.correctSongTimer}</h1>
         <div>Correct song was</div>
-          <div className="trackitem">
-              <img src={track.album.images[2].url}/>
-              <div className="trackinfo">
-                <div className="trackname"> {track.name} </div>
-                <div className="trackartists"> {track.artists.map(artist => <span>{artist.name }</span>)} </div>
-              </div>
+        <div><Track track={track}/> 
             
-        
         <div><Scores score={this.props.score}/></div>
       </div>
       </div>
