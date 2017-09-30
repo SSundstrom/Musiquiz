@@ -7,8 +7,8 @@ var spotifyApi = new SpotifyWebApi({
     redirectUri : ''
 });
 
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -63,7 +63,17 @@ function setHost(socket) {
   hostSocket = socket
 }
 
-
 function play(players){
   
 };
+
+function chooseSong() {
+  io.send({players:players, leader:leader})
+}
+
+// -------------- Events --------------
+
+
+io.on('guess', function (socket){
+
+})
