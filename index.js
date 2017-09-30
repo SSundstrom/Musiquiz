@@ -7,8 +7,8 @@ var spotifyApi = new SpotifyWebApi({
     redirectUri : ''
 });
 
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -48,7 +48,7 @@ http.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
 
-// ------------------------------------------------------------
+// --------------------------- Functions ---------------------------------
 
 var players = []
 var hostSocket
@@ -64,10 +64,10 @@ function setHost(socket) {
   hostSocket = socket
 };
 
-
 function play(players){
-  
+
 };
+
 function pickLeader() {
   if (!leader){
     leader = players[0]
@@ -75,3 +75,31 @@ function pickLeader() {
     leader = players[players.indexOf(leader)+1]
   }
 };
+
+
+function leaderChooseSong() {
+  io.send({players:players, leader:leader})
+}
+
+function chooseSong() {
+  io.send({players:players, leader:leader})
+}
+
+// -------------- IO - Events --------------
+
+io.on('leaderSong', function (socket, songUri) {
+
+})
+
+io.on('guess', function (socket, guess){
+
+})
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+});
