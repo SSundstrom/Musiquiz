@@ -76,7 +76,7 @@ function setHost(socket) {
 
 
 function sendStatus() {
-  io.emit('status', {score:score, players:players, gamestate:gamestate})
+  io.emit('status', {score:score, players:players, gamestate:gamestate, guesses:guesses})
   console.log('sendStatus')
 }
 
@@ -175,10 +175,11 @@ io.on('connection', function(socket){
 
   socket.on('guess', function(uri) {
     console.log('got guess')
-    if (selectedSong.uri = uri) {
+    if (selectedSong.uri == uri) {
       score[nickname] += 7
     }
     guesses++
+    sendStatus()
     if (guesses >= players.length-1) {
       stopRound()
     }
