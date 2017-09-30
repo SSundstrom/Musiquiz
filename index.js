@@ -174,7 +174,8 @@ io.on('connection', function(socket){
   })
 
   socket.on('disconnect', function(){
-    
+    players.splice(players.indexOf(nickname),1)
+    sendStatus()
     console.log('user disconnected');
   });
 
