@@ -44,13 +44,6 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/file.html');
 });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-});
-
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')
 })
@@ -60,6 +53,7 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
+var selectedSong
 
 function addNewPlayer(nick) {
   if (host) {
@@ -92,20 +86,66 @@ function chooseSong() {
   io.send({players:players, leader:leader})
 }
 
+function sendStatus() {
+  io.send('status', {score:score, players:players, gamestate:gamestate})
+}
+
+function hostPlaySong(uri) {
+  io.send('hostPlaySong', uri)
+}
+
+function correctSong() {
+  io.send('correctSong', correctSong)
+}
+
+function leader() {
+  io.send('leader', leader)
+}
+
+function startRound() {
+  io.send('startRound')
+}
+
+function stopRound() {
+  io.send('stopRound')
+}
+
 // -------------- IO - Events --------------
-
-io.on('leaderSong', function (socket, songUri) {
-
-})
-
-io.on('guess', function (socket, guess){
-
-})
 
 io.on('connection', function(socket){
   console.log('a user connected');
 
+  var nickname;
+
+  socket.on('join', function(name) {
+    nickname = name;
+  });
+
+  socket.on('hostjoin', function() {
+    hostSocket = socket
+  })
+
+  socket.on('guess', function(uri) {
+    console.log('dummy')
+  })
+
+  socket.on('selectedSong', function(songObject) {
+    selectedSong = songObject
+    gamestate = "midgame"
+    startRound()
+    sendStatus(score, players, gamestate)
+  })
+
+  socket.on('hostStartGame', function() {
+    console.log('dummy')
+  })
+
+  socket.on('hostReset', function() {
+    console.log('dummy')
+  })
+
   socket.on('disconnect', function(){
+    
     console.log('user disconnected');
   });
 
