@@ -13,7 +13,7 @@ class App extends Component {
       loading: false,
       isHost: false,
       hasHost: false,
-      nickname: '',
+      nickname: false,
       players: [],
       started: false,
       score: {},
@@ -38,6 +38,8 @@ class App extends Component {
 
       if (data.gamestate === 'pregame') {
          state.hasHost = false;
+         state.started = false;
+         state.nickname = false;
       } else if (data.gamestate === 'lobby') {
         state.hasHost = true;
       } else if (data.gamestate === 'choose') {

@@ -5,7 +5,7 @@ class HostWaitingToStart extends Component {
     return (
       <div>
         Waiting for players
-        <button onClick={() => this.props.onStartGame()}>Start game</button>
+        {!this.props.players.length && <button onClick={() => this.props.onStartGame()}>Start game</button>}
       </div>
     );
   }
