@@ -48,32 +48,58 @@ http.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
 
-// ------------------------------------------------------------
+// --------------------------- Functions ---------------------------------
 
 var players = []
 var hostSocket
+var leader
 
 function addNewPlayer(nick) {
   if (host) {
     players.push(nick)
   }
-}
+};
 
 function setHost(socket) {
   hostSocket = socket
-}
+};
 
 function play(players){
-  
+
 };
+
+function pickLeader() {
+  if (!leader){
+    leader = players[0]
+  } else {
+    leader = players[players.indexOf(leader)+1]
+  }
+};
+
+
+function leaderChooseSong() {
+  io.send({players:players, leader:leader})
+}
 
 function chooseSong() {
   io.send({players:players, leader:leader})
 }
 
-// -------------- Events --------------
+// -------------- IO - Events --------------
 
-
-io.on('guess', function (socket){
+io.on('leaderSong', function (socket, songUri) {
 
 })
+
+io.on('guess', function (socket, guess){
+
+})
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+});
