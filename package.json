@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/SSundstrom/DWIMS/issues"
   },
-  "homepage": "https://github.com/SSundstrom/DWIMS#readme"
+  "homepage": "https://github.com/SSundstrom/DWIMS#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
 }
