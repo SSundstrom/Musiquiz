@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
 app.get('/search/:name', function(req, res) {
     spotifyApi.searchTracks(req.params.name)
         .then(function(data) {
-            res.send(data)
+            res.emit(data)
         }, function(err) {
         console.error(err);
         });
@@ -86,22 +86,22 @@ function pickLeader() {
 };
 
 function sendStatus() {
-  io.send('status', {score:score, players:players, gamestate:gamestate})
+  io.emit('status', {score:score, players:players, gamestate:gamestate})
   console.log('sendStatus')
 }
 
 function hostPlaySong(uri) {
-  io.send('hostPlaySong', uri)
+  io.emit('hostPlaySong', uri)
   console.log('hostPlaySong')
 }
 
 function correctSong() {
-  io.send('correctSong', correctSong)
+  io.emit('correctSong', correctSong)
   console.log('correctSong')
 }
 
 function leader() {
-  io.send('leader', leader)
+  io.emit('leader', leader)
   console.log('leader')
 }
 
@@ -109,7 +109,7 @@ function startRound() {
   console.log('startRound')
   if (gamestate == 'choose') {
     gamestate = 'midgame'
-    io.send('startRound')
+    io.emit('startRound')
     setTimeout(stopRound, 30000)
   }
 }
@@ -119,7 +119,7 @@ function stopRound() {
   if (gamestate == 'midgame') {
     guesses = 0
     gamestate = 'finished'
-    io.send('stopRound')
+    io.emit('stopRound')
     startChoose()
   }
 }
