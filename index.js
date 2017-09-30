@@ -54,7 +54,7 @@ var players = []
 var hostSocket
 var leader
 var guesses
-var scores = {}
+var score = {}
 var selectedSong
 var gamestate = 'pregame'
 
@@ -81,10 +81,12 @@ function pickLeader() {
 
 function chooseSong() {
   io.send({players:players, leader:leader})
+  console.log('chooseSong')
 }
 
 function sendStatus() {
   io.send('status', {score:score, players:players, gamestate:gamestate})
+  console.log('chooseSong')
 }
 
 function hostPlaySong(uri) {
@@ -132,10 +134,8 @@ io.on('connection', function(socket){
   var nickname;
 
   socket.on('join', function(name) {
-    if (gamestate != 'pregame') {
-      nickname = name;
-      addNewPlayer(nickname)
-    }
+    nickname = name;
+    addNewPlayer(nickname)
   });
 
   socket.on('hostjoin', function() {
@@ -148,7 +148,7 @@ io.on('connection', function(socket){
 
   socket.on('guess', function(uri) {
     if (selectedSong.uri = uri) {
-      scores[nickname] += 7
+      score[nickname] += 7
     }
     guesses++
     if (guesses >= players.length) {
