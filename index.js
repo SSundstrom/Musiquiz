@@ -73,16 +73,13 @@ function setHost(socket) {
   hostSocket = socket
 };
 
-function play(players){
-
-};
-
 function pickLeader() {
   if (!leader){
     leader = players[0]
   } else {
     leader = players[players.indexOf(leader)+1]
   }
+  leader()
 };
 
 function sendStatus() {
