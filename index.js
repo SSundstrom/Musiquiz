@@ -114,7 +114,7 @@ function stopRound() {
   if (gamestate == 'midgame') {
     guesses = 0
     gamestate = 'finished'
-    io.emit('stopRound')
+    io.emit('stopRound', correctSong);
     startChoose()
   }
 }

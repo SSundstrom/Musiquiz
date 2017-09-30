@@ -62,7 +62,7 @@ class App extends Component {
       isLeader: data === this.state.nickname
     }));
 
-    on('correctSong', (data) => {
+    on('stopRound', (data) => {
       this.setState({
         correctSong: data,
         correctSongTimer: CORRECT_SONG_TIMER
