@@ -64,6 +64,7 @@ class Game extends Component {
       return (
         <HostMusicPlayer 
           songToPlay={this.props.songToPlay}
+          score={this.props.score}
         />
       );
     }
