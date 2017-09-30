@@ -158,7 +158,10 @@ io.on('connection', function(socket){
     if (gamestate == 'pregame') {
       gamestate = 'lobby'
       hostSocket = socket
-      hostSocket.on('disconnect', hostReset)
+      hostSocket.on('disconnect', function() {
+        console.log('got host disconnect')
+        hostReset()
+      })
       sendStatus()
     }
   })
