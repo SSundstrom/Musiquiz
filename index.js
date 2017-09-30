@@ -102,6 +102,7 @@ function pickLeader() {
     }
     
   }
+
   sendLeader()
 };
 
@@ -205,6 +206,9 @@ io.on('connection', function(socket){
       pickLeader()
     }
     players.splice(players.indexOf(nickname),1)
+    if (players.length < 2) {
+      hostReset()
+    }
     delete score[nickname]
     sendStatus()
     console.log('user disconnected');
