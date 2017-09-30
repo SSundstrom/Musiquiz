@@ -169,7 +169,8 @@ class App extends Component {
           correctSong={this.state.correctSong}
           correctSongTimer={this.state.correctSongTimer}
           songToPlay={this.state.songToPlay}
-
+          guessed={this.state.guessed}
+          
           onStartGame={() => this.startGame()}
           onJoinAsPlayer={(nickname) => this.joinAsPlayer(nickname)}
           onJoinAsHost={() => this.joinAsHost()}
