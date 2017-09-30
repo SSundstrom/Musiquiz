@@ -21,7 +21,7 @@ class JoinAsPlayer extends Component {
               value={this.state.nickname} 
             />
           </label>
-          <input type="submit" value="Join" />
+          <input className="button" type="submit" value="Join" />
         </form>
       </div>
     );

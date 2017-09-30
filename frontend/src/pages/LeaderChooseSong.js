@@ -22,12 +22,12 @@ class LeaderChooseSong extends Component {
               value={this.state.value}
             />
           </label>
-          {this.state.results.map(tracks => (
-            <div className="trackitem">
-              <img src={tracks.al}/>
-              <div className="trackname"> {tracks.name} </div>
-              <div className="trackartists"> {tracks.artists.map(artist => <span>{artist.name}</span>)} </div>
-            </div>
+          {this.state.results.map(track => (
+            <button className="trackitem" onClick={() => this.props.onSelectSong(track)}>
+              <img src={track.al}/>
+              <div className="trackname"> {track.name} </div>
+              <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
+            </button>
           ))}
       </div>
     );

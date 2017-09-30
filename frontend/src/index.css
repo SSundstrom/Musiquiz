@@ -19,14 +19,17 @@ body {
 
 .trackitem {
   border-bottom: 1px black solid;
+  display: block;
 }
 
 .trackname{
-
+  font-size: 12px;
+  color: black
 }
 
 .trackartists{
-  
+  font-size: 8px;
+  color: gray
 }
 
 .navbar {
@@ -39,7 +42,7 @@ label {
   margin-bottom: 10px;
 }
 
-button, input[type="submit"] {
+.button {
   background-color: #000;
   border: none;
   color: #fff;
