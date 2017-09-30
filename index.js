@@ -131,17 +131,22 @@ io.on('connection', function(socket){
 
   socket.on('selectedSong', function(songObject) {
     selectedSong = songObject
-    gamestate = "midgame"
     startRound()
     sendStatus(score, players, gamestate)
   })
 
   socket.on('hostStartGame', function() {
-    console.log('dummy')
+
   })
 
   socket.on('hostReset', function() {
-    console.log('dummy')
+    stopRound()
+    players = null
+    hostSocket = null
+    leader = null
+    selectedSong = null
+    sendStatus()
+    
   })
 
   socket.on('disconnect', function(){
