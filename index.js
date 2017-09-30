@@ -55,7 +55,7 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
-var guesses
+var guesses = 0
 var score = {}
 var selectedSong
 var gamestate = 'pregame'
@@ -73,16 +73,15 @@ function setHost(socket) {
   hostSocket = socket
 };
 
-
-
 function sendStatus() {
   io.emit('status', {score:score, players:players, gamestate:gamestate, guesses:guesses})
   console.log('sendStatus')
 }
 
-function hostPlaySong(uri) {
-  io.emit('hostPlaySong', uri)
-  console.log('hostPlaySong')
+function playSong(uri) {
+  // io.emit('playSong', uri)
+  
+  console.log('playSong')
 }
 
 function sendLeader() {
@@ -106,13 +105,17 @@ function pickLeader() {
   sendLeader()
 };
 
+var roundStartTime;
+
 function startRound() {
   console.log('startRound')
+
   const timer = 30000
   if (gamestate == 'choose') {
     gamestate = 'midgame'
     io.emit('startRound', timer)
     setTimeout(stopRound, timer)
+    roundStartTime = new Date();
   }
 }
 
@@ -176,7 +179,11 @@ io.on('connection', function(socket){
   socket.on('guess', function(uri) {
     console.log('got guess')
     if (selectedSong.uri == uri) {
-      score[nickname] += 7
+      var current = new Date();
+      var diff = current.getTime() - roundStartTime.getTime();
+      score[nickname] += Math.round((30000 - diff)/1000)
+      console.log(score[nickname]);
+      
     }
     guesses++
     sendStatus()
@@ -189,6 +196,7 @@ io.on('connection', function(socket){
     console.log('got selectedSong')
     selectedSong = songObject
     startRound()
+    playSong(songObject.uri)
     sendStatus(score, players, gamestate)
   })
 

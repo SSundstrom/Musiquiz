@@ -6,6 +6,8 @@ import Layout from './components/Layout';
 const CORRECT_SONG_TIMER = 10;
 
 class App extends Component {
+  interval;
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -85,15 +87,17 @@ class App extends Component {
         guessTimer: data / 1000
       });
 
-      var interval = setInterval(() => {
-        if (this.state.guessTimer === 1) {
-          clearInterval(interval);
-        }
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          if (this.state.guessTimer === 1) {
+            clearInterval(this.interval);
+          }
 
-        this.setState({
-          guessTimer: this.state.guessTimer === 1 ? 0 : this.state.guessTimer - 1
-        });
-      }, 1000);
+          this.setState({
+            guessTimer: this.state.guessTimer === 1 ? 0 : this.state.guessTimer - 1
+          });
+        }, 1000);
+      }
     });
 
     on('hostPlaySong', (data) => this.setState({
