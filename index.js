@@ -100,6 +100,7 @@ function leader() {
 }
 
 function startRound() {
+  console.log('startRound')
   if (gamestate == 'choose') {
     gamestate = 'midgame'
     io.send('startRound')
@@ -108,6 +109,7 @@ function startRound() {
 }
 
 function stopRound() {
+  console.log('stopRound')
   if (gamestate == 'midgame') {
     guesses = 0
     gamestate = 'finished'
@@ -117,6 +119,7 @@ function stopRound() {
 }
 
 function startChoose() {
+  console.log('startChoose')
   if (gamestate == 'lobby' && gamestate == 'finished') {
     gamestate = 'choose'
     pickLeader()
@@ -132,11 +135,13 @@ io.on('connection', function(socket){
   var nickname;
 
   socket.on('join', function(name) {
+    console.log('got join')
     nickname = name;
     addNewPlayer(nickname)
   });
 
   socket.on('hostjoin', function() {
+    console.log('got hostJoin')
     if (gamestate == 'pregame') {
       gamestate = 'lobby'
       hostSocket = socket
@@ -145,6 +150,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('guess', function(uri) {
+    console.log('got guess')
     if (selectedSong.uri = uri) {
       score[nickname] += 7
     }
@@ -155,16 +161,19 @@ io.on('connection', function(socket){
   })
 
   socket.on('selectedSong', function(songObject) {
+    console.log('got selectedSong')
     selectedSong = songObject
     startRound()
     sendStatus(score, players, gamestate)
   })
 
   socket.on('hostStartGame', function() {
+    console.log('got hostStartGame')
     startChoose()
   })
 
   socket.on('hostReset', function() {
+    console.log('got hostReset')
     stopRound()
     players = []
     hostSocket = null
