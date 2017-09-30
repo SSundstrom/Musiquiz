@@ -93,6 +93,7 @@ class Game extends Component {
         <ShowCorrectSong 
           players={this.props.players}
           score={this.props.score}
+          correctSong={this.props.correctSong}
         />
       );
     }
