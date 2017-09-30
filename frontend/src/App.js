@@ -3,23 +3,28 @@ import Game from './Game';
 import { on, emit, search } from './api';
 import Layout from './components/Layout';
 
+const GUESS_TIMER = 30;
+const CORRECT_SONG_TIMER = 10;
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       isHost: false,
-      hasHost: true,
+      hasHost: false,
       nickname: '',
       players: [],
       started: false,
       score: {},
-      guessTimer: 10,
-      correctSongTimer: 10,
-      leader: 'test',
+      guessTimer: GUESS_TIMER,
+      correctSongTimer: CORRECT_SONG_TIMER,
+      leader: false,
       isLeader: false,
       correctSong: false,
-      songToPlay: false
+      songToPlay: false,
+      guessed: false,
+      selectedSong: false
     }
   }
 
@@ -32,13 +37,14 @@ class App extends Component {
 
     on('leader', (data) => this.setState({
       leader: data,
+      selectedSong: false,
       isLeader: data === this.state.nickname
     }));
 
     on('correctSong', (data) => {
       this.setState({
         correctSong: data,
-        correctSongTimer: 10
+        correctSongTimer: CORRECT_SONG_TIMER
       });
 
       var interval = setInterval(() => {
@@ -56,7 +62,7 @@ class App extends Component {
       this.setState({
         correctSong: false,
         guessed: false,
-        guessTimer: 20
+        guessTimer: GUESS_TIMER
       });
 
       var interval = setInterval(() => {
@@ -84,6 +90,14 @@ class App extends Component {
   }
 
   joinAsPlayer(nickname) {
+    if (!nickname.length) {
+      return;
+    }
+
+    if (this.state.nickname) {
+      return;
+    }
+
     this.setState({
       nickname: nickname
     }, () => emit('join', nickname));
@@ -102,6 +116,12 @@ class App extends Component {
         guessed: true
       }, () => emit('guess', uri));
     }
+  }
+
+  selectSong(song) {
+    this.setState({
+      selectedSong: true
+    }, () => emit('selectedSong', song));
   }
 
   render() {
@@ -123,8 +143,13 @@ class App extends Component {
           isLeader={this.state.isLeader}
           correctSong={this.state.correctSong}
           correctSongTimer={this.state.correctSongTimer}
+          songToPlay={this.state.songToPlay}
 
           onStartGame={() => this.startGame()}
+          onJoinAsPlayer={(nickname) => this.joinAsPlayer(nickname)}
+          onJoinAsHost={() => this.joinAsHost()}
+          onGuess={(uri) => this.guess(uri)}
+          onSelectSong={(song) => this.selectSong(song)}
         />
       </Layout>
     );
