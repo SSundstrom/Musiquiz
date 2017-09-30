@@ -62,7 +62,7 @@ class App extends Component {
       isLeader: data === this.state.nickname
     }));
 
-    on('correctSong', (data) => {
+    on('stopRound', (data) => {
       this.setState({
         correctSong: data,
         correctSongTimer: CORRECT_SONG_TIMER
@@ -119,6 +119,10 @@ class App extends Component {
       return;
     }
 
+    if (this.state.players.indexOf(nickname) !== -1) {
+      return alert('There\'s already someone with that name!');
+    }
+
     this.setState({
       nickname: nickname
     }, () => emit('join', nickname));
@@ -165,7 +169,8 @@ class App extends Component {
           correctSong={this.state.correctSong}
           correctSongTimer={this.state.correctSongTimer}
           songToPlay={this.state.songToPlay}
-
+          guessed={this.state.guessed}
+          
           onStartGame={() => this.startGame()}
           onJoinAsPlayer={(nickname) => this.joinAsPlayer(nickname)}
           onJoinAsHost={() => this.joinAsHost()}

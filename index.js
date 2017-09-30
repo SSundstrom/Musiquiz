@@ -85,11 +85,6 @@ function hostPlaySong(uri) {
   console.log('hostPlaySong')
 }
 
-function selectedSong() {
-  io.emit('selectedSong', selectedSong)
-  console.log('selectedSong')
-}
-
 function sendLeader() {
   io.emit('leader', leader)
   console.log('leader')
@@ -124,7 +119,7 @@ function stopRound() {
   if (gamestate == 'midgame') {
     guesses = 0
     gamestate = 'finished'
-    io.emit('stopRound')
+    io.emit('stopRound', selectedSong);
     startChoose()
   }
 }
@@ -182,7 +177,7 @@ io.on('connection', function(socket){
       score[nickname] += 7
     }
     guesses++
-    if (guesses >= players.length) {
+    if (guesses >= players.length-1) {
       stopRound()
     }
   })

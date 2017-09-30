@@ -82,6 +82,7 @@ class Game extends Component {
       return (
         <PlayerGuess 
           onGuess={this.props.onGuess}
+          guessed={this.props.guessed}
         />
       );
     }
