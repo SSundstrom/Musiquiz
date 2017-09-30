@@ -72,6 +72,6 @@ function pickLeader() {
   if (!leader){
     leader = players[0]
   } else {
-    leader = player[find(leader)+1]
+    leader = players[players.indexOf(leader)+1]
   }
 };
