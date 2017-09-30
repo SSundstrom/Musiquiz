@@ -29,7 +29,7 @@ class Game extends Component {
   renderWait() {
     if (this.props.isHost) {
       return (
-        <HostWaitingToStart />
+        <HostWaitingToStart players={this.props.players} onStartGame={this.props.onStartGame} />
       );
     }
 

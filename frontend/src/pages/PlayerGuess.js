@@ -4,7 +4,13 @@ class PlayerGuess extends Component {
   render() {
     return (
       <div>
-        Enter a song name
+        <form onSubmit="">
+          <label>
+            Enter a song name
+            <input type="text" />
+          </label>
+          <input type="submit" value="Join" />
+        </form>
       </div>
     );
   }
