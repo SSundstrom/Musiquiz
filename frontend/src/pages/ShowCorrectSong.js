@@ -8,6 +8,7 @@ class ShowCorrectSong extends Component {
     const track = this.props.correctSong
     return (
       <div>
+        <h1>{this.props.correctSongTimer}</h1>
         <div>Correct song was</div>
           <div className="trackitem">
               <img src={track.album.images[2].url}/>
