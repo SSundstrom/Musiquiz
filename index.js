@@ -94,17 +94,24 @@ function pickLeader() {
   if (!leader){
     leader = players[0]
   } else {
-    leader = players[players.indexOf(leader)+1]
+    var nextIndex = players.indexOf(leader)+1
+    if (nextIndex < players.length) {
+      leader = players[nextIndex]
+    } else {
+      leader = players[0]
+    }
+    
   }
   sendLeader()
 };
 
 function startRound() {
   console.log('startRound')
+  const timer = 30000
   if (gamestate == 'choose') {
     gamestate = 'midgame'
-    io.emit('startRound')
-    setTimeout(stopRound, 30000)
+    io.emit('startRound', timer)
+    setTimeout(stopRound, timer)
   }
 }
 
@@ -148,6 +155,7 @@ io.on('connection', function(socket){
   socket.on('join', function(name) {
     console.log('got join')
     nickname = name;
+    score[nickname] = 0
     addNewPlayer(nickname)
   });
 
@@ -193,7 +201,11 @@ io.on('connection', function(socket){
   })
 
   socket.on('disconnect', function(){
+    if (leader == nickname) {
+      pickLeader()
+    }
     players.splice(players.indexOf(nickname),1)
+    delete score[nickname]
     sendStatus()
     console.log('user disconnected');
   });
