@@ -79,7 +79,7 @@ function sendStatus() {
 }
 
 function playSong(uri) {
-  // io.emit('playSong', uri)
+  io.emit('hostPlaySong', uri)
   
   console.log('playSong')
 }
