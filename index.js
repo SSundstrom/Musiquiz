@@ -53,6 +53,7 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
+var 
 
 function addNewPlayer(nick) {
   if (host) {
@@ -85,6 +86,30 @@ function chooseSong() {
   io.send({players:players, leader:leader})
 }
 
+function sendStatus() {
+  io.send('status', {score:score, players:players, gamestate:gamestate})
+}
+
+function hostPlaySong(uri) {
+  io.send('hostPlaySong', uri)
+}
+
+function correctSong() {
+  io.send('correctSong', correctSong)
+}
+
+function leader() {
+  io.send('leader', leader)
+}
+
+function startRound() {
+  io.send('startRound')
+}
+
+function stopRound() {
+  io.send('stopRound')
+}
+
 // -------------- IO - Events --------------
 
 io.on('connection', function(socket){
@@ -94,8 +119,27 @@ io.on('connection', function(socket){
 
   socket.on('join', function(name) {
     nickname = name;
-    console.log(name)
   });
+
+  socket.on('hostjoin', function() {
+    hostSocket = socket
+  })
+
+  socket.on('guess', function(uri) {
+    console.log('dummy')
+  })
+
+  socket.on('selectedSong', function(uri) {
+    console.log('dummy')
+  })
+
+  socket.on('hostStartGame', function() {
+    console.log('dummy')
+  })
+
+  socket.on('hostReset', function() {
+    console.log('dummy')
+  })
 
   socket.on('disconnect', function(){
     
