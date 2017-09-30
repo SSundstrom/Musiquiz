@@ -29,11 +29,28 @@ class App extends Component {
   }
 
   componentDidMount() {
-    on('status', (data) => this.setState({
-      loading: false,
-      players: data.players,
-      score: data.score
-    }));
+    on('status', (data) => {
+      const state = {
+        loading: false,
+        players: data.players,
+        score: data.score
+      };
+
+      if (data.gamestate === 'pregame') {
+         state.hasHost = false;
+      } else if (data.gamestate === 'lobby') {
+        state.hasHost = true;
+      } else if (data.gamestate === 'choose') {
+        state.guessTimer = 0;
+        state.started = true;
+      } else if (data.gamestate === 'midgame') {
+        // ?
+      } else if (data.gamestate === 'finished') {
+        state.guessTimer = 0;
+      }
+
+      this.setState(state);
+    });
 
     on('leader', (data) => this.setState({
       leader: data,
