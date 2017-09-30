@@ -5,7 +5,7 @@ class JoinAsHost extends Component {
     return (
       <div>
         Start a game
-        <button>Log in with Spotify</button>
+        <button onClick={() => this.props.onJoinAsHost()}>Log in with Spotify</button>
       </div>
     );
   }

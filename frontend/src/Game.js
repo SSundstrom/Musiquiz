@@ -29,35 +29,42 @@ class Game extends Component {
   renderWait() {
     if (this.props.isHost) {
       return (
-        <HostWaitingToStart players={this.props.players} onStartGame={this.props.onStartGame} />
+        <HostWaitingToStart 
+          players={this.props.players} 
+          onStartGame={this.props.onStartGame} 
+        />
       );
     }
 
     return (
-      <PlayerWaitingToStart />
+      <PlayerWaitingToStart 
+        players={this.props.players}
+      />
     );
   }
 
   renderJoin() {
     if (this.props.hasHost) {
-      return <JoinAsPlayer />;
-    }
-
-    return <JoinAsHost />;
-  }
-
-  renderHost() {
-    if (!this.props.started) {
       return (
-        <JoinAsHost />
+        <JoinAsPlayer 
+          onJoinAsPlayer={this.props.onJoinAsPlayer}
+        />
       );
     }
+
+    return (
+      <JoinAsHost 
+        onJoinAsHost={this.props.onJoinAsHost}
+      />
+    );
   }
 
   renderPlay() {
     if (this.props.isHost) {
       return (
-        <HostMusicPlayer />
+        <HostMusicPlayer 
+          songToPlay={this.props.songToPlay}
+        />
       );
     }
 
@@ -65,30 +72,42 @@ class Game extends Component {
     if (this.props.guessTimer > 0) {
       if (this.props.isLeader) {
         return (
-          <LeaderWaitingForGuesses />
+          <LeaderWaitingForGuesses
+            players={this.props.players}
+          />
         );
       }
 
       return (
-        <PlayerGuess />
+        <PlayerGuess 
+          onGuess={this.props.onGuess}
+        />
       );
     }
 
     // If guess timer is 0 and correct song is known, show score view
     if (this.props.correctSong && this.props.correctSongTimer > 0) {
       return (
-        <ShowCorrectSong />
+        <ShowCorrectSong 
+          players={this.props.players}
+          score={this.props.score}
+        />
       );
     }
 
     if (this.props.isLeader) {
       return (
-        <LeaderChooseSong />
+        <LeaderChooseSong 
+          onSelectSong={this.props.onSelectSong}
+        />
       );
     }
 
     return (
-      <PlayerWaitingForLeader />
+      <PlayerWaitingForLeader
+        players={this.props.players}
+        score={this.props.score}
+      />
     );
   }
 }
