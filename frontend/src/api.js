@@ -10,12 +10,13 @@ socket.on('connect', function() {
 
 function on(event, callback) {
   socket.on(event, (data) => {
-    console.log(event, data);
+    console.log('receiving', event, data);
     callback(data);
   });
 }
 
 function emit(event, data, callback) {
+  console.log('sending', event, data);
   socket.emit(event, data);
 }
 
