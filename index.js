@@ -53,7 +53,7 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
-var 
+var selectedSong
 
 function addNewPlayer(nick) {
   if (host) {
@@ -129,8 +129,11 @@ io.on('connection', function(socket){
     console.log('dummy')
   })
 
-  socket.on('selectedSong', function(uri) {
-    console.log('dummy')
+  socket.on('selectedSong', function(songObject) {
+    selectedSong = songObject
+    gamestate = "midgame"
+    startRound()
+    sendStatus(score, players, gamestate)
   })
 
   socket.on('hostStartGame', function() {
