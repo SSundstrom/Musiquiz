@@ -119,6 +119,10 @@ class App extends Component {
       return;
     }
 
+    if (this.state.players.indexOf(nickname) !== -1) {
+      return alert('There\'s already someone with that name!');
+    }
+
     this.setState({
       nickname: nickname
     }, () => emit('join', nickname));
