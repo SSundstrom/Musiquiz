@@ -34,7 +34,7 @@ app.get('/search/:name', function(req, res) {
 })
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/file.html');
 });
 
 io.on('connection', function(socket){
@@ -47,3 +47,23 @@ io.on('connection', function(socket){
 http.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
+
+// ------------------------------------------------------------
+
+var players = []
+var hostSocket
+
+function addNewPlayer(nick) {
+  if (host) {
+    players.push(nick)
+  }
+}
+
+function setHost(socket) {
+  hostSocket = socket
+}
+
+
+function play(players){
+  
+};
