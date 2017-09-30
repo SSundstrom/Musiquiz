@@ -75,6 +75,7 @@ class Game extends Component {
         return (
           <LeaderWaitingForGuesses
             players={this.props.players}
+            guessTimer={this.props.guessTimer}
           />
         );
       }
@@ -82,6 +83,7 @@ class Game extends Component {
       return (
         <PlayerGuess 
           onGuess={this.props.onGuess}
+          guessTimer={this.props.guessTimer}
           guessed={this.props.guessed}
         />
       );
@@ -93,6 +95,7 @@ class Game extends Component {
         <ShowCorrectSong 
           players={this.props.players}
           score={this.props.score}
+          correctSong={this.props.correctSong}
         />
       );
     }
