@@ -56,10 +56,12 @@ var leader
 var guesses
 var scores = {}
 var selectedSong
+var gamestate = 'pregame'
 
 function addNewPlayer(nick) {
   if (host) {
     players.push(nick)
+    sendStatus()
   }
 };
 
@@ -78,11 +80,6 @@ function pickLeader() {
     leader = players[players.indexOf(leader)+1]
   }
 };
-
-
-function leaderChooseSong() {
-  io.send({players:players, leader:leader})
-}
 
 function chooseSong() {
   io.send({players:players, leader:leader})
@@ -114,11 +111,20 @@ function startRound() {
 
 function stopRound() {
   if (gamestate == 'midgame') {
+    guesses = 0
     gamestate = 'finished'
     io.send('stopRound')
+    startChoose()
   }
 }
 
+function startChoose() {
+  if (gamestate == 'lobby' && gamestate == 'finished')
+  gamestate = 'choose'
+  pickLeader()
+  sendStatus()
+}
+  
 // -------------- IO - Events --------------
 
 io.on('connection', function(socket){
@@ -131,8 +137,10 @@ io.on('connection', function(socket){
   });
 
   socket.on('hostjoin', function() {
-    hostSocket = socket
-    gamestate = 'lobby'
+    if (gamestate == 'pregame') {
+      gamestate = 'lobby'
+      hostSocket = socket
+    }
   })
 
   socket.on('guess', function(uri) {
@@ -152,8 +160,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('hostStartGame', function() {
-    gamestate = 'choose'
-    sendStatus()
+    startChoose()
   })
 
   socket.on('hostReset', function() {
