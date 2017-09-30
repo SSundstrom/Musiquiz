@@ -24,9 +24,11 @@ class LeaderChooseSong extends Component {
           </label>
           {this.state.results.map(track => (
             <button className="trackitem" onClick={() => this.props.onSelectSong(track)}>
-              <img src={track.al}/>
-              <div className="trackname"> {track.name} </div>
-              <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
+              <img src={track.album.images[2].url}/>
+              <div className="trackinfo">
+                <div className="trackname"> {track.name} </div>
+                <div className="trackartists"> {track.artists.map(artist => <span>{artist.name }</span>)} </div>
+              </div>
             </button>
           ))}
       </div>

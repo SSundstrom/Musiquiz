@@ -17,9 +17,18 @@ body {
   padding: 20px;
 }
 
+.trackinfo {
+  padding: 10px;
+  text-align: left;
+}
+
 .trackitem {
+  border: none;
   border-bottom: 1px black solid;
-  display: block;
+  display: flex;
+  width: 100%;
+  background: none;
+  align-items: center;
 }
 
 .trackname{
