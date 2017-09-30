@@ -53,7 +53,8 @@ http.listen(8888, function () {
 var players = []
 var hostSocket
 var leader
-var 
+var guesses
+var scores = {}
 
 function addNewPlayer(nick) {
   if (host) {
@@ -103,11 +104,18 @@ function leader() {
 }
 
 function startRound() {
-  io.send('startRound')
+  if (gamestate == 'choose') {
+    gamestate = 'midgame'
+    io.send('startRound')
+    setTimeout(stopRound, 30000)
+  }
 }
 
 function stopRound() {
-  io.send('stopRound')
+  if (gamestate == 'midgame') {
+    gamestate = 'finished'
+    io.send('stopRound')
+  }
 }
 
 // -------------- IO - Events --------------
@@ -123,10 +131,17 @@ io.on('connection', function(socket){
 
   socket.on('hostjoin', function() {
     hostSocket = socket
+    gamestate = 'lobby'
   })
 
   socket.on('guess', function(uri) {
-    console.log('dummy')
+    if (selectedSong.uri = uri) {
+      scores[nickname] += 7
+    }
+    guesses++
+    if (guesses >= players.length) {
+      stopRound()
+    }
   })
 
   socket.on('selectedSong', function(uri) {
@@ -134,7 +149,8 @@ io.on('connection', function(socket){
   })
 
   socket.on('hostStartGame', function() {
-    console.log('dummy')
+    gamestate = 'choose'
+    sendStatus()
   })
 
   socket.on('hostReset', function() {
