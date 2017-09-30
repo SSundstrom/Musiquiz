@@ -44,13 +44,6 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/file.html');
 });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-});
-
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')
 })
@@ -94,18 +87,18 @@ function chooseSong() {
 
 // -------------- IO - Events --------------
 
-io.on('leaderSong', function (socket, songUri) {
-
-})
-
-io.on('guess', function (socket, guess){
-
-})
-
 io.on('connection', function(socket){
   console.log('a user connected');
 
+  var nickname;
+
+  socket.on('join', function(name) {
+    nickname = name;
+    console.log(name)
+  });
+
   socket.on('disconnect', function(){
+    
     console.log('user disconnected');
   });
 

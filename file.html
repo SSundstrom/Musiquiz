@@ -16,6 +16,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io();
+    socket.emit('join', 'Jeep')
   </script>
   <body>
     <ul id="messages"></ul>
