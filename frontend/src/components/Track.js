@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 const Track = (props) => (
-  <div className="coverArt">
+  <div className="coverArt" onClick={props.onClick}>
         <div className="trackitem">
           <img src={props.track.album.images[2].url}/>
           <div className="trackinfo">

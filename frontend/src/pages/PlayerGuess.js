@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { search as trackSearch } from '../api';
+import Track from '../components/Track'
 
 class PlayerGuess extends Component {
   constructor(props) {
@@ -31,11 +32,7 @@ class PlayerGuess extends Component {
                 />
               </label>
               {this.state.results.map(track => (
-                <button className="trackitem" onClick={() => this.props.onGuess(track.uri)}>
-                  <img src={track.al} />
-                  <div className="trackname"> {track.name} </div>
-                  <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
-                </button>
+                <Track track={track} onClick={() => this.props.onGuess(track.uri)}/>
               ))}
             </div>
           )}

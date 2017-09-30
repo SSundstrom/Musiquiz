@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { search as trackSearch } from '../api';
+import Track from '../components/Track'
 
 class LeaderChooseSong extends Component {
   constructor(props) {
@@ -23,13 +24,7 @@ class LeaderChooseSong extends Component {
             />
           </label>
           {this.state.results.map(track => (
-            <button key={track.id} className="trackitem" onClick={() => this.props.onSelectSong(track)}>
-              <img src={track.album.images[2].url}/>
-              <div className="trackinfo">
-                <div className="trackname"> {track.name} </div>
-                <div className="trackartists"> {track.artists.map(artist => <span key={artist.name}>{artist.name }</span>)} </div>
-              </div>
-            </button>
+            <Track track = {track} onClick={() => this.props.onSelectSong(track)}/>
           ))}
       </div>
     );
