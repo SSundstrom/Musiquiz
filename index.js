@@ -52,18 +52,26 @@ http.listen(3000, function () {
 
 var players = []
 var hostSocket
+var leader
 
 function addNewPlayer(nick) {
   if (host) {
     players.push(nick)
   }
-}
+};
 
 function setHost(socket) {
   hostSocket = socket
-}
+};
 
 
 function play(players){
   
+};
+function pickLeader() {
+  if (!leader){
+    leader = players[0]
+  } else {
+    leader = player[find(leader)+1]
+  }
 };
