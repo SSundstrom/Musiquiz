@@ -12,7 +12,7 @@ class JoinAsPlayer extends Component {
     return (
       <div>
         Join a game
-        <form onSubmit={() => this.props.onJoinAsPlayer(this.state.nickname)}>
+        <form onSubmit={(e) => { e.preventDefault(); this.props.onJoinAsPlayer(this.state.nickname); return false; }}>
           <label>
             Nickname
             <input 
