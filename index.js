@@ -61,7 +61,11 @@ var selectedSong
 var gamestate = 'pregame'
 
 function addNewPlayer(nick) {
-  players.push(nick)
+  if (players.indexOf(nick) != -1){
+    addNewPlayer(nick+" :-)")
+  } else {
+    players.push(nick)
+  }
   sendStatus()
 };
 
@@ -81,9 +85,9 @@ function hostPlaySong(uri) {
   console.log('hostPlaySong')
 }
 
-function correctSong() {
-  io.emit('correctSong', correctSong)
-  console.log('correctSong')
+function selectedSong() {
+  io.emit('selectedSong', selectedSong)
+  console.log('selectedSong')
 }
 
 function sendLeader() {
