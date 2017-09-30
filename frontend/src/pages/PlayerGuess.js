@@ -14,21 +14,31 @@ class PlayerGuess extends Component {
   render() {
     return (
       <div>
-          <label>
-            Enter a song name
-            <input 
-              type="text" 
-              onChange={(e) => this.onChange(e.currentTarget.value)} 
-              value={this.state.value}
-            />
-          </label>
-          {this.state.results.map(track => (
-            <button className="trackitem" onClick={() => this.props.onGuess(track.uri)}>
-              <img src={track.al}/>
-              <div className="trackname"> {track.name} </div>
-              <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
-            </button>
-          ))}
+          <h1>{this.props.guessTimer}</h1>
+
+          {this.props.guessed && (
+            <div>Waiting for other players</div>
+          )}
+
+          {!this.props.guessed && (
+            <div>
+              <label>
+                Enter a song name
+              <input
+                  type="text"
+                  onChange={(e) => this.onChange(e.currentTarget.value)}
+                  value={this.state.value}
+                />
+              </label>
+              {this.state.results.map(track => (
+                <button className="trackitem" onClick={() => this.props.onGuess(track.uri)}>
+                  <img src={track.al} />
+                  <div className="trackname"> {track.name} </div>
+                  <div className="trackartists"> {track.artists.map(artist => <span>{artist.name}</span>)} </div>
+                </button>
+              ))}
+            </div>
+          )}
       </div>
     );
   }
