@@ -46,7 +46,7 @@ app.get('/search/:name', function(req, res) {
         });
 })
 
-<<<<<<< HEAD
+
 average = 0.6
 tempoArray = []
 
@@ -69,9 +69,8 @@ app.get('/recommendations', function(req, res) {
       res.send(rec)
     })
 });
-=======
+
 app.use('/', express.static('frontend/build'))
->>>>>>> ccea7e8afbdde38fd0c24953399fc80ce2cd2102
 
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')
