@@ -5,7 +5,7 @@ const Players = (props) => (
       {props.players.map((name)=>(
         <div key={name}>
             {name}
-            <small>{name === this.props.nickname && ' (you)'}</small>
+            <small>{name === props.nickname && ' (you)'}</small>
         </div>
       ))}
   </div>

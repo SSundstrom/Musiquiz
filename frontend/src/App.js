@@ -18,6 +18,7 @@ class App extends Component {
       players: [],
       started: false,
       score: {},
+      oldScore: false,
       guessTimer: 0,
       correctSongTimer: CORRECT_SONG_TIMER,
       leader: false,
@@ -94,7 +95,8 @@ class App extends Component {
       this.setState({
         correctSong: false,
         guessed: false,
-        guessTimer: data / 1000
+        guessTimer: data / 1000,
+        oldScore: this.state.score
       });
 
       clearInterval(this.guessInterval);
@@ -188,6 +190,7 @@ class App extends Component {
           started={this.state.started}
           players={this.state.players}
           score={this.state.score}
+          oldScore={this.state.oldScore}
           leader={this.state.leader}
           guessTimer={this.state.guessTimer}
           isLeader={this.state.isLeader}

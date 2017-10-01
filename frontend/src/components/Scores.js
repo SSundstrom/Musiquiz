@@ -12,13 +12,27 @@ class Scores extends React.Component {
                 <small>{name === this.props.nickname && ' (you)'}</small>
               </div>
               <div className="score-score">
-                {this.props.score[name]}
+                {this.props.oldScore && this.props.oldScore[name]} {this.getDiff(name)}
               </div>
             </div>
           </div>
         ))}
       </div>
     );
+  }
+
+  getDiff(name) {
+    if (!this.props.oldScore) {
+      return '';
+    }
+
+    if (!this.props.oldScore[name]) {
+      return " + " + this.props.score[name];
+    }
+
+    const diff = this.props.score[name] - this.props.oldScore[name];
+
+    return '+ ' + diff;
   }
 }
 
