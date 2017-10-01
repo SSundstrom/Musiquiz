@@ -7,7 +7,7 @@ var SpotifyPlayer = {
     player_name: 'Dude, what\'s my song',
     client_id: 'c11d380eadd04921a083d5637c108f8c',
     redirect_uri: window.location.origin,
-    scopes: ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private']
+    scopes: ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state']
   },
   access_token: null,
   player: null,
@@ -44,8 +44,10 @@ SpotifyPlayer.controls = {
       xhr.send(JSON.stringify(params));
     });
   },
-  switchPlayback: function () {
-    this._request("PUT", "/v1/me/player", { device_ids: [SpotifyPlayer.device_id] });
+  switchPlayback: function (id, callback) {
+    this._request("PUT", "/v1/me/player", { device_ids: [id] }).then( () => {
+        callback()
+    });
   },
   play: function (uris) {
     if (uris) {
@@ -67,6 +69,11 @@ SpotifyPlayer.controls = {
     this._request("GET", "/v1/search?type=track&q=" + query + "*&market=from_token", {}).then(function (results) {
       SpotifyPlayer.controls.play([results.tracks.items[0].uri]);
     });
+  },
+  getDevices: function (callback) {
+    this._request("GET", "/v1/me/player/devices").then( (results) => {
+        callback(results.devices)
+    })
   }
 };
 

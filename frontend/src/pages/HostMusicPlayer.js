@@ -4,6 +4,17 @@ import Track from '../components/Track'
 import SpotifyPlayer from '../playback';
 
 class HostMusicPlayer extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      devices:[],
+      selectedDevice:null
+    }
+  }
+  componentDidMount() {
+    this.getDevices()
+  }
+
   componentWillReceiveProps(newProps) {
     if (this.props.songToPlay !== newProps.songToPlay) {
       console.log('Playing ' + newProps.songToPlay);
@@ -21,6 +32,9 @@ class HostMusicPlayer extends Component {
       <div>
         <h2>Dude, you're the host</h2>
 
+        {console.log(this.state.devices)}
+
+        {this.state.devices.length > 0 && this.renderDevices()}
         <h1>{this.props.correctSongTimer}</h1>
 
         {track && (<div>The correct song was... <Track track={track}/></div>)}            
@@ -29,6 +43,35 @@ class HostMusicPlayer extends Component {
       </div>
       
     );
+  }
+  renderDevices() {
+    for (var i in this.state.devices) {
+      if (this.state.devices[i].is_active) {
+        this.state.selectedDevice = this.state.devices[i].id
+        break
+      }
+    }
+    return (
+      <select value={this.state.selectedDevice} onChange = {(e) => this.changeDevice(e.target.value)}>
+      {this.state.devices.map((device) => {
+        console.log(device)
+        return <option key={device.id} value={device.id}>{device.name}</option>
+      })}
+    </select>
+    )
+  }
+  changeDevice(id) {
+    console.log(id)
+    SpotifyPlayer.controls.switchPlayback(id, () => {
+      console.log('changeDevice')
+      this.getDevices()})
+  }
+
+  getDevices() {
+    SpotifyPlayer.controls.getDevices((results) => {
+      console.log('getDevices')
+      this.setState({devices:results})
+    })
   }
 }
 
