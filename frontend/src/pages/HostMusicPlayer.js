@@ -8,11 +8,12 @@ class HostMusicPlayer extends Component {
     super(props)
     this.state = {
       devices:[],
-      selectedDevice:null
+      selectedDevice:SpotifyPlayer.device_id
     }
   }
   componentDidMount() {
     this.updateDevices(SpotifyPlayer.device_id)
+    this.playSong('spotify:track:1DCNcPA0Y9ukY5AlXAZKUm')
   }
 
   componentWillReceiveProps(newProps) {
