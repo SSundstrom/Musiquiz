@@ -12,7 +12,11 @@ class JoinAsHost extends Component {
     return (
       <div>
         <h2>Start a game</h2>
-        <button className="button" onClick={() => auth()}>Log in with Spotify</button>
+        <p style={{ textAlign: 'center' }}>Click to sign in</p>
+        
+        <button className="button" onClick={() => auth()}>
+          <img src="/spotify.png" height="25" valign="middle" style={{marginLeft: 5}} />
+        </button>
       </div>
     );
   }
