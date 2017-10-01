@@ -12,7 +12,7 @@ class HostMusicPlayer extends Component {
     }
   }
   componentDidMount() {
-    this.getDevices()
+    this.updateDevices(SpotifyPlayer.device_id)
   }
 
   componentWillReceiveProps(newProps) {
@@ -23,15 +23,13 @@ class HostMusicPlayer extends Component {
   }
 
   playSong(uri) {
-    SpotifyPlayer.controls.play([uri]);
+    SpotifyPlayer.controls.play([uri], this.state.selectedDevice);
   }
 
   render() {
     const track = this.props.correctSong
     return (
       <div>
-        {console.log(this.state.devices)}
-
         {this.state.devices.length > 0 && this.renderDevices()}
         <h1>{this.props.correctSongTimer}</h1>
 
@@ -47,7 +45,6 @@ class HostMusicPlayer extends Component {
     return (
       <select value={this.state.selectedDevice} onChange = {(e) => this.changeDevice(e.target.value)}>
       {this.state.devices.map((device) => {
-        console.log(device)
         return <option key={device.id} value={device.id}>{device.name}</option>
       })}
     </select>
@@ -55,20 +52,12 @@ class HostMusicPlayer extends Component {
   }
   changeDevice(id) {
     console.log(id)
-    SpotifyPlayer.controls.switchPlayback(id);
-    this.setState({selectedDevice:id})
+    SpotifyPlayer.controls.switchPlayback(id)
+    this.updateDevices(id)
   }
 
-  getDevices() {
+  updateDevices(id) {
     SpotifyPlayer.controls.getDevices((results) => {
-      var id;
-      console.log(results)
-      for (var i in this.state.devices) {
-        if (this.state.devices[i].is_active) {
-          id = this.state.devices[i].id
-          break
-        }
-      }
       this.setState({devices:results, selectedDevice:id})
     })
   }

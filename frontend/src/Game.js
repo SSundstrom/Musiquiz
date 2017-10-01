@@ -118,6 +118,7 @@ class Game extends Component {
         score={this.props.score}
         leader={this.props.leader}
         nickname={this.props.nickname}
+        correctSong={this.props.correctSong}
       />
     );
   }
