@@ -159,7 +159,7 @@ class App extends Component {
     }
 
     return (
-      <Layout>
+      <Layout isLeader={this.state.isLeader} isHost={this.state.isHost}>
         <Game
           isHost={this.state.isHost}
           hasHost={this.state.hasHost}

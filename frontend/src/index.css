@@ -5,7 +5,6 @@ body {
   padding: 0;
   font-family: 'Slackey', cursive;
   font-size: 20px;
-  background-color: #C42AE6;
   color: #fff;
 }
 
@@ -17,6 +16,23 @@ body {
   padding: 20px;
   max-width: 500px;
   margin: auto;
+}
+
+body, html, #root, .background {
+  position: relative;
+  height: 100%;
+}
+
+.background {
+  background-color: #C42AE6;
+}
+
+.background.is-leader {
+  background-color: #F3BD34;
+}
+
+.background.is-host {
+  background-color: #3466F3;
 }
 
 .trackinfo {
