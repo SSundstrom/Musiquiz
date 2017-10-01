@@ -18,12 +18,12 @@ class JoinAsPlayer extends Component {
               type="text" 
               onChange={(e) => this.setState({nickname: e.currentTarget.value})} 
               value={this.state.nickname} 
-              
             />
           </label>
-          <button className="lucky" onClick={ ()=> this.imFeelingLucky()}> 🍀 I'm feeling lucky </button>
           <input className="button" type="submit" value="Join" />
         </form>
+
+        <button className="lucky" onClick={() => this.imFeelingLucky()}> 🍀 I'm feeling lucky </button>
       </div>
     );
   }
