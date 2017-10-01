@@ -45,13 +45,7 @@ class PlayerGuess extends Component {
       value: value
     });
 
-    console.log(value);
-
-    setTimeout(() => {
-      if (this.state.value === value) {
-        this.search(value);
-      }
-    }, 50);
+    this.search(value);
   }
 
   search(value) {
@@ -60,9 +54,11 @@ class PlayerGuess extends Component {
         results: []
       });
     }
+    
     trackSearch(value, (results) => {
-      console.log(results);
-      this.setState({results:results})
+      if (value === this.state.value) {
+        this.setState({results:results})
+      }
     });
   }
 }
