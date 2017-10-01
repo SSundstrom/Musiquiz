@@ -39,6 +39,7 @@ class Game extends Component {
     return (
       <PlayerWaitingToStart 
         players={this.props.players}
+        nickname={this.props.nickname}
       />
     );
   }
