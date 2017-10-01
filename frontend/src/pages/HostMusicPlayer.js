@@ -30,14 +30,14 @@ class HostMusicPlayer extends Component {
     const track = this.props.correctSong
     return (
       <div>
-        Host music player
+        <h2>Dude, you're the host</h2>
 
         {console.log(this.state.devices)}
 
         {this.state.devices.length > 0 && this.renderDevices()}
         <h1>{this.props.correctSongTimer}</h1>
 
-        {track && (<div>Correct song was <Track track={track}/></div>)}            
+        {track && (<div>The correct song was... <Track track={track}/></div>)}            
         
         <div><Scores score={this.props.score}/></div>
       </div>

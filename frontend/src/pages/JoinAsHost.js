@@ -11,7 +11,7 @@ class JoinAsHost extends Component {
   render() {
     return (
       <div>
-        Start a game
+        <h2>Start a game</h2>
         <button className="button" onClick={() => auth()}>Log in with Spotify</button>
       </div>
     );
