@@ -18,18 +18,18 @@ class JoinAsPlayer extends Component {
               type="text" 
               onChange={(e) => this.setState({nickname: e.currentTarget.value})} 
               value={this.state.nickname} 
-              
             />
           </label>
-          <button className="lucky" onClick={ ()=> this.imFeelingLucky()}> 🍀 I'm feeling lucky </button>
           <input className="button" type="submit" value="Join" />
         </form>
+
+        <button className="lucky" onClick={() => this.imFeelingLucky()}> 🍀 I'm feeling lucky </button>
       </div>
     );
   }
 
   imFeelingLucky(){
-    var randomNames = ['Quizter Sjögren', 'Quiztina Aguilera', 'Quiz Brown'];
+    var randomNames = ['Quizter Sjögren', 'Quiztina Aguilera', 'Quiz Brown', 'Quiz Medina', 'Ernst Quizteiger'];
 
     randomNames = randomNames.filter(el => {
       return this.props.players.indexOf(el) == -1

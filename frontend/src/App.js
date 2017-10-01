@@ -71,13 +71,21 @@ class App extends Component {
         correctSongTimer: CORRECT_SONG_TIMER
       });
 
-      var interval = setInterval(() => {
-        if (this.state.correctSongTimer === 1) {
-          clearInterval(interval);
+      clearInterval(this.correctSongInterval);
+      this.correctSongInterval = undefined;
+
+      this.correctSongInterval = setInterval(() => {
+        if (this.state.correctSongTimer < 1) {
+          clearInterval(this.correctSongInterval);
+          this.correctSongInterval = undefined;
+          this.setState({
+            correctSongTimer: 0
+          });
+          return;
         }
 
         this.setState({
-          correctSongTimer: this.state.correctSongTimer === 1 ? 0 : this.state.correctSongTimer-1
+          correctSongTimer: this.state.correctSongTimer - 1
         });
       }, 1000);
     });
@@ -89,17 +97,23 @@ class App extends Component {
         guessTimer: data / 1000
       });
 
-      if (!this.interval) {
-        this.interval = setInterval(() => {
-          if (this.state.guessTimer === 1) {
-            clearInterval(this.interval);
-          }
+      clearInterval(this.guessInterval);
+      this.guessInterval = undefined;
 
+      this.guessInterval = setInterval(() => {
+        if (this.state.guessTimer < 1) {
+          clearInterval(this.guessInterval);
+          this.guessInterval = undefined;
           this.setState({
-            guessTimer: this.state.guessTimer === 1 ? 0 : this.state.guessTimer - 1
+            guessTimer: 0
           });
-        }, 1000);
-      }
+          return;
+        }
+
+        this.setState({
+          guessTimer: this.state.guessTimer - 1
+        });
+      }, 1000);
     });
 
     on('hostPlaySong', (data) => this.setState({

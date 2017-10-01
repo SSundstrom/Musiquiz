@@ -23,6 +23,7 @@ class RecommendedSongs extends Component {
   render() {
     return (
       <div>
+        <div> Suggestions </div>
         {this.state.results.map(track => (
           <Track track={track} onClick={() => this.props.onSelectSong(track)}/>
         ))}

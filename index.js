@@ -56,21 +56,29 @@ app.get('/recommendations', function(req, res) {
   var collectedDanceability = 0
   var collectedEnergy = 0;
 
-  for (var i=0; i<energyArray.length; i++)
-  collectedEnergy = collectedEnergy + energyArray[i]
-  averageEnergy = collectedEnergy/energyArray.length
-
-  for (var i=0; i<danceabilityArray.length; i++)
-     collectedDanceability = collectedDanceability + danceabilityArray[i]
-     averageDanceability = collectedDanceability/danceabilityArray.length
-  
-     if (songArray.length ==  0){
-       songArray.push('5QjJgPU8AJeickx34f7on6')
-     }
-    spotifyApi.getRecommendations({ min_danceability: averageDanceability-0.1, max_danceability: averageDanceability+0.1, min_energy: averageEnergy-0.1, max_energy: averageEnergy+0.1, seed_tracks: [songArray] })
-    .then(function(rec) {
-      res.send(rec)
-    })
+    for (var i=0; i<energyArray.length; i++){
+    collectedEnergy = collectedEnergy + energyArray[i]
+    averageEnergy = collectedEnergy/energyArray.length
+  }
+    for (var i=0; i<danceabilityArray.length; i++){
+      collectedDanceability = collectedDanceability + danceabilityArray[i]
+      averageDanceability = collectedDanceability/danceabilityArray.length
+    }
+      if (songArray.length ==  0){
+        songArray.push('5QjJgPU8AJeickx34f7on6')
+      }
+      if (averageDanceability > 0.8){
+        averageDanceability = 0.8
+      }
+      if (averageEnergy > 0.8){
+        averageEnergy = 0.8
+      }
+      spotifyApi.getRecommendations({limit: 5, min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2, min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, seed_tracks: [songArray] })
+      .then(function(rec) {
+        res.send(rec)
+      }).catch(function(e) {
+        console.log(e);
+      });
 });
 
 
@@ -89,13 +97,10 @@ var guesses = 0
 var score = {}
 var selectedSong
 var gamestate = 'pregame'
+var totalPoints = 0
 
 function addNewPlayer(nick) {
-  if (players.indexOf(nick) != -1){
-    addNewPlayer(nick+" :-)")
-  } else {
-    players.push(nick)
-  }
+  players.push(nick)
   sendStatus()
 };
 
@@ -152,6 +157,8 @@ function startRound() {
 function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
+    score[leader] += Math.round(totalPoints/guesses)
+    totalPoints = 0
     guesses = 0
     gamestate = 'finished'
     io.emit('stopRound', selectedSong);
@@ -227,7 +234,9 @@ io.on('connection', function(socket){
     if (selectedSong.uri == uri) {
       var current = new Date();
       var diff = current.getTime() - roundStartTime.getTime();
-      score[nickname] += Math.round((30000 - diff)/1000)
+      var roundScore = Math.round((30000 - diff)/1000)
+      score[nickname] += roundScore
+      totalPoints = totalPoints + roundScore
       console.log(score[nickname]);
       
     }
