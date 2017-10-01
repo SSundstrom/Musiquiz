@@ -46,6 +46,8 @@ app.get('/search/:name', function(req, res) {
         });
 })
 
+app.use('/', express.static('frontend/build'))
+
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')
 })

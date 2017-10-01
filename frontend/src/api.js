@@ -1,6 +1,6 @@
 import openSocket from 'socket.io-client';
 
-const api = 'http://localhost:8888';
+const api = window.location.origin.replace(/3000/, '8888');
 
 const socket = openSocket(api);
 
