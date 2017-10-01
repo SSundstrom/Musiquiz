@@ -21,7 +21,7 @@ class JoinAsPlayer extends Component {
               
             />
           </label>
-          <button className="lucky" onClick={ ()=> this.imFeelingLucky()}> I'm feeling lucky </button>
+          <button className="lucky" onClick={ ()=> this.imFeelingLucky()}> 🍀 I'm feeling lucky </button>
           <input className="button" type="submit" value="Join" />
         </form>
       </div>
