@@ -12,7 +12,6 @@ class ShowCorrectSong extends Component {
         <h2>Correct song was</h2>
         <div>
           <Track track={track}/> 
-            
           <Scores score={this.props.score}/>
         </div>
       </div>

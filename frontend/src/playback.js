@@ -6,7 +6,7 @@ var SpotifyPlayer = {
   config: {
     player_name: 'Dude, what\'s my song',
     client_id: 'c11d380eadd04921a083d5637c108f8c',
-    redirect_uri: 'http://localhost:3000',
+    redirect_uri: window.location.origin,
     scopes: ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private']
   },
   access_token: null,

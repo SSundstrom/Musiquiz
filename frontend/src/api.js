@@ -1,6 +1,6 @@
 import openSocket from 'socket.io-client';
 
-const api = 'http://localhost:8888';
+const api = window.location.origin.replace(/3000/, '8888');
 
 const socket = openSocket(api);
 
@@ -32,4 +32,15 @@ function search(song, callback) {
   });
 }
 
-export { on, emit, search };
+function getAudioAnalysis(callback) {
+  console.log('getAudioAnalysis')
+  fetch(api + '/recommendations/').then(function(response) {
+    console.log('fetch audio analysis')
+    return response.json();
+  }).then((res) => callback(res.body.tracks))
+  .catch((e) => {
+    console.log(e)
+  });
+}
+
+export { on, emit, search, getAudioAnalysis };
