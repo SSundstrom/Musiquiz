@@ -56,21 +56,29 @@ app.get('/recommendations', function(req, res) {
   var collectedDanceability = 0
   var collectedEnergy = 0;
 
-  for (var i=0; i<energyArray.length; i++)
-  collectedEnergy = collectedEnergy + energyArray[i]
-  averageEnergy = collectedEnergy/energyArray.length
-
-  for (var i=0; i<danceabilityArray.length; i++)
-     collectedDanceability = collectedDanceability + danceabilityArray[i]
-     averageDanceability = collectedDanceability/danceabilityArray.length
-  
-     if (songArray.length ==  0){
-       songArray.push('5QjJgPU8AJeickx34f7on6')
-     }
-    spotifyApi.getRecommendations({ min_danceability: averageDanceability-0.1, max_danceability: averageDanceability+0.1, min_energy: averageEnergy-0.1, max_energy: averageEnergy+0.1, seed_tracks: [songArray] })
-    .then(function(rec) {
-      res.send(rec)
-    })
+    for (var i=0; i<energyArray.length; i++){
+    collectedEnergy = collectedEnergy + energyArray[i]
+    averageEnergy = collectedEnergy/energyArray.length
+  }
+    for (var i=0; i<danceabilityArray.length; i++){
+      collectedDanceability = collectedDanceability + danceabilityArray[i]
+      averageDanceability = collectedDanceability/danceabilityArray.length
+    }
+      if (songArray.length ==  0){
+        songArray.push('5QjJgPU8AJeickx34f7on6')
+      }
+      if (averageDanceability > 0.8){
+        averageDanceability = 0.8
+      }
+      if (averageEnergy > 0.8){
+        averageEnergy = 0.8
+      }
+      spotifyApi.getRecommendations({limit: 5, min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2, min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, seed_tracks: [songArray] })
+      .then(function(rec) {
+        res.send(rec)
+      }).catch(function(e) {
+        console.log(e);
+      });
 });
 
 
