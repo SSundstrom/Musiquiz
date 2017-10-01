@@ -18,7 +18,7 @@ class PlayerGuess extends Component {
           <h1>{this.props.guessTimer}</h1>
 
           {this.props.guessed && (
-            <div>Waiting for other players</div>
+            <h2>Waiting for other players</h2>
           )}
 
           {!this.props.guessed && (
