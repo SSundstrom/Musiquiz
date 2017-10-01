@@ -4,7 +4,7 @@ class PlayerWaitingForLeader extends Component {
   render() {
     return (
       <div>
-        <h2>Waiting for leader to choose song</h2>
+        <h2>Waiting for {this.props.leader} to choose song</h2>
       </div>
     );
   }

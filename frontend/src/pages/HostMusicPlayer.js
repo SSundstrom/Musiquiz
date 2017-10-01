@@ -30,8 +30,6 @@ class HostMusicPlayer extends Component {
     const track = this.props.correctSong
     return (
       <div>
-        <h2>Dude, you're the host</h2>
-
         {console.log(this.state.devices)}
 
         {this.state.devices.length > 0 && this.renderDevices()}

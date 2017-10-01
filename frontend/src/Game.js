@@ -113,6 +113,7 @@ class Game extends Component {
       <PlayerWaitingForLeader
         players={this.props.players}
         score={this.props.score}
+        leader={this.props.leader}
       />
     );
   }
