@@ -5,7 +5,7 @@ var SpotifyPlayer = {
   },
   config: {
     player_name: 'Dude, what\'s my song',
-    client_id: 'c11d380eadd04921a083d5637c108f8c',
+    client_id: '3736cb70c4024decbf118aae05fda241',
     redirect_uri: window.location.origin,
     scopes: ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state']
   },
