@@ -33,10 +33,15 @@ SpotifyPlayer.controls = {
       xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
       xhr.setRequestHeader('Authorization','Bearer ' + SpotifyPlayer.access_token);
       xhr.onload = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
+        if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 204)) {
           try {
+            if (!xhr.responseText) {
+                return resolve();
+            }
+            
             resolve(JSON.parse(xhr.responseText));
           } catch (err) {
+              console.log(err)
             reject();
           }
         }
@@ -45,9 +50,7 @@ SpotifyPlayer.controls = {
     });
   },
   switchPlayback: function (id, callback) {
-    this._request("PUT", "/v1/me/player", { device_ids: [id] }).then( () => {
-        callback()
-    });
+    this._request("PUT", "/v1/me/player", { device_ids: [id] });
   },
   play: function (uris) {
     if (uris) {

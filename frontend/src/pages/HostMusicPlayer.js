@@ -45,12 +45,7 @@ class HostMusicPlayer extends Component {
     );
   }
   renderDevices() {
-    for (var i in this.state.devices) {
-      if (this.state.devices[i].is_active) {
-        this.state.selectedDevice = this.state.devices[i].id
-        break
-      }
-    }
+    
     return (
       <select value={this.state.selectedDevice} onChange = {(e) => this.changeDevice(e.target.value)}>
       {this.state.devices.map((device) => {
@@ -62,15 +57,21 @@ class HostMusicPlayer extends Component {
   }
   changeDevice(id) {
     console.log(id)
-    SpotifyPlayer.controls.switchPlayback(id, () => {
-      console.log('changeDevice')
-      this.getDevices()})
+    SpotifyPlayer.controls.switchPlayback(id);
+    this.setState({selectedDevice:id})
   }
 
   getDevices() {
     SpotifyPlayer.controls.getDevices((results) => {
-      console.log('getDevices')
-      this.setState({devices:results})
+      var id;
+      console.log(results)
+      for (var i in this.state.devices) {
+        if (this.state.devices[i].is_active) {
+          id = this.state.devices[i].id
+          break
+        }
+      }
+      this.setState({devices:results, selectedDevice:id})
     })
   }
 }
