@@ -73,7 +73,8 @@ app.get('/recommendations', function(req, res) {
       if (averageEnergy > 0.8){
         averageEnergy = 0.8
       }
-      spotifyApi.getRecommendations({limit: 5, min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2, min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, seed_tracks: [songArray] })
+      console.log(songArray)
+      spotifyApi.getRecommendations({/*min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2, min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2,*/ seed_tracks: [songArray] })
       .then(function(rec) {
         res.send(rec)
       }).catch(function(e) {
@@ -251,6 +252,9 @@ io.on('connection', function(socket){
   socket.on('selectedSong', function(songObject) {
     if (songArray.length ==  1 && songArray[0] == '5QjJgPU8AJeickx34f7on6'){
       songArray = [];
+    }
+    if (songArray.length > 19){
+      songArray.splice(0,1)
     }
     console.log('got selectedSong')
     selectedSong = songObject
