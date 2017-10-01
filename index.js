@@ -89,7 +89,6 @@ http.listen(8888, function () {
 })
 
 // --------------------------- Functions ---------------------------------
-
 var players = []
 var hostSocket
 var leader
