@@ -41,6 +41,7 @@ class App extends Component {
          state.hasHost = false;
          state.started = false;
          state.nickname = false;
+         state.isHost = false
       } else if (data.gamestate === 'lobby') {
         state.hasHost = true;
       } else if (data.gamestate === 'choose') {
