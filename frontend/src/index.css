@@ -92,15 +92,18 @@ label {
 }
 
 .button {
-  background-color: #000;
-  border: none;
+  background-color: transparent;
+  border: solid 3px white;
   color: #fff;
   font-size: 20px;
   border-radius: 7px;
   display: block;
   width: 100%;
   padding: 10px;
+  margin: auto;
+  max-width: 50%;
   margin-bottom: 20px;
+  font-family: inherit;
 }
 
 input[type="text"], input[type="number"] {
@@ -149,11 +152,18 @@ select {
 }
 
 .lucky {
+  background-color: transparent;
+  border: solid 3px white;
   color: #fff;
-  background: none;
-  border: none;
-  font-size: 18px;
+  font-size: 15px;
+  border-radius: 7px;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: auto;
+  max-width: 50%;
   margin-bottom: 20px;
+  font-family: inherit;
 }
 
 .score-row {
@@ -167,15 +177,16 @@ select {
 }
 
 .spotify-button {
-    border: 1px solid #fff;
-    background: transparent;
-    max-width: 50%;
-    color: #fff;
-    margin: auto;
-    font-size: 20px;
-    border-radius: 50px;
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
+  border: 3px solid #fff;
+  background: transparent;
+  max-width: 200px;
+  color: #fff;
+  margin: auto;
+  font-size: 20px;
+  border-radius: 50px;
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 20px;
 }
+*:focus { outline: none; }
