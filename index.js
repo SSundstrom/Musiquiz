@@ -115,6 +115,7 @@ function sendStatus() {
 
 function playSong(uri) {
   hostSocket.emit('hostPlaySong', uri)
+  io.emit('playing', selectedSong)
   console.log('playSong')
 }
 

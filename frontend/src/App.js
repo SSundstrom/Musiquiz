@@ -26,6 +26,7 @@ class App extends Component {
       songToPlay: false,
       guessed: false,
       selectedSong: false,
+      playing:false,
     }
   }
 
@@ -118,8 +119,14 @@ class App extends Component {
     on('hostPlaySong', (data) => this.setState({
       songToPlay: data
     }));
+
+    on('playingSong', (data) => this.setState({
+      playing: data
+    }))
   }
 
+
+  
   startGame() {
     emit('hostStartGame');
   }
@@ -188,6 +195,7 @@ class App extends Component {
           correctSongTimer={this.state.correctSongTimer}
           songToPlay={this.state.songToPlay}
           guessed={this.state.guessed}
+          playing={this.state.playing}
 
           onStartGame={() => this.startGame()}
           onJoinAsPlayer={(nickname) => this.joinAsPlayer(nickname)}

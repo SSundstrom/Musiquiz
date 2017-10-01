@@ -49,12 +49,12 @@ SpotifyPlayer.controls = {
       xhr.send(JSON.stringify(params));
     });
   },
-  switchPlayback: function (id, callback) {
-    this._request("PUT", "/v1/me/player", { device_ids: [id] });
+  switchPlayback: function (id) {
+    return this._request("PUT", "/v1/me/player", { device_ids: [id] });
   },
-  play: function (uris) {
+  play: function (uris, id) {
     if (uris) {
-      this._request("PUT", "/v1/me/player/play", { uris: uris });
+      this._request("PUT", "/v1/me/player/play?device_id="+id, { uris: uris });
     } else {
       this._request("PUT", "/v1/me/player/play");
     }
