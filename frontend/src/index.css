@@ -25,6 +25,8 @@ body, html, #root, .background {
 
 .background {
   background-color: #C42AE6;
+  height: auto;
+  min-height: 100%;
 }
 
 .background.is-leader {
@@ -38,6 +40,7 @@ body, html, #root, .background {
 .trackinfo {
   padding: 10px;
   text-align: left;
+  word-break: break-all;
 }
 
 .trackitem {

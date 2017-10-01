@@ -39,23 +39,16 @@ class LeaderChooseSong extends Component {
       value: value
     });
 
-    console.log(value);
-
-    setTimeout(() => {
-      if (this.state.value === value) {
-        this.search(value);
-      }
-    }, 50);
+    this.search(value);
   }
 
   search(value) {
-    if (value.length < 2) {
+    if (value.length === 0) {
       return this.setState({
         results: []
       });
     }
     trackSearch(value, (results) => {
-      console.log(results);
       this.setState({results:results})
     });
   }
