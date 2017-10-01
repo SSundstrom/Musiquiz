@@ -89,13 +89,10 @@ var guesses = 0
 var score = {}
 var selectedSong
 var gamestate = 'pregame'
+var totalPoints = 0
 
 function addNewPlayer(nick) {
-  if (players.indexOf(nick) != -1){
-    addNewPlayer(nick+" :-)")
-  } else {
-    players.push(nick)
-  }
+  players.push(nick)
   sendStatus()
 };
 
@@ -151,6 +148,8 @@ function startRound() {
 function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
+    score[leader] += Math.round(totalPoints/guesses)
+    totalPoints = 0
     guesses = 0
     gamestate = 'finished'
     io.emit('stopRound', selectedSong);
@@ -226,7 +225,9 @@ io.on('connection', function(socket){
     if (selectedSong.uri == uri) {
       var current = new Date();
       var diff = current.getTime() - roundStartTime.getTime();
-      score[nickname] += Math.round((30000 - diff)/1000)
+      var roundScore = Math.round((30000 - diff)/1000)
+      score[nickname] += roundScore
+      totalPoints = totalPoints + roundScore
       console.log(score[nickname]);
       
     }
@@ -238,12 +239,16 @@ io.on('connection', function(socket){
   })
 
   socket.on('selectedSong', function(songObject) {
+    if (songArray.length ==  1 && songArray[0] == '5QjJgPU8AJeickx34f7on6'){
+      songArray = [];
+    }
     console.log('got selectedSong')
     selectedSong = songObject
     startRound()
     playSong(songObject.uri)
     sendStatus(score, players, gamestate)
     analyzeSong(songObject.id);
+
 
   })
 

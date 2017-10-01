@@ -48,6 +48,7 @@ class Game extends Component {
       return (
         <JoinAsPlayer 
           onJoinAsPlayer={this.props.onJoinAsPlayer}
+          players={this.props.players}
         />
       );
     }

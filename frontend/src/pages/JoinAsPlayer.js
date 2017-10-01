@@ -29,9 +29,15 @@ class JoinAsPlayer extends Component {
   }
 
   imFeelingLucky(){
-    var randomNames = ['Quizter Sjögren', 'Quiztina Aguilera', 'Quiz Brown']
-  
-    var nickname = randomNames[Math.floor(Math.random()*randomNames.length)];
+    var randomNames = ['Quizter Sjögren', 'Quiztina Aguilera', 'Quiz Brown', 'Quiz Medina', 'Ernst Quizteiger'];
+
+    randomNames = randomNames.filter(el => {
+      return this.props.players.indexOf(el) == -1
+    });
+
+    var index = 0;
+    index = Math.floor(Math.random()*randomNames.length)
+    var nickname = randomNames[index];
 
     this.props.onJoinAsPlayer(nickname);
   }
