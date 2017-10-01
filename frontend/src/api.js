@@ -32,4 +32,15 @@ function search(song, callback) {
   });
 }
 
-export { on, emit, search };
+function getAudioAnalysis(callback) {
+  console.log('getAudioAnalysis')
+  fetch(api + '/recommendations/').then(function(response) {
+    console.log('fetch audio analysis')
+    return response.json();
+  }).then((res) => callback(res.body.tracks))
+  .catch((e) => {
+    console.log(e)
+  });
+}
+
+export { on, emit, search, getAudioAnalysis };

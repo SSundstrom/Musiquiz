@@ -46,6 +46,29 @@ app.get('/search/:name', function(req, res) {
         });
 })
 
+average = 0.6
+tempoArray = []
+
+app.get('/recommendations', function(req, res) {
+  var collectedValue = 0
+
+  for (var i=0; i<tempoArray.length; i++)
+  collectedValue = collectedValue + tempoArray[i]
+  averageTempo = collectedValue/danceabilityArray.length
+
+  for (var i=0; i<danceabilityArray.length; i++)
+     collectedValue = collectedValue + danceabilityArray[i]
+     averageDanceability = collectedValue/danceabilityArray.length
+  
+     if (songArray.length ==  0){
+       songArray.push('5QjJgPU8AJeickx34f7on6')
+     }
+    spotifyApi.getRecommendations({ min_danceability: averageDanceability-0.1, max_danceability: average+0.1, seed_tracks: [songArray] })
+    .then(function(rec) {
+      res.send(rec)
+    })
+});
+
 http.listen(8888, function () {
   console.log('Example app listening on port 8888!')
 })
@@ -140,6 +163,20 @@ function hostReset() {
   sendStatus()
 }
 
+var danceabilityArray = [];
+songArray = []
+
+function analyzeSong(id) {
+  spotifyApi.getAudioFeaturesForTrack(id)
+  .then(function(data) {
+      danceabilityArray.push(data.body.danceability);
+      songArray.push(id)
+  }, function(err) {
+  console.error(err);
+  });
+}
+
+
 function startChoose() {
   console.log('startChoose')
   if (gamestate == 'lobby' || gamestate == 'finished') {
@@ -199,6 +236,8 @@ io.on('connection', function(socket){
     startRound()
     playSong(songObject.uri)
     sendStatus(score, players, gamestate)
+    analyzeSong(songObject.id);
+
   })
 
   socket.on('hostStartGame', function() {
