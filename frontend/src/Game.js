@@ -39,6 +39,7 @@ class Game extends Component {
     return (
       <PlayerWaitingToStart 
         players={this.props.players}
+        nickname={this.props.nickname}
       />
     );
   }
@@ -66,6 +67,7 @@ class Game extends Component {
         <HostMusicPlayer 
           songToPlay={this.props.songToPlay}
           score={this.props.score}
+          oldScore={this.props.oldScore}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
         />
@@ -98,6 +100,7 @@ class Game extends Component {
         <ShowCorrectSong 
           players={this.props.players}
           score={this.props.score}
+          oldScore={this.props.oldScore}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
         />

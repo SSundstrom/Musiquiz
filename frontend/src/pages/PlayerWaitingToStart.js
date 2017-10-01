@@ -6,7 +6,7 @@ class PlayerWaitingToStart extends Component {
     return (
       <div>
         <h2>Waiting for host to start</h2>
-        <Players players={this.props.players}/>
+        <Players players={this.props.players} nickname={this.props.nickname} />
       </div>
     );
   }
