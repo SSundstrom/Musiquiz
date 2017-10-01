@@ -238,12 +238,16 @@ io.on('connection', function(socket){
   })
 
   socket.on('selectedSong', function(songObject) {
+    if (songArray.length ==  1 && songArray[0] == '5QjJgPU8AJeickx34f7on6'){
+      songArray = [];
+    }
     console.log('got selectedSong')
     selectedSong = songObject
     startRound()
     playSong(songObject.uri)
     sendStatus(score, players, gamestate)
     analyzeSong(songObject.id);
+
 
   })
 
