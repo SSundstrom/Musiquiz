@@ -79,8 +79,7 @@ function sendStatus() {
 }
 
 function playSong(uri) {
-  io.emit('hostPlaySong', uri)
-  
+  hostSocket.emit('hostPlaySong', uri)
   console.log('playSong')
 }
 
@@ -215,7 +214,10 @@ io.on('connection', function(socket){
     if (leader == nickname) {
       pickLeader()
     }
-    players.splice(players.indexOf(nickname),1)
+    var index = players.indexOf(nickname)
+    if (index != -1) {
+      players.splice(index,1)
+    }
     if (players.length < 2) {
       hostReset()
     }
