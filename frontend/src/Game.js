@@ -67,6 +67,7 @@ class Game extends Component {
           songToPlay={this.props.songToPlay}
           score={this.props.score}
           correctSong={this.props.correctSong}
+          nickname={this.props.nickname}
         />
       );
     }
@@ -98,6 +99,7 @@ class Game extends Component {
           players={this.props.players}
           score={this.props.score}
           correctSong={this.props.correctSong}
+          nickname={this.props.nickname}
         />
       );
     }
@@ -115,6 +117,7 @@ class Game extends Component {
         players={this.props.players}
         score={this.props.score}
         leader={this.props.leader}
+        nickname={this.props.nickname}
       />
     );
   }
