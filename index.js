@@ -47,28 +47,32 @@ app.get('/search/:name', function(req, res) {
 })
 
 
-average = 0.6
-tempoArray = []
+averageDanceability = 0.5
+averageEnergy = 0.5
+energyArray = []
+deleteTemp = true
 
 app.get('/recommendations', function(req, res) {
-  var collectedValue = 0
+  var collectedDanceability = 0
+  var collectedEnergy = 0;
 
-  for (var i=0; i<tempoArray.length; i++)
-  collectedValue = collectedValue + tempoArray[i]
-  averageTempo = collectedValue/danceabilityArray.length
+  for (var i=0; i<energyArray.length; i++)
+  collectedEnergy = collectedEnergy + energyArray[i]
+  averageEnergy = collectedEnergy/energyArray.length
 
   for (var i=0; i<danceabilityArray.length; i++)
-     collectedValue = collectedValue + danceabilityArray[i]
-     averageDanceability = collectedValue/danceabilityArray.length
+     collectedDanceability = collectedDanceability + danceabilityArray[i]
+     averageDanceability = collectedDanceability/danceabilityArray.length
   
      if (songArray.length ==  0){
        songArray.push('5QjJgPU8AJeickx34f7on6')
      }
-    spotifyApi.getRecommendations({ min_danceability: averageDanceability-0.1, max_danceability: average+0.1, seed_tracks: [songArray] })
+    spotifyApi.getRecommendations({ min_danceability: averageDanceability-0.1, max_danceability: averageDanceability+0.1, min_energy: averageEnergy-0.1, max_energy: averageEnergy+0.1, seed_tracks: [songArray] })
     .then(function(rec) {
       res.send(rec)
     })
 });
+
 
 app.use('/', express.static('frontend/build'))
 
@@ -172,6 +176,7 @@ function analyzeSong(id) {
   spotifyApi.getAudioFeaturesForTrack(id)
   .then(function(data) {
       danceabilityArray.push(data.body.danceability);
+      energyArray.push(data.body.energy)
       songArray.push(id)
   }, function(err) {
   console.error(err);
