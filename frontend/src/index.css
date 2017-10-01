@@ -161,3 +161,7 @@ select {
   width: 100%;
   justify-content: space-between;
 }
+
+select {
+  margin-bottom: 30px;
+}
