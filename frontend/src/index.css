@@ -165,3 +165,17 @@ select {
 select {
   margin-bottom: 30px;
 }
+
+.spotify-button {
+    border: 1px solid #fff;
+    background: transparent;
+    max-width: 50%;
+    color: #fff;
+    margin: auto;
+    font-size: 20px;
+    border-radius: 50px;
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+}
