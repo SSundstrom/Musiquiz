@@ -5,7 +5,7 @@ class LeaderWaitingForGuesses extends Component {
     return (
       <div>
         <h1>{this.props.guessTimer}</h1>
-        Waiting for guesses
+        <h2>Waiting for guesses</h2>
       </div>
     );
   }

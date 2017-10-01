@@ -17,7 +17,7 @@ class LeaderChooseSong extends Component {
     return (
       <div>
           <label>
-            Enter a song name
+            <h2>Dude, enter a song name</h2>
             <input 
               type="text" 
               onChange={(e) => this.onChange(e.currentTarget.value)} 

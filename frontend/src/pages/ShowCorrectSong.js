@@ -9,7 +9,7 @@ class ShowCorrectSong extends Component {
     return (
       <div>
         <h1>{this.props.correctSongTimer}</h1>
-        <div>Correct song was</div>
+        <h2>Correct song was</h2>
         <div>
           <Track track={track}/> 
           <Scores score={this.props.score}/>

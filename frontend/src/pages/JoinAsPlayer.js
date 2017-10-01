@@ -11,10 +11,9 @@ class JoinAsPlayer extends Component {
   render() {
     return (
       <div>
-        Join a game
         <form onSubmit={(e) => { e.preventDefault(); this.props.onJoinAsPlayer(this.state.nickname); return false; }}>
           <label>
-            Nickname
+            Dude, what's your name?
             <input 
               type="text" 
               onChange={(e) => this.setState({nickname: e.currentTarget.value})} 
