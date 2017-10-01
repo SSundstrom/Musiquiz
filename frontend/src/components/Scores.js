@@ -4,7 +4,7 @@ const Scores = (props) => (
   <div className="scores">
       {Object.keys(props.score).map((name)=>(
         <div key={name}>
-          <div>{name} - {props.score[name]}</div>
+          <div>{name === props.nickname && '-->'}{name} - {props.score[name]}</div>
         </div>
       ))}
   </div>
