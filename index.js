@@ -157,7 +157,9 @@ function startRound() {
 function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
+    if (guesses > 0){
     score[leader] += Math.round(totalPoints/guesses)
+    }
     totalPoints = 0
     guesses = 0
     gamestate = 'finished'
