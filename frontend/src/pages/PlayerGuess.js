@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { search as trackSearch } from '../api';
 import Track from '../components/Track'
+import Scores from '../components/Scores'
 
 class PlayerGuess extends Component {
   constructor(props) {

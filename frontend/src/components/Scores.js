@@ -23,11 +23,11 @@ class Scores extends React.Component {
 
   getDiff(name) {
     if (!this.props.oldScore) {
-      return '';
+      return '0';
     }
 
     if (!this.props.oldScore[name]) {
-      return " + " + this.props.score[name];
+      return ' + ' + this.props.score[name];
     }
 
     const diff = this.props.score[name] - this.props.oldScore[name];
