@@ -90,6 +90,9 @@ class Game extends Component {
           onGuess={this.props.onGuess}
           guessTimer={this.props.guessTimer}
           guessed={this.props.guessed}
+          score={this.props.score}
+          oldScore={this.props.oldScore}
+          nickname={this.props.nickname}
         />
       );
     }
@@ -121,6 +124,7 @@ class Game extends Component {
         score={this.props.score}
         leader={this.props.leader}
         nickname={this.props.nickname}
+        oldScore={this.props.oldScore}
         correctSong={this.props.correctSong}
       />
     );

@@ -18,7 +18,10 @@ class PlayerGuess extends Component {
           <h1>{this.props.guessTimer}</h1>
 
           {this.props.guessed && (
-            <h2>Waiting for other players</h2>
+            <div>
+              <h2>Waiting for other players</h2>
+              <Scores score={this.props.score} nickname={this.props.nickname} oldScore={this.props.oldScore}/>
+            </div>
           )}
 
           {!this.props.guessed && (
@@ -35,6 +38,7 @@ class PlayerGuess extends Component {
                 <Track track={track} onClick={() => this.props.onGuess(track.uri)}/>
               ))}
             </div>
+            
           )}
       </div>
     );
