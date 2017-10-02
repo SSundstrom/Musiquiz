@@ -141,6 +141,7 @@ function pickLeader() {
 };
 
 var roundStartTime;
+var timeout;
 
 function startRound() {
   console.log('startRound')
@@ -149,7 +150,7 @@ function startRound() {
   if (gamestate == 'choose') {
     gamestate = 'midgame'
     io.emit('startRound', timer)
-    setTimeout(stopRound, timer)
+    timeout = setTimeout(stopRound, timer)
     roundStartTime = new Date();
   }
 }
@@ -157,9 +158,8 @@ function startRound() {
 function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
-    if (guesses > 0){
-    score[leader] += Math.round(totalPoints/guesses)
-    }
+    clearTimeout(timeout)
+    score[leader] += Math.round(totalPoints/players.length)
     totalPoints = 0
     guesses = 0
     gamestate = 'finished'
@@ -180,7 +180,7 @@ function hostReset() {
 }
 
 var danceabilityArray = [];
-songArray = []
+var songArray = []
 
 function analyzeSong(id) {
   spotifyApi.getAudioFeaturesForTrack(id)
@@ -216,6 +216,9 @@ io.on('connection', function(socket){
     console.log(nickname)
     score[nickname] = 0
     addNewPlayer(nickname)
+    if (leader) {
+      sendLeader()
+    }
   });
 
   socket.on('hostJoin', function() {
@@ -253,7 +256,7 @@ io.on('connection', function(socket){
     if (songArray.length ==  1 && songArray[0] == '5QjJgPU8AJeickx34f7on6'){
       songArray = [];
     }
-    if (songArray.length > 19){
+    if (songArray.length > 3){
       songArray.splice(0,1)
     }
     console.log('got selectedSong')
@@ -262,8 +265,6 @@ io.on('connection', function(socket){
     playSong(songObject.uri)
     sendStatus(score, players, gamestate)
     analyzeSong(songObject.id);
-
-
   })
 
   socket.on('hostStartGame', function() {
