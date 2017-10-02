@@ -159,7 +159,7 @@ function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
     clearTimeout(timeout)
-    score[leader] += Math.round(totalPoints/players.length)
+    score[leader] += Math.round(totalPoints/(players.length-1))
     totalPoints = 0
     guesses = 0
     gamestate = 'finished'
