@@ -82,6 +82,9 @@ class Game extends Component {
           <LeaderWaitingForGuesses
             players={this.props.players}
             guessTimer={this.props.guessTimer}
+            score={this.props.score}
+            oldScore={this.props.oldScore}
+            nickname={this.props.nickname}
           />
         );
       }

@@ -125,6 +125,12 @@ class App extends Component {
     on('playingSong', (data) => this.setState({
       playing: data
     }))
+
+    on('reconnect', (attempts) => {
+      if (this.state.nickname) {
+        emit('reconnected', this.state.nickname)
+      }
+    })
   }
 
 

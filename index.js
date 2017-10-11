@@ -281,6 +281,10 @@ io.on('connection', function(socket){
     hostReset()
   })
 
+  socket.on('reconnected', (nick) => {
+    console.log('reconnected ' + name)
+  })
+
   socket.on('disconnect', function(){
     if (leader == nickname) {
       pickLeader()
