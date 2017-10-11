@@ -90,6 +90,7 @@ http.listen(8888, function () {
 })
 
 // --------------------------- Functions ---------------------------------
+var disconnected = {}
 var players = []
 var hostSocket
 var leader
@@ -101,6 +102,11 @@ var totalPoints = 0
 
 function addNewPlayer(nick) {
   players.push(nick)
+  console.log(nick)
+  score[nick] = 0
+  if (leader) {
+    sendLeader()
+  }
   sendStatus()
 };
 
@@ -170,6 +176,7 @@ function stopRound() {
 
 function hostReset() {
   players = []
+  disconnected = {}
   hostSocket = false
   leader = false
   selectedSong = false
@@ -213,12 +220,7 @@ io.on('connection', function(socket){
   socket.on('join', function(name) {
     console.log('got join from')
     nickname = name;
-    console.log(nickname)
-    score[nickname] = 0
     addNewPlayer(nickname)
-    if (leader) {
-      sendLeader()
-    }
   });
 
   socket.on('hostJoin', function() {
@@ -282,7 +284,14 @@ io.on('connection', function(socket){
   })
 
   socket.on('reconnected', (nick) => {
-    console.log('reconnected ' + name)
+    console.log('reconnected ' + nick)
+    if (nick in disconnected) {
+      addNewPlayer(nick)
+      score[nick] = disconnected[nick]
+      delete disconnected[nick]
+    } else {
+      console.log(nick + ' should reload site')
+    }
   })
 
   socket.on('disconnect', function(){
@@ -291,6 +300,7 @@ io.on('connection', function(socket){
     }
     var index = players.indexOf(nickname)
     if (index != -1) {
+      disconnected[nickname] = score[nickname]
       players.splice(index,1)
     }
     if (players.length < 2) {
@@ -299,6 +309,8 @@ io.on('connection', function(socket){
     delete score[nickname]
     sendStatus()
     console.log('user disconnected');
+    console.log(disconnected)
   });
+
 
 });
