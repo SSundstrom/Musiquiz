@@ -8,7 +8,8 @@ class HostMusicPlayer extends Component {
     super(props)
     this.state = {
       devices:[],
-      selectedDevice:SpotifyPlayer.device_id
+      selectedDevice:SpotifyPlayer.device_id,
+      time:30
     }
   }
   componentDidMount() {
@@ -32,10 +33,26 @@ class HostMusicPlayer extends Component {
     return (
       <div>
         {this.state.devices.length > 0 && this.renderDevices()}
+        
+        <form onSubmit={(e) => { e.preventDefault(); this.props.onChangeTimer(this.state.time); return false; }}>
+          <label>
+            Time
+            <input className="timer-input"
+              type="number" 
+              onChange={(e) => this.setState({time: e.currentTarget.value})} 
+              value={this.state.time}
+              step="5"
+              min="15"
+              max="180"
+            />
+            <input className="button, timer-button" type="submit" value="Change" />
+          </label>
+        </form>
+
         <h1>{this.props.correctSongTimer}</h1>
 
         {track && (<div>The correct song was... <Track track={track}/></div>)}            
-        
+ 
         <div><Scores score={this.props.score} nickname={this.props.nickname} oldScore={this.props.oldScore}/></div>
       </div>
       

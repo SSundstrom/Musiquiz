@@ -142,11 +142,11 @@ function pickLeader() {
 
 var roundStartTime;
 var timeout;
+var timer = 30000
 
 function startRound() {
   console.log('startRound')
 
-  const timer = 30000
   if (gamestate == 'choose') {
     gamestate = 'midgame'
     io.emit('startRound', timer)
@@ -229,6 +229,10 @@ io.on('connection', function(socket){
       hostSocket.on('disconnect', function() {
         console.log('got host disconnect')
         hostReset()
+      })
+      hostSocket.on('timer', (time) => {
+        console.log('got new timer' + time)
+        timer = time*1000
       })
       sendStatus()
     }

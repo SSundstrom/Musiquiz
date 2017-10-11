@@ -170,6 +170,10 @@ class App extends Component {
     }
   }
 
+  sendTime(time) {
+    this.setState({timer: time}, () => emit('timer', time))
+  }
+
   selectSong(song) {
     this.setState({
       selectedSong: true
@@ -205,6 +209,7 @@ class App extends Component {
           onJoinAsHost={() => this.joinAsHost()}
           onGuess={(uri) => this.guess(uri)}
           onSelectSong={(song) => this.selectSong(song)}
+          onChangeTimer={(time) => this.sendTime(time)}
         />
       </Layout>
     );

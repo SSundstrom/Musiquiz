@@ -190,3 +190,28 @@ select {
   margin-bottom: 20px;
 }
 *:focus { outline: none; }
+
+
+input.timer-input{
+  display: inline-block;
+  width: auto;
+  margin-left: 20px;
+  padding: 7px;
+  text-align: right;
+}
+
+.timer-button{
+  background-color: transparent;
+  border: solid 3px white;
+  color: #fff;
+  font-size: 20px;
+  border-radius: 7px;
+  padding: 10px;
+  margin: auto;
+  max-width: 50%;
+  margin-bottom: 20px;
+  font-family: inherit;
+  display: inline-block;
+  width: auto;
+  margin-left: 20px;
+}

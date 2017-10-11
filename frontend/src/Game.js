@@ -70,6 +70,7 @@ class Game extends Component {
           oldScore={this.props.oldScore}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
+          onChangeTimer={this.props.onChangeTimer}
         />
       );
     }
