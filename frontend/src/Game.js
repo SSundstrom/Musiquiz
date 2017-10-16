@@ -63,11 +63,12 @@ class Game extends Component {
 
   renderPlay() {
     if (this.props.isHost) {
+      console.log(this.props)
       return (
         <HostMusicPlayer 
           songToPlay={this.props.songToPlay}
           score={this.props.score}
-          oldScore={this.props.oldScore}
+          scoreUpdates={this.props.scoreUpdates}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
           onChangeTimer={this.props.onChangeTimer}
@@ -83,7 +84,7 @@ class Game extends Component {
             players={this.props.players}
             guessTimer={this.props.guessTimer}
             score={this.props.score}
-            oldScore={this.props.oldScore}
+            scoreUpdates={this.props.scoreUpdates}
             nickname={this.props.nickname}
           />
         );
@@ -95,7 +96,7 @@ class Game extends Component {
           guessTimer={this.props.guessTimer}
           guessed={this.props.guessed}
           score={this.props.score}
-          oldScore={this.props.oldScore}
+          scoreUpdates={this.props.scoreUpdates}
           nickname={this.props.nickname}
         />
       );
@@ -107,7 +108,7 @@ class Game extends Component {
         <ShowCorrectSong 
           players={this.props.players}
           score={this.props.score}
-          oldScore={this.props.oldScore}
+          scoreUpdates={this.props.scoreUpdates}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
         />
@@ -128,7 +129,7 @@ class Game extends Component {
         score={this.props.score}
         leader={this.props.leader}
         nickname={this.props.nickname}
-        oldScore={this.props.oldScore}
+        scoreUpdates={this.props.scoreUpdates}
         correctSong={this.props.correctSong}
       />
     );

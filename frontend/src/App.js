@@ -18,7 +18,7 @@ class App extends Component {
       players: [],
       started: false,
       score: {},
-      oldScore: false,
+      scoreUpdates: {},
       guessTimer: 0,
       correctSongTimer: CORRECT_SONG_TIMER,
       leader: false,
@@ -27,7 +27,7 @@ class App extends Component {
       songToPlay: false,
       guessed: false,
       selectedSong: false,
-      playing:false,
+      playing:false
     }
   }
 
@@ -68,8 +68,9 @@ class App extends Component {
 
     on('stopRound', (data) => {
       this.setState({
-        correctSong: data,
-        correctSongTimer: CORRECT_SONG_TIMER
+        correctSong: data['selectedSong'],
+        correctSongTimer: CORRECT_SONG_TIMER,
+        scoreUpdates: data['scoreUpdates']
       });
 
       clearInterval(this.correctSongInterval);
@@ -200,7 +201,7 @@ class App extends Component {
           started={this.state.started}
           players={this.state.players}
           score={this.state.score}
-          oldScore={this.state.oldScore}
+          scoreUpdates={this.state.scoreUpdates}
           leader={this.state.leader}
           guessTimer={this.state.guessTimer}
           isLeader={this.state.isLeader}

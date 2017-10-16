@@ -12,7 +12,8 @@ class Scores extends React.Component {
                 <small>{name === this.props.nickname && ' (you)'}</small>
               </div>
               <div className="score-score">
-                {this.props.oldScore && this.props.oldScore[name]} {this.getDiff(name)}
+                {(name in this.props.score ) && this.props.score[name] && this.props.score[name]} 
+                {(name in this.props.scoreUpdates) && ' + ' + this.props.scoreUpdates[name]}
               </div>
             </div>
           </div>

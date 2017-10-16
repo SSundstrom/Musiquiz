@@ -12,7 +12,7 @@ class PlayerWaitingForLeader extends Component {
         <div>
           
           {track && <Track track={track}/>}
-          <Scores score={this.props.score} nickname={this.props.nickname} oldScore={this.props.oldScore}/>
+          <Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/>
         </div>
       </div>
     );
