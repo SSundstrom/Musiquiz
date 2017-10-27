@@ -215,3 +215,7 @@ input.timer-input{
   width: auto;
   margin-left: 20px;
 }
+
+.small{
+  font-size: 3px;
+}
