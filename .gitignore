@@ -2,7 +2,6 @@
 # Created by https://www.gitignore.io/api/node,macos,windows,webstorm,visualstudiocode
 
 
-frontend/build
 
 ### macOS ###
 *.DS_Store
@@ -64,7 +63,6 @@ bower_components
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
 
 # Dependency directories
 node_modules/

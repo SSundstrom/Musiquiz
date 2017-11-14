@@ -46,7 +46,6 @@ app.get('/search/:name', function(req, res) {
         });
 })
 
-
 averageDanceability = 0.5
 averageEnergy = 0.5
 energyArray = []
@@ -82,7 +81,6 @@ app.get('/recommendations', function(req, res) {
       });
 });
 
-
 app.use('/', express.static('frontend/build'))
 
 http.listen(8888, function () {
@@ -90,17 +88,39 @@ http.listen(8888, function () {
 })
 
 // --------------------------- Functions ---------------------------------
+
 var players = []
 var hostSocket
 var leader
 var guesses = 0
-var score = {}
+var scores = {}
+var scoreUpdates = {}
 var selectedSong
 var gamestate = 'pregame'
 var totalPoints = 0
+var allowReconnect = false
 
-function addNewPlayer(nick) {
+function hostReset() {
+  players = []
+  hostSocket
+  leader
+  guesses = 0
+  scores = {}
+  scoreUpdates = {}
+  selectedSong
+  gamestate = 'pregame'
+  totalPoints = 0
+  allowReconnect = false
+  sendStatus()
+}
+
+function addPlayer(nick, score) {
   players.push(nick)
+  console.log(nick)
+  scores[nick] = score
+  if (leader) {
+    sendLeader()
+  }
   sendStatus()
 };
 
@@ -109,7 +129,7 @@ function setHost(socket) {
 };
 
 function sendStatus() {
-  io.emit('status', {score:score, players:players, gamestate:gamestate, guesses:guesses})
+  io.emit('status', {scores:scores, players:players, gamestate:gamestate, guesses:guesses, scoreUpdates:scoreUpdates})
   console.log('sendStatus')
 }
 
@@ -124,6 +144,11 @@ function sendLeader() {
   console.log('leader')
 }
 
+function clearLeader() {
+  io.emit('leader', undefined)
+  console.log('leader')
+}
+
 function pickLeader() {
   if (!leader){
     leader = players[0]
@@ -134,7 +159,6 @@ function pickLeader() {
     } else {
       leader = players[0]
     }
-    
   }
 
   sendLeader()
@@ -142,15 +166,15 @@ function pickLeader() {
 
 var roundStartTime;
 var timeout;
-var timer = 30000
+var roundTime = 30000
+var displayCorrectTime = 10000
 
 function startRound() {
   console.log('startRound')
-
   if (gamestate == 'choose') {
     gamestate = 'midgame'
-    io.emit('startRound', timer)
-    timeout = setTimeout(stopRound, timer)
+    io.emit('startRound', roundTime)
+    timeout = setTimeout(stopRound, roundTime)
     roundStartTime = new Date();
   }
 }
@@ -159,24 +183,19 @@ function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
     clearTimeout(timeout)
-    score[leader] += Math.round(totalPoints/(players.length-1))
+    var leaderScore = Math.round(totalPoints/(players.length-1))
+    if (leaderScore > 0) {
+      scoreUpdates[leader] = leaderScore
+    }
     totalPoints = 0
     guesses = 0
+    clearLeader()
     gamestate = 'finished'
-    io.emit('stopRound', selectedSong);
-    startChoose()
+    sendStatus()
+    io.emit('stopRound', {'selectedSong':selectedSong});
+    setTimeout(applyUpdates, displayCorrectTime/2)
+    setTimeout(startChoose, displayCorrectTime)
   }
-}
-
-function hostReset() {
-  players = []
-  hostSocket = false
-  leader = false
-  selectedSong = false
-  score = {}
-  guesses = 0
-  gamestate = 'pregame'
-  sendStatus()
 }
 
 var danceabilityArray = [];
@@ -199,8 +218,17 @@ function startChoose() {
   if (gamestate == 'lobby' || gamestate == 'finished') {
     gamestate = 'choose'
     pickLeader()
+    sendLeader()
     sendStatus()
   }
+}
+
+function applyUpdates() {
+  for (var nick in scoreUpdates) {
+    scores[nick] += scoreUpdates[nick]
+  }
+  scoreUpdates = {}
+  sendStatus()
 }
   
 // -------------- IO - Events --------------
@@ -213,12 +241,7 @@ io.on('connection', function(socket){
   socket.on('join', function(name) {
     console.log('got join from')
     nickname = name;
-    console.log(nickname)
-    score[nickname] = 0
-    addNewPlayer(nickname)
-    if (leader) {
-      sendLeader()
-    }
+    addPlayer(nickname, 0)
   });
 
   socket.on('hostJoin', function() {
@@ -230,24 +253,26 @@ io.on('connection', function(socket){
         console.log('got host disconnect')
         hostReset()
       })
+
       hostSocket.on('timer', (time) => {
         console.log('got new timer' + time)
-        timer = time*1000
+        roundTime = time*1000
       })
       sendStatus()
     }
   })
 
   socket.on('guess', function(uri) {
-    console.log('got guess')
+    console.log('got guess from ' + nickname)
     if (selectedSong.uri == uri) {
       var current = new Date();
       var diff = current.getTime() - roundStartTime.getTime();
-      var roundScore = Math.round((30000 - diff)/1000)
-      score[nickname] += roundScore
+      var roundScore = Math.round((roundTime - diff)/1000)
+
+      scoreUpdates[nickname] = roundScore
       totalPoints = totalPoints + roundScore
-      console.log(score[nickname]);
-      
+
+      console.log('correct')
     }
     guesses++
     sendStatus()
@@ -267,7 +292,7 @@ io.on('connection', function(socket){
     selectedSong = songObject
     startRound()
     playSong(songObject.uri)
-    sendStatus(score, players, gamestate)
+    sendStatus()
     analyzeSong(songObject.id);
   })
 
@@ -281,20 +306,41 @@ io.on('connection', function(socket){
     hostReset()
   })
 
+  socket.on('reconnected', (nick, score) => {
+    if (allowReconnect) {
+      if (score) {
+        score = score
+      } else {
+        score = 0
+      }
+      console.log('reconnected ' + nick + ' with ' + score)
+      addPlayer(nick, score)
+    } else {
+      console.log('Didnt allow reconnect from ' + nick )
+    }
+  })
+
   socket.on('disconnect', function(){
+
+    allowReconnect = true
+
     if (leader == nickname) {
       pickLeader()
     }
     var index = players.indexOf(nickname)
+
     if (index != -1) {
       players.splice(index,1)
     }
+
     if (players.length < 2) {
       hostReset()
     }
-    delete score[nickname]
+
+
+    delete scores[nickname]
+    delete scoreUpdates[nickname]
     sendStatus()
     console.log('user disconnected');
   });
-
 });

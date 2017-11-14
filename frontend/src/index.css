@@ -172,6 +172,16 @@ select {
   justify-content: space-between;
 }
 
+.score-score {
+  display: flex;
+  min-width: 60px;
+  justify-content: right
+}
+
+.score-addition {
+  width: 55px
+}
+
 select {
   margin-bottom: 30px;
 }

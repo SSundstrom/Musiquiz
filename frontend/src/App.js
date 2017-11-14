@@ -18,7 +18,7 @@ class App extends Component {
       players: [],
       started: false,
       score: {},
-      oldScore: false,
+      scoreUpdates: {},
       guessTimer: 0,
       correctSongTimer: CORRECT_SONG_TIMER,
       leader: false,
@@ -27,7 +27,7 @@ class App extends Component {
       songToPlay: false,
       guessed: false,
       selectedSong: false,
-      playing:false,
+      playing:false
     }
   }
 
@@ -36,7 +36,8 @@ class App extends Component {
       const state = {
         loading: false,
         players: data.players,
-        score: data.score
+        score: data.scores,
+        scoreUpdates: data.scoreUpdates
       };
 
       if (data.gamestate === 'pregame') {
@@ -68,27 +69,9 @@ class App extends Component {
 
     on('stopRound', (data) => {
       this.setState({
-        correctSong: data,
+        correctSong: data['selectedSong'],
         correctSongTimer: CORRECT_SONG_TIMER
       });
-
-      clearInterval(this.correctSongInterval);
-      this.correctSongInterval = undefined;
-
-      this.correctSongInterval = setInterval(() => {
-        if (this.state.correctSongTimer < 1) {
-          clearInterval(this.correctSongInterval);
-          this.correctSongInterval = undefined;
-          this.setState({
-            correctSongTimer: 0
-          });
-          return;
-        }
-
-        this.setState({
-          correctSongTimer: this.state.correctSongTimer - 1
-        });
-      }, 1000);
     });
     
     on('startRound', (data) => {
@@ -125,6 +108,12 @@ class App extends Component {
     on('playingSong', (data) => this.setState({
       playing: data
     }))
+
+    on('reconnect', (attempts) => {
+      if (this.state.nickname) {
+        emit('reconnected', this.state.nickname, this.state.score[this.state.nickname])
+      }
+    })
   }
 
 
@@ -149,7 +138,7 @@ class App extends Component {
     if (this.state.players.indexOf(nickname) !== -1) {
       return alert('There\'s already someone with that name!');
     }
-
+    console.log(this.state.score)
     this.setState({
       nickname: nickname
     }, () => emit('join', nickname));
@@ -194,7 +183,7 @@ class App extends Component {
           started={this.state.started}
           players={this.state.players}
           score={this.state.score}
-          oldScore={this.state.oldScore}
+          scoreUpdates={this.state.scoreUpdates}
           leader={this.state.leader}
           guessTimer={this.state.guessTimer}
           isLeader={this.state.isLeader}

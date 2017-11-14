@@ -21,7 +21,7 @@ class PlayerGuess extends Component {
           {this.props.guessed && (
             <div>
               <h2>Waiting for other players</h2>
-              <Scores score={this.props.score} nickname={this.props.nickname} oldScore={this.props.oldScore}/>
+              <Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/>
             </div>
           )}
 

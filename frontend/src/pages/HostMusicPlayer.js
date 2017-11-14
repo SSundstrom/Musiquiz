@@ -53,7 +53,7 @@ class HostMusicPlayer extends Component {
 
         {track && (<div>The correct song was... <Track track={track}/></div>)}            
  
-        <div><Scores score={this.props.score} nickname={this.props.nickname} oldScore={this.props.oldScore}/></div>
+        <div><Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/></div>
       </div>
       
     );
