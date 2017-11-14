@@ -183,7 +183,10 @@ function stopRound() {
   console.log('stopRound')
   if (gamestate == 'midgame') {
     clearTimeout(timeout)
-    scoreUpdates[leader] = Math.round(totalPoints/(players.length-1))
+    var leaderScore = Math.round(totalPoints/(players.length-1))
+    if (leaderScore > 0) {
+      scoreUpdates[leader] = leaderScore
+    }
     totalPoints = 0
     guesses = 0
     clearLeader()
