@@ -172,6 +172,10 @@ select {
   justify-content: space-between;
 }
 
+.score-name {
+  font-size: 17px
+}
+
 .score-score {
   display: flex;
   min-width: 60px;
