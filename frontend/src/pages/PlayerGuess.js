@@ -16,7 +16,7 @@ class PlayerGuess extends Component {
   render() {
     return (
       <div>
-          <h1 class="small">{this.props.guessTimer}</h1>
+          <h1>{this.props.guessTimer}</h1>
 
           {this.props.guessed && (
             <div>
