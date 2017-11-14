@@ -38,7 +38,6 @@ class JoinAsPlayer extends Component {
     var index = 0;
     index = Math.floor(Math.random()*randomNames.length)
     var nickname = randomNames[index];
-
     this.props.onJoinAsPlayer(nickname);
   }
 }

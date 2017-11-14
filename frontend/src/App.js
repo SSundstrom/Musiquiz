@@ -36,7 +36,8 @@ class App extends Component {
       const state = {
         loading: false,
         players: data.players,
-        score: data.score
+        score: data.scores,
+        scoreUpdates: data.scoreUpdates
       };
 
       if (data.gamestate === 'pregame') {
@@ -69,27 +70,8 @@ class App extends Component {
     on('stopRound', (data) => {
       this.setState({
         correctSong: data['selectedSong'],
-        correctSongTimer: CORRECT_SONG_TIMER,
-        scoreUpdates: data['scoreUpdates']
+        correctSongTimer: CORRECT_SONG_TIMER
       });
-
-      clearInterval(this.correctSongInterval);
-      this.correctSongInterval = undefined;
-
-      this.correctSongInterval = setInterval(() => {
-        if (this.state.correctSongTimer < 1) {
-          clearInterval(this.correctSongInterval);
-          this.correctSongInterval = undefined;
-          this.setState({
-            correctSongTimer: 0
-          });
-          return;
-        }
-
-        this.setState({
-          correctSongTimer: this.state.correctSongTimer - 1
-        });
-      }, 1000);
     });
     
     on('startRound', (data) => {
@@ -129,7 +111,7 @@ class App extends Component {
 
     on('reconnect', (attempts) => {
       if (this.state.nickname) {
-        emit('reconnected', this.state.nickname)
+        emit('reconnected', this.state.nickname, this.state.score[this.state.nickname])
       }
     })
   }
@@ -156,7 +138,7 @@ class App extends Component {
     if (this.state.players.indexOf(nickname) !== -1) {
       return alert('There\'s already someone with that name!');
     }
-
+    console.log(this.state.score)
     this.setState({
       nickname: nickname
     }, () => emit('join', nickname));

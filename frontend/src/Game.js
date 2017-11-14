@@ -102,8 +102,16 @@ class Game extends Component {
       );
     }
 
+    if (this.props.isLeader) {
+      return (
+        <LeaderChooseSong 
+          onSelectSong={this.props.onSelectSong}
+        />
+      );
+    }
+
     // If guess timer is 0 and correct song is known, show score view
-    if (this.props.correctSong && this.props.correctSongTimer > 0) {
+    if (this.props.correctSong) {
       return (
         <ShowCorrectSong 
           players={this.props.players}
@@ -111,14 +119,6 @@ class Game extends Component {
           scoreUpdates={this.props.scoreUpdates}
           correctSong={this.props.correctSong}
           nickname={this.props.nickname}
-        />
-      );
-    }
-
-    if (this.props.isLeader) {
-      return (
-        <LeaderChooseSong 
-          onSelectSong={this.props.onSelectSong}
         />
       );
     }

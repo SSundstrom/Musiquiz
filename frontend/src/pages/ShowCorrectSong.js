@@ -4,7 +4,6 @@ import Track from '../components/Track'
 
 class ShowCorrectSong extends Component {
   render() {
-    console.log(this.props.correctSong)
     const track = this.props.correctSong
     return (
       <div>

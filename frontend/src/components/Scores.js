@@ -12,8 +12,12 @@ class Scores extends React.Component {
                 <small>{name === this.props.nickname && ' (you)'}</small>
               </div>
               <div className="score-score">
-                {(name in this.props.score ) && this.props.score[name] && this.props.score[name]} 
-                {(name in this.props.scoreUpdates) && ' + ' + this.props.scoreUpdates[name]}
+                <div>
+                  {(name in this.props.score ) && this.props.score[name] && this.props.score[name]} 
+                </div>
+                <div className="score-addition">
+                  {(name in this.props.scoreUpdates) && '+' + this.props.scoreUpdates[name]}
+                </div>
               </div>
             </div>
           </div>
@@ -22,19 +26,7 @@ class Scores extends React.Component {
     );
   }
 
-  getDiff(name) {
-    if (!this.props.oldScore) {
-      return '0';
-    }
 
-    if (!this.props.oldScore[name]) {
-      return ' + ' + this.props.score[name];
-    }
-
-    const diff = this.props.score[name] - this.props.oldScore[name];
-
-    return '+ ' + diff;
-  }
 }
 
 export default Scores;
