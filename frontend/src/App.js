@@ -37,7 +37,7 @@ class App extends Component {
       if (this) {
         if (this.state.nickname) {
           console.log('reconnected ' + this.state.nickname + this.state.score[this.state.nickname])
-          emit('reconnected', this.state.nickname, this.state.score[this.state.nickname])
+          emit('reconnected', {nick:this.state.nickname, score:this.state.score[this.state.nickname]})
         } else {
           console.log("Connected")
         }

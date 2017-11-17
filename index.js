@@ -306,18 +306,18 @@ io.on('connection', (socket) => {
     hostReset()
   })
 
-  socket.on('reconnected', (nick, score) => {
-    nickname = nick
+  socket.on('reconnected', (data) => {
+    nickname = data.nick
     if (allowReconnect) {
-      if (score) {
-        score = score
+      if (data.score) {
+        score = data.score
       } else {
         score = 0
       }
-      console.log('reconnected ' + nick + ' with ' + score)
-      addPlayer(nick, score)
+      console.log('reconnected ' + data.nick + ' with ' + data.score)
+      addPlayer(data.nick, data.score)
     } else {
-      console.log('Didnt allow reconnect from ' + nick )
+      console.log('Didnt allow reconnect from ' + data.nick )
     }
   })
 
