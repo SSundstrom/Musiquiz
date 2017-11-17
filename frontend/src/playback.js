@@ -33,7 +33,7 @@ SpotifyPlayer.controls = {
       xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
       xhr.setRequestHeader('Authorization','Bearer ' + SpotifyPlayer.access_token);
       xhr.onload = function () {
-        if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 204)) {
+        if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 204)) {
           try {
             if (!xhr.responseText) {
                 return resolve();

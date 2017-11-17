@@ -27,7 +27,7 @@ class LeaderChooseSong extends Component {
           {this.state.value.length > 0 && this.state.results.map(track => (
             <Track track = {track} onClick={() => this.props.onSelectSong(track)}/>
           ))}
-          {this.state.value.length == 0 && (
+          {this.state.value.length === 0 && (
             <RecommendedSongs onSelectSong={this.props.onSelectSong} />
           )}
       </div>

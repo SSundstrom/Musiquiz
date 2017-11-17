@@ -233,7 +233,7 @@ function applyUpdates() {
   
 // -------------- IO - Events --------------
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   console.log('a user connected');
   sendStatus()
   var nickname;
@@ -307,6 +307,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('reconnected', (nick, score) => {
+    nickname = nick
     if (allowReconnect) {
       if (score) {
         score = score
@@ -341,6 +342,6 @@ io.on('connection', function(socket){
     delete scores[nickname]
     delete scoreUpdates[nickname]
     sendStatus()
-    console.log('user disconnected');
+    console.log(nickname + ' disconnected');
   });
 });
