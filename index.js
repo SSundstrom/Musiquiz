@@ -233,7 +233,7 @@ function applyUpdates() {
   
 // -------------- IO - Events --------------
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   console.log('a user connected');
   sendStatus()
   var nickname;
@@ -306,17 +306,18 @@ io.on('connection', function(socket){
     hostReset()
   })
 
-  socket.on('reconnected', (nick, score) => {
+  socket.on('reconnected', (data) => {
+    nickname = data.nick
     if (allowReconnect) {
-      if (score) {
-        score = score
+      if (data.score) {
+        score = data.score
       } else {
         score = 0
       }
-      console.log('reconnected ' + nick + ' with ' + score)
-      addPlayer(nick, score)
+      console.log('reconnected ' + data.nick + ' with ' + data.score)
+      addPlayer(data.nick, data.score)
     } else {
-      console.log('Didnt allow reconnect from ' + nick )
+      console.log('Didnt allow reconnect from ' + data.nick )
     }
   })
 
@@ -341,6 +342,6 @@ io.on('connection', function(socket){
     delete scores[nickname]
     delete scoreUpdates[nickname]
     sendStatus()
-    console.log('user disconnected');
+    console.log(nickname + ' disconnected');
   });
 });

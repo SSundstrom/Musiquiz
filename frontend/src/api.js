@@ -1,12 +1,20 @@
-import openSocket from 'socket.io-client';
+import io from 'socket.io-client';
 
 const api = window.location.origin.replace(/3000/, '8888');
 
-const socket = openSocket(api);
+const socket = io(api);
 
-socket.on('connect', function() {
-  console.log('connected');
-});
+function dissconnect() {
+  socket.disconnect()
+}
+
+function reconnect() {
+  socket.connect()
+}
+
+window.dissconnect = dissconnect
+
+window.reconnect = reconnect
 
 function on(event, callback) {
   socket.on(event, (data) => {

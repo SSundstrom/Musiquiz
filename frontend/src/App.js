@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Game from './Game';
-import { on, emit, search } from './api';
+import { on, emit } from './api';
 import Layout from './components/Layout';
 
 const CORRECT_SONG_TIMER = 10;
@@ -32,6 +32,19 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+    on('connect', (data) => {
+      if (this) {
+        if (this.state.nickname) {
+          console.log('reconnected ' + this.state.nickname + this.state.score[this.state.nickname])
+          emit('reconnected', {nick:this.state.nickname, score:this.state.score[this.state.nickname]})
+        } else {
+          console.log("Connected")
+        }
+      }
+      else { console.log("Connected") }
+    });
+
     on('status', (data) => {
       const state = {
         loading: false,
@@ -108,14 +121,7 @@ class App extends Component {
     on('playingSong', (data) => this.setState({
       playing: data
     }))
-
-    on('reconnect', (attempts) => {
-      if (this.state.nickname) {
-        emit('reconnected', this.state.nickname, this.state.score[this.state.nickname])
-      }
-    })
   }
-
 
   
   startGame() {
