@@ -3,8 +3,6 @@ import Game from './Game';
 import { on, emit } from './api';
 import Layout from './components/Layout';
 
-const CORRECT_SONG_TIMER = 10;
-
 class App extends Component {
   interval;
   
@@ -20,7 +18,6 @@ class App extends Component {
       score: {},
       scoreUpdates: {},
       guessTimer: 0,
-      correctSongTimer: CORRECT_SONG_TIMER,
       leader: false,
       isLeader: false,
       correctSong: false,
@@ -85,14 +82,13 @@ class App extends Component {
     on('leader', (data) => this.setState({
       leader: data,
       selectedSong: false,
-      correctSong: false, //Todo look over this. Is used to show that a new leader is supposed to choose song.
+      correctSong: false, // <-- This is used to chnage to view from correct song to showing who is up next.
       isLeader: data === this.state.nickname
     }));
 
     on('stopRound', (data) => {
       this.setState({
-        correctSong: data['selectedSong'],
-        correctSongTimer: CORRECT_SONG_TIMER
+        correctSong: data['selectedSong']
       });
     });
     
@@ -203,7 +199,6 @@ class App extends Component {
           guessTimer={this.state.guessTimer}
           isLeader={this.state.isLeader}
           correctSong={this.state.correctSong}
-          correctSongTimer={this.state.correctSongTimer}
           songToPlay={this.state.songToPlay}
           guessed={this.state.guessed}
           playing={this.state.playing}
