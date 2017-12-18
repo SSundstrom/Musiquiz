@@ -91,7 +91,6 @@ http.listen(8888, function () {
 // --------------------------- Functions ---------------------------------
 
 var playerList = ds.linkedList();
-console.log(playerList);
 var hostSocket;
 var leader;
 var guesses = 0;
