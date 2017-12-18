@@ -45,6 +45,14 @@ class App extends Component {
       else { console.log("Connected") }
     });
 
+    on('disconnect', () => {
+      var nick = this.state.nickname
+      var updates = this.state.scoreUpdates
+      if (nick in updates) {
+        this.state.score[nick] += updates[nick]
+      }
+    });
+
     on('status', (data) => {
       const state = {
         loading: false,
@@ -77,6 +85,7 @@ class App extends Component {
     on('leader', (data) => this.setState({
       leader: data,
       selectedSong: false,
+      correctSong: false, //Todo look over this. Is used to show that a new leader is supposed to choose song.
       isLeader: data === this.state.nickname
     }));
 
