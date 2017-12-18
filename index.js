@@ -1,4 +1,5 @@
 var SpotifyWebApi = require('spotify-web-api-node');
+var ds = require('datastructures-js');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
@@ -89,7 +90,8 @@ http.listen(8888, function () {
 
 // --------------------------- Functions ---------------------------------
 
-var players = [];
+var playerList = ds.linkedList();
+console.log(playerList);
 var hostSocket;
 var leader;
 var guesses = 0;
@@ -101,7 +103,7 @@ var totalPoints = 0;
 var allowReconnect = false;
 
 function hostReset() {
-    players = [];
+    playerList = ds.linkedList();
     hostSocket;
     leader;
     guesses = 0;
@@ -115,7 +117,7 @@ function hostReset() {
 }
 
 function addPlayer(nick, score) {
-    players.push(nick);
+    playerList.addLast(nick);
     console.log(nick);
     scores[nick] = score;
     if (leader) {
@@ -124,12 +126,21 @@ function addPlayer(nick, score) {
     sendStatus();
 }
 
-// function setHost(socket) {
-//     hostSocket = socket;
-// }
-
 function sendStatus() {
-    io.emit('status', {scores:scores, players:players, gamestate:gamestate, guesses:guesses, scoreUpdates:scoreUpdates});
+
+    function toArray(queue) {
+        var retArray = [];
+        if (queue) {
+            var tmp = queue.findFirst();
+            while (tmp) {
+                retArray.push(tmp.getValue());
+                tmp = tmp.getNext();
+            }
+        }
+        return retArray;
+    }
+
+    io.emit('status', {scores:scores, players:toArray(playerList), gamestate:gamestate, guesses:guesses, scoreUpdates:scoreUpdates});
     console.log('sendStatus');
 }
 
@@ -150,17 +161,12 @@ function clearLeader() {
 }
 
 function pickLeader() {
-    if (!leader){
-        leader = players[0];
-    } else {
-        var nextIndex = players.indexOf(leader)+1;
-        if (nextIndex < players.length) {
-            leader = players[nextIndex];
-        } else {
-            leader = players[0];
-        }
+    var node = playerList.findFirst();
+    if (node) {
+        leader = node.getValue();
+        playerList.removeFirst();
+        playerList.addLast(leader);    
     }
-
     sendLeader();
 }
 
@@ -183,7 +189,7 @@ function stopRound() {
     console.log('stopRound');
     if (gamestate == 'midgame') {
         clearTimeout(timeout);
-        var leaderScore = Math.round(totalPoints/(players.length-1));
+        var leaderScore = Math.round(totalPoints/(playerList.count()-1));
         if (leaderScore > 0) {
             scoreUpdates[leader] = leaderScore;
         }
@@ -276,7 +282,7 @@ io.on('connection', (socket) => {
         }
         guesses++;
         sendStatus();
-        if (guesses >= players.length-1) {
+        if (guesses >= playerList.count()-1) {
             stopRound();
         }
     });
@@ -327,16 +333,14 @@ io.on('connection', (socket) => {
         if (leader == nickname) {
             pickLeader();
         }
-        var index = players.indexOf(nickname);
 
-        if (index != -1) {
-            players.splice(index,1);
+        if (playerList.find(nickname)) {
+            playerList.remove(nickname);
         }
-
-        if (players.length < 2) {
+        
+        if (playerList.count() < 2) {
             hostReset();
         }
-
 
         delete scores[nickname];
         delete scoreUpdates[nickname];
