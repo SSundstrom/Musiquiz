@@ -3,8 +3,8 @@ var ds = require('datastructures-js');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
-    clientId: '3736cb70c4024decbf118aae05fda241',
-    clientSecret: '2e9fedd4c3894dd3b3a2421d06b1e8bb',
+    clientId: 'c11d380eadd04921a083d5637c108f8c',
+    clientSecret: 'f8db5475fa7748e28203dd0ebac181e4',
     redirectUri : ''
 });
 
@@ -39,7 +39,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/search/:name', function(req, res) {
-    spotifyApi.searchTracks(req.params.name)
+    spotifyApi.searchTracks(req.params.name, {market:'SE'} )
         .then(function(data) {
             res.send(data);
         }, function(err) {
