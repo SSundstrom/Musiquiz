@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-const Players = (props) => (
+const Players = ({ players, nickname }) => (
   <div className="players">
-      {props.players.map((name)=>(
-        <div key={name}>
-            {name}
-            <small>{name === props.nickname && ' (you)'}</small>
-        </div>
-      ))}
+    {players.map(name => (
+      <div key={name}>
+        {name}
+        <small>{name === nickname && ' (you)'}</small>
+      </div>
+    ))}
   </div>
 );
 

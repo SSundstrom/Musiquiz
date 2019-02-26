@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import Players from '../components/Players'
+import Players from '../components/Players';
 
-class PlayerWaitingToStart extends Component {
-  render() {
-    return (
-      <div>
-        <h2>Waiting for host to start</h2>
-        <Players players={this.props.players} nickname={this.props.nickname} />
-      </div>
-    );
-  }
-}
+const PlayerWaitingToStart = ({ room, nickname }) => (
+  <div>
+    <h2>Waiting for host to start</h2>
+    {room && room.name && <h2>{`Room code: ${room.name}`}</h2>}
+    {room && room.players && <Players players={room.players} nickname={nickname} />}
+  </div>
+);
 
 export default PlayerWaitingToStart;

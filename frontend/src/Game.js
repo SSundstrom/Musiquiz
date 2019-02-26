@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import JoinAsHost from './pages/JoinAsHost';
-import JoinAsPlayer from './pages/JoinAsPlayer';
+import JoinOrCreateRoom from './pages/JoinOrCreateRoom';
 import HostWaitingToStart from './pages/HostWaitingToStart';
 import PlayerWaitingToStart from './pages/PlayerWaitingToStart';
 import LeaderWaitingForGuesses from './pages/LeaderWaitingForGuesses';
@@ -17,7 +16,7 @@ class Game extends Component {
     // if the game has not yet started and we have not become host or entered nickname
     if (!nickname && !isHost) {
       return this.renderJoin();
-    } 
+    }
 
     if (!started) {
       return this.renderWait();
@@ -27,110 +26,98 @@ class Game extends Component {
   }
 
   renderWait() {
-    if (this.props.isHost) {
-      return (
-        <HostWaitingToStart 
-          players={this.props.players} 
-          onStartGame={this.props.onStartGame} 
-        />
-      );
+    const { isHost, room, onStartGame, nickname } = this.props;
+    if (isHost) {
+      return <HostWaitingToStart room={room} onStartGame={onStartGame} />;
     }
 
-    return (
-      <PlayerWaitingToStart 
-        players={this.props.players}
-        nickname={this.props.nickname}
-      />
-    );
+    return <PlayerWaitingToStart room={room} nickname={nickname} />;
   }
 
   renderJoin() {
-    if (this.props.hasHost) {
-      return (
-        <JoinAsPlayer 
-          onJoinAsPlayer={this.props.onJoinAsPlayer}
-          players={this.props.players}
-        />
-      );
-    }
-
-    return (
-      <JoinAsHost 
-        onJoinAsHost={this.props.onJoinAsHost}
-      />
-    );
+    const { onJoinAsHost, onJoinAsPlayer } = this.props;
+    return <JoinOrCreateRoom onJoinAsHost={onJoinAsHost} onJoinAsPlayer={onJoinAsPlayer} />;
   }
 
   renderPlay() {
-    if (this.props.isHost) {
-      console.log(this.props)
+    const {
+      isHost,
+      room,
+      songToPlay,
+      score,
+      scoreUpdates,
+      correctSong,
+      nickname,
+      onChangeTimer,
+      guessTimer,
+      isLeader,
+      onGuess,
+      onSelectSong,
+      guessed,
+    } = this.props;
+    if (isHost) {
       return (
-        <HostMusicPlayer 
-          songToPlay={this.props.songToPlay}
-          score={this.props.score}
-          scoreUpdates={this.props.scoreUpdates}
-          correctSong={this.props.correctSong}
-          nickname={this.props.nickname}
-          onChangeTimer={this.props.onChangeTimer}
+        <HostMusicPlayer
+          room={room}
+          songToPlay={songToPlay}
+          score={score}
+          scoreUpdates={scoreUpdates}
+          correctSong={correctSong}
+          nickname={nickname}
+          onChangeTimer={onChangeTimer}
         />
       );
     }
 
     // If there is a guessing timer, we are on the guess screen
-    if (this.props.guessTimer > 0) {
-      if (this.props.isLeader) {
+    if (guessTimer > 0) {
+      if (isLeader) {
         return (
           <LeaderWaitingForGuesses
-            players={this.props.players}
-            guessTimer={this.props.guessTimer}
-            score={this.props.score}
-            scoreUpdates={this.props.scoreUpdates}
-            nickname={this.props.nickname}
+            room={room}
+            guessTimer={guessTimer}
+            score={score}
+            scoreUpdates={scoreUpdates}
+            nickname={nickname}
           />
         );
       }
 
       return (
-        <PlayerGuess 
-          onGuess={this.props.onGuess}
-          guessTimer={this.props.guessTimer}
-          guessed={this.props.guessed}
-          score={this.props.score}
-          scoreUpdates={this.props.scoreUpdates}
-          nickname={this.props.nickname}
+        <PlayerGuess
+          onGuess={onGuess}
+          guessTimer={guessTimer}
+          guessed={guessed}
+          score={score}
+          scoreUpdates={scoreUpdates}
+          nickname={nickname}
         />
       );
     }
 
-    if (this.props.isLeader) {
-      return (
-        <LeaderChooseSong 
-          onSelectSong={this.props.onSelectSong}
-        />
-      );
+    if (isLeader) {
+      return <LeaderChooseSong onSelectSong={onSelectSong} />;
     }
 
     // If guess timer is 0 and correct song is known, show score view
-    if (this.props.correctSong) {
+    if (correctSong) {
       return (
-        <ShowCorrectSong 
-          players={this.props.players}
-          score={this.props.score}
-          scoreUpdates={this.props.scoreUpdates}
-          correctSong={this.props.correctSong}
-          nickname={this.props.nickname}
+        <ShowCorrectSong
+          room={room}
+          score={score}
+          scoreUpdates={scoreUpdates}
+          correctSong={correctSong}
+          nickname={nickname}
         />
       );
     }
 
     return (
       <PlayerWaitingForLeader
-        players={this.props.players}
-        score={this.props.score}
-        leader={this.props.leader}
-        nickname={this.props.nickname}
-        scoreUpdates={this.props.scoreUpdates}
-        correctSong={this.props.correctSong}
+        room={room}
+        score={score}
+        nickname={nickname}
+        correctSong={correctSong}
       />
     );
   }
