@@ -18,6 +18,7 @@
   "homepage": "https://github.com/SSundstrom/DWIMS#readme",
   "dependencies": {
     "datastructures-js": "^3.0.7",
+    "dotenv": "^6.2.0",
     "express": "^4.16.2",
     "socket.io": "^2.0.4",
     "spotify-web-api-node": "^2.5.0"
