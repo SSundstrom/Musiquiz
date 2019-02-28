@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled from '@emotion/styled';
+import PropTypes from 'prop-types';
 import SpotifyPlayer, { auth } from '../playback';
 
 class JoinOrCreateRoom extends Component {
@@ -48,5 +48,8 @@ class JoinOrCreateRoom extends Component {
     );
   }
 }
-
+JoinOrCreateRoom.propTypes = {
+  onJoinAsPlayer: PropTypes.func.isRequired,
+  onJoinAsHost: PropTypes.func.isRequired,
+};
 export default JoinOrCreateRoom;

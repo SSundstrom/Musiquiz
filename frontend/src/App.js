@@ -10,27 +10,23 @@ class App extends Component {
       loading: false,
       isHost: false,
       hasHost: false,
-      nickname: false,
       started: false,
       guessTimer: 0,
       isLeader: false,
-      correctSong: false,
-      songToPlay: false,
       guessed: false,
-      roomNotFound: false,
       playing: false,
     };
   }
 
   componentDidMount() {
     on('connect', (data) => {
-      const { nickname, score } = this.state;
+      const { nickname, scores } = this.state;
       if (this) {
         if (nickname) {
-          console.log(`reconnected ${nickname}${score[nickname]}`);
+          console.log(`reconnected ${nickname}${scores[nickname]}`);
           emit('reconnected', {
             nickname,
-            score: score[nickname],
+            score: scores[nickname],
           });
         } else {
           console.log('Connected');
@@ -40,20 +36,20 @@ class App extends Component {
       }
     });
 
-    /* on('disconnect', () => {
-      const { nickname, score, scoreUpdates } = this.state;
+    on('disconnect', () => {
+      const { nickname, scores, scoreUpdates } = this.state;
 
       if (nickname in scoreUpdates) {
-        score[nickname] += scoreUpdates[nickname];
+        scores[nickname] += scoreUpdates[nickname];
       }
-    }); */
+    });
     on('roomNotFound', (data) => {
       this.setState({ roomNotFound: true });
     });
     on('status', (data) => {
       console.log(data);
       const state = {
-        room: data,
+        ...data,
         loading: false,
       };
       if (data.gamestate === 'pregame') {
@@ -64,7 +60,6 @@ class App extends Component {
       } else if (data.gamestate === 'lobby') {
         state.hasHost = true;
       } else if (data.gamestate === 'choose') {
-        state.guessTimer = 0;
         state.started = true;
         state.hasHost = true;
       } else if (data.gamestate === 'midgame') {
@@ -81,9 +76,9 @@ class App extends Component {
       const { nickname } = this.state;
       this.setState({
         leader: data,
-        selectedSong: false,
+        selectedSong: null,
         correctSong: false, // <-- chnage to view from correct song to showing who is up next.
-        isLeader: data === nickname,
+        isLeader: data == nickname,
       });
     });
 
@@ -93,19 +88,17 @@ class App extends Component {
       });
     });
 
-    on('startRound', (data) => {
-      const { score, guessTimer } = this.state;
+    on('startRound', ({ roundTime }) => {
       this.setState({
         correctSong: false,
         guessed: false,
-        guessTimer: data / 1000,
-        oldScore: score,
+        guessTimer: roundTime / 1000,
       });
 
       clearInterval(this.guessInterval);
       this.guessInterval = undefined;
-
       this.guessInterval = setInterval(() => {
+        const { guessTimer } = this.state;
         if (guessTimer < 1) {
           clearInterval(this.guessInterval);
           this.guessInterval = undefined;
@@ -114,31 +107,36 @@ class App extends Component {
           });
           return;
         }
-
         this.setState({
           guessTimer: guessTimer - 1,
         });
       }, 1000);
     });
 
-    on('hostPlaySong', data => this.setState({
-      songToPlay: data,
-    }));
+    on('hostPlaySong', (data) => {
+      this.setState({
+        songToPlay: data,
+      });
+    });
 
-    on('playingSong', data => this.setState({
-      playing: data,
-    }));
+    on('playingSong', (data) => {
+      this.setState({
+        playing: data,
+      });
+    });
   }
 
   startGame() {
-    emit('hostStartGame', this.state);
+    const { name } = this.state;
+    emit('hostStartGame', name);
   }
 
   resetGame() {
-    emit('hostResetGame', this.state);
+    const { name } = this.state;
+    emit('hostResetGame', name);
   }
 
-  joinAsPlayer(nick, room) {
+  joinAsPlayer(nick, name) {
     const { nickname } = this.state;
     if (!nick.length) {
       return;
@@ -154,7 +152,7 @@ class App extends Component {
       {
         nickname: nick,
       },
-      () => emit('join', { nick, roomName: room }),
+      () => emit('join', { nick, name }),
     );
   }
 
@@ -169,13 +167,13 @@ class App extends Component {
   }
 
   guess(uri) {
-    const { guessed, nickname } = this.state;
+    const { guessed, nickname, name } = this.state;
     if (!guessed) {
       this.setState(
         {
           guessed: true,
         },
-        () => emit('guess', { uri, room: this.state, nickname }),
+        () => emit('guess', { uri, name, nickname }),
       );
     }
   }
@@ -185,25 +183,28 @@ class App extends Component {
   }
 
   selectSong(song) {
-    const { room } = this.state;
+    const { name } = this.state;
     this.setState(
       {
         selectedSong: true,
       },
-      () => emit('selectedSong', { song, room }),
+      () => emit('selectedSong', { song, name }),
     );
   }
 
   render() {
     const {
+      name,
       loading,
       isLeader,
       isHost,
-      room,
       hasHost,
+      players,
       nickname,
       started,
-      score,
+      scores,
+      leader,
+      scoreUpdates,
       guessTimer,
       correctSong,
       songToPlay,
@@ -217,14 +218,17 @@ class App extends Component {
     return (
       <Layout isLeader={isLeader} isHost={isHost}>
         <Game
-          room={room}
+          name={name}
+          players={players}
+          scores={scores}
+          scoreUpdates={scoreUpdates}
           isHost={isHost}
           hasHost={hasHost}
           nickname={nickname}
           started={started}
-          score={score}
           guessTimer={guessTimer}
           isLeader={isLeader}
+          leader={leader}
           correctSong={correctSong}
           songToPlay={songToPlay}
           guessed={guessed}

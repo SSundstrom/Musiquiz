@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
-import Scores from '../components/Scores'
-import Track from '../components/Track'
+import PropTypes from 'prop-types';
+import Scores from '../components/Scores';
+import Track from '../components/Track';
 
-class PlayerWaitingForLeader extends Component {
-  render() {
-    console.log(this.props.correctSong)
-    const track = this.props.correctSong
-    return (
-      <div>
-        <h2>Waiting for {this.props.leader} to choose a song</h2>
-        <div>
-          
-          {track && <Track track={track}/>}
-          <Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/>
-        </div>
-      </div>
-    );
-  }
-}
+const PlayerWaitingForLeader = ({ correctSong, leader, nickname, scores, scoreUpdates }) => (
+  <div>
+    <h2>{`Waiting for ${leader} to choose a song`}</h2>
+    <div>
+      {correctSong && <Track track={correctSong} />}
+      {scores && <Scores scores={scores} nickname={nickname} scoreUpdates={scoreUpdates} />}
+    </div>
+  </div>
+);
+PlayerWaitingForLeader.propTypes = {
+  correctSong: PropTypes.bool.isRequired,
+  leader: PropTypes.string.isRequired,
+  nickname: PropTypes.string.isRequired,
+  scores: PropTypes.object.isRequired,
+  scoreUpdates: PropTypes.object.isRequired,
+};
 export default PlayerWaitingForLeader;

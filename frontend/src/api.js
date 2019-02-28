@@ -43,9 +43,9 @@ function search(song, callback) {
     });
 }
 
-function getAudioAnalysis(callback) {
+function getAudioAnalysis(name, callback) {
   console.log('getAudioAnalysis');
-  fetch(`${api}/recommendations/`)
+  fetch(`${api}/recommendations/${name}`)
     .then((response) => {
       console.log('fetch audio analysis');
       return response.json();

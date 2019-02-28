@@ -1,5 +1,4 @@
 const SpotifyWebApi = require('spotify-web-api-node');
-const ds = require('datastructures-js');
 
 // credentials are optional
 const spotifyApi = new SpotifyWebApi({
@@ -13,6 +12,8 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
+const rooms = [];
 
 function getToken() {
   spotifyApi.clientCredentialsGrant().then(
@@ -50,48 +51,48 @@ app.get('/search/:name', (req, res) => {
     },
   );
 });
-
 let averageDanceability = 0.5;
 let averageEnergy = 0.5;
-const energyArray = [];
-const danceabilityArray = [];
-let songArray = [];
 // let deleteTemp = true;
 
-app.get('/recommendations', (req, res) => {
-  let collectedDanceability = 0;
-  let collectedEnergy = 0;
+app.get('/recommendations/:name', (req, res) => {
+  const foundRoom = rooms.find(r => r.name === req.params.name);
+  if (foundRoom) {
+    const { songArray, energyArray, danceabilityArray } = foundRoom;
+    let collectedDanceability = 0;
+    let collectedEnergy = 0;
 
-  for (let i = 0; i < energyArray.length; i += 1) {
-    collectedEnergy += energyArray[i];
-    averageEnergy = collectedEnergy / energyArray.length;
-  }
-  for (let i = 0; i < danceabilityArray.length; i += 1) {
-    collectedDanceability += danceabilityArray[i];
-    averageDanceability = collectedDanceability / danceabilityArray.length;
-  }
-  if (songArray.length === 0) {
-    songArray.push('5QjJgPU8AJeickx34f7on6');
-  }
-  if (averageDanceability > 0.8) {
-    averageDanceability = 0.8;
-  }
-  if (averageEnergy > 0.8) {
-    averageEnergy = 0.8;
-  }
-  console.log(songArray);
-  spotifyApi
-    .getRecommendations({
-      /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
+    for (let i = 0; i < energyArray.length; i += 1) {
+      collectedEnergy += energyArray[i];
+      averageEnergy = collectedEnergy / energyArray.length;
+    }
+    for (let i = 0; i < danceabilityArray.length; i += 1) {
+      collectedDanceability += danceabilityArray[i];
+      averageDanceability = collectedDanceability / danceabilityArray.length;
+    }
+    if (songArray.length === 0) {
+      songArray.push('5QjJgPU8AJeickx34f7on6');
+    }
+    if (averageDanceability > 0.8) {
+      averageDanceability = 0.8;
+    }
+    if (averageEnergy > 0.8) {
+      averageEnergy = 0.8;
+    }
+    console.log(songArray);
+    spotifyApi
+      .getRecommendations({
+        /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
        min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, */
-      seed_tracks: [songArray],
-    })
-    .then((rec) => {
-      res.send(rec);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+        seed_tracks: [songArray],
+      })
+      .then((rec) => {
+        res.send(rec);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 });
 
 app.use('/', express.static('frontend/build'));
@@ -101,14 +102,13 @@ http.listen(8888, () => {
 });
 
 // --------------------------- Functions ---------------------------------
-const rooms = [];
 
 function sendStatus(room) {
   io.to(room.name).emit('status', room);
   console.log('sendStatus', room.name);
 }
 function resetRoom(room) {
-  room.playerList = ds.linkedList();
+  room.players = [];
   room.leader = undefined;
   room.guesses = 0;
   room.scores = {};
@@ -117,52 +117,48 @@ function resetRoom(room) {
   room.gamestate = 'pregame';
   room.totalPoints = 0;
   room.allowReconnect = false;
+  room.energyArray = [];
+  room.danceabilityArray = [];
+  room.songArray = [];
   sendStatus(room);
 }
 function applyUpdates(room) {
-  let { scoreUpdates } = room;
-  const { scores } = room;
-  scoreUpdates.forEach((nick) => {
-    scores[nick] += scoreUpdates[nick];
+  Object.entries(room.scoreUpdates).forEach(([nick, score]) => {
+    room.scores[nick] += score;
   });
-
-  scoreUpdates = {};
+  room.scoreUpdates = {};
   sendStatus(room);
 }
 
-function playSong(data) {
-  const { uri, room } = data;
-  io.to(room).emit('hostPlaySong', uri);
-  io.to(room).emit('playing', room.selectedSong);
+function playSong(song, name) {
   console.log('playSong');
+  io.to(name).emit('hostPlaySong', song.uri);
+  io.to(name).emit('playing', song);
 }
 
-function sendLeader(room) {
-  io.in(room).emit('leader', room.leader);
-  console.log('leader');
+function sendLeader(name, leader) {
+  io.to(name).emit('leader', leader);
+  console.log('send leader', leader);
 }
 
-function clearLeader(room) {
-  io.to(room).emit('leader', undefined);
-  console.log('leader');
+function clearLeader(name) {
+  io.to(name).emit('leader', null);
+  console.log('clear leader');
 }
 
 function pickLeader(room) {
-  const node = room.playerList.findFirst();
-  let { leader } = room;
-  if (node) {
-    leader = node.getValue();
-    room.playerList.removeFirst();
-    room.playerList.addLast(leader);
-  }
-  sendLeader(room.name);
+  const { players } = room;
+  const leader = players.shift();
+  room.leader = leader;
+  players.push(leader);
+  sendLeader(room.name, leader);
 }
 
 function startChoose(room) {
-  console.log('startChoose');
-  let { gamestate } = room;
+  const { gamestate } = room;
+  console.log('startChoose', room.name, gamestate);
   if (gamestate === 'lobby' || gamestate === 'finished') {
-    gamestate = 'choose';
+    room.gamestate = 'choose';
     pickLeader(room);
     sendLeader(room);
     sendStatus(room);
@@ -171,43 +167,40 @@ function startChoose(room) {
 
 function stopRound(room) {
   console.log('stopRound');
-  let { totalPoints, guesses, gamestate } = room;
-  const { leader, scoreUpdates, playerList, displayCorrectTime, selectedSong } = room;
-  if (gamestate === 'midgame') {
-    clearTimeout(room.timeout);
-    const leaderScore = Math.round(totalPoints / (playerList.count() - 1));
+  const { leader, scoreUpdates, players, displayCorrectTime, selectedSong, totalPoints } = room;
+  if (room.gamestate === 'midgame') {
+    // clearTimeout(room.timeout);
+    const leaderScore = Math.round(totalPoints / (players.length - 1));
     if (leaderScore > 0) {
       scoreUpdates[leader] = leaderScore;
     }
-    totalPoints = 0;
-    guesses = 0;
+    room.totalPoints = 0;
+    room.guesses = 0;
     clearLeader(room);
-    gamestate = 'finished';
+    room.gamestate = 'finished';
     sendStatus(room);
-    io.to(room).emit('stopRound', { selectedSong });
-    setTimeout(applyUpdates, displayCorrectTime / 2);
-    setTimeout(startChoose, displayCorrectTime);
+    io.to(room.name).emit('stopRound', { selectedSong });
+    setTimeout(applyUpdates, displayCorrectTime / 2, room);
+    setTimeout(startChoose, displayCorrectTime, room);
   }
 }
 
 function startRound(room) {
   console.log('startRound');
-  let { gamestate, timeout, roundStartTime } = room;
-  const { roundTime } = room;
-  if (gamestate === 'choose') {
-    gamestate = 'midgame';
-    io.to(room).emit('startRound', roundTime);
-    timeout = setTimeout(stopRound, roundTime);
-    roundStartTime = new Date();
+  if (room.gamestate === 'choose') {
+    room.gamestate = 'midgame';
+    setTimeout(stopRound, room.roundTime, room);
+    room.roundStartTime = new Date();
+    io.to(room.name).emit('startRound', room);
   }
 }
 
-function analyzeSong(id) {
+function analyzeSong(id, room) {
   spotifyApi.getAudioFeaturesForTrack(id).then(
     (data) => {
-      danceabilityArray.push(data.body.danceability);
-      energyArray.push(data.body.energy);
-      songArray.push(id);
+      room.danceabilityArray.push(data.body.danceability);
+      room.energyArray.push(data.body.energy);
+      room.songArray.push(id);
     },
     (err) => {
       console.error(err);
@@ -215,19 +208,8 @@ function analyzeSong(id) {
   );
 }
 
-function toArray(queue) {
-  const retArray = [];
-  if (queue) {
-    let tmp = queue.findFirst();
-    while (tmp) {
-      retArray.push(tmp.getValue());
-      tmp = tmp.getNext();
-    }
-  }
-  return retArray;
-}
 function addPlayer(room, nick, score) {
-  room.playerList.addLast(nick);
+  room.players.push(nick);
   console.log(nick);
   room.scores[nick] = score;
   if (room.leader) {
@@ -239,16 +221,20 @@ function addPlayer(room, nick, score) {
 
 io.on('connection', (socket) => {
   socket.on('join', (data) => {
-    const { nick, roomName } = data;
-    const foundRoom = rooms.find(r => r.name === roomName);
+    console.log('join');
+    const { nick, name } = data;
+    const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
-      foundRoom.playerList.addLast(nick);
-      foundRoom.players = toArray(foundRoom.playerList);
+      foundRoom.players.push(nick);
+      foundRoom.scores[nick] = 0;
       socket.nickname = nick;
-      socket.join(roomName);
+      socket.join(name);
+      if (foundRoom.leader) {
+        sendLeader(foundRoom);
+      }
       sendStatus(foundRoom);
     } else {
-      socket.emit('roomNotFound');
+      socket.to(name).emit('roomNotFound');
     }
   });
 
@@ -264,7 +250,6 @@ io.on('connection', (socket) => {
       name,
       leader,
       selectedSong,
-      playerList: ds.linkedList(),
       players: [],
       guesses: 0,
       scores: {},
@@ -272,6 +257,9 @@ io.on('connection', (socket) => {
       gamestate: 'lobby',
       totalPoints: 0,
       allowReconnect: false,
+      energyArray: [],
+      danceabilityArray: [],
+      songArray: [],
       roundStartTime,
       timeout,
       roundTime,
@@ -283,81 +271,88 @@ io.on('connection', (socket) => {
   });
 
   socket.on('guess', (data) => {
-    const { uri, room, nickname } = data;
-    let { totalPoints, guesses } = room;
-    const { selectedSong, scoreUpdates, roundStartTime, roundTime, playerList } = room;
+    const { uri, name, nickname } = data;
+    const foundRoom = rooms.find(r => r.name === name);
+    const { selectedSong, scoreUpdates, roundStartTime, roundTime, players } = foundRoom;
     if (selectedSong.uri === uri) {
       const current = new Date();
       const diff = current.getTime() - roundStartTime.getTime();
       const roundScore = Math.round((roundTime - diff) / 1000);
       scoreUpdates[nickname] = roundScore;
-      totalPoints += roundScore;
+      foundRoom.totalPoints += roundScore;
       console.log('correct');
     }
-    guesses += 1;
-    sendStatus(room);
-    if (guesses >= playerList.count() - 1) {
-      stopRound();
+    foundRoom.guesses += 1;
+    sendStatus(foundRoom);
+    if (foundRoom.guesses >= players.length - 1) {
+      stopRound(foundRoom);
     }
   });
 
   socket.on('selectedSong', (data) => {
-    const { song, room } = data;
-    let { selectedSong } = room;
-    if (songArray.length === 1 && songArray[0] === '5QjJgPU8AJeickx34f7on6') {
-      songArray = [];
+    const { song, name } = data;
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      if (foundRoom.songArray.length === 1 && foundRoom.songArray[0] === '5QjJgPU8AJeickx34f7on6') {
+        foundRoom.songArray = [];
+      }
+      if (foundRoom.songArray.length > 3) {
+        foundRoom.songArray.splice(0, 1);
+      }
+      console.log('got selectedSong');
+      foundRoom.selectedSong = song;
+      playSong(song, foundRoom.name);
+      startRound(foundRoom);
+      analyzeSong(song.id, foundRoom);
     }
-    if (songArray.length > 3) {
-      songArray.splice(0, 1);
-    }
-    console.log('got selectedSong');
-    selectedSong = song;
-    startRound(room);
-    playSong(song.uri);
-    sendStatus(room);
-    analyzeSong(song.id);
   });
 
-  socket.on('hostStartGame', (room) => {
+  socket.on('hostStartGame', (name) => {
     console.log('got hostStartGame');
-    startChoose(room);
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      startChoose(foundRoom);
+    }
   });
 
-  socket.on('hostReset', (room) => {
+  socket.on('hostReset', (name) => {
     console.log('got hostReset');
-    resetRoom(room);
-  });
-
-  socket.on('reconnected', ({ nick, room, score }) => {
-    const nickname = nick;
-    const { allowReconnect } = room;
-    if (allowReconnect) {
-      console.log(`reconnected ${nick} with ${score}`);
-      addPlayer(nick, score);
-    } else {
-      console.log(`Didnt allow reconnect from ${nick}`);
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      resetRoom(foundRoom);
     }
   });
 
-  /* socket.on('disconnect', ({ nickname, room }) => {
-    // let { allowReconnect } = room;
-    const { leader, playerList, scores, scoreUpdates } = room;
-    const allowReconnect = true;
-    if (leader === nickname) {
-      pickLeader(room);
+  socket.on('reconnected', ({ nickname, name, score }) => {
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      if (foundRoom.allowReconnect) {
+        console.log(`reconnected ${nickname} with ${score}`);
+        addPlayer(foundRoom, nickname, score);
+      } else {
+        console.log(`Didnt allow reconnect from ${nickname}`);
+      }
     }
+  });
 
-    if (playerList.find(nickname)) {
-      playerList.remove(nickname);
+  socket.on('disconnect', ({ nickname, name }) => {
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      const { leader, players } = foundRoom;
+      const allowReconnect = true;
+      if (leader === nickname) {
+        pickLeader(foundRoom);
+      }
+      foundRoom.players = players.filter(player => player !== nickname);
+
+      if (players.length < 2) {
+        resetRoom(foundRoom);
+      }
+
+      delete foundRoom.scores[nickname];
+      delete foundRoom.scoreUpdates[nickname];
+      sendStatus(foundRoom);
+      console.log(`${nickname} disconnected`);
     }
-
-    if (playerList.count() < 2) {
-      resetRoom(room);
-    }
-
-    delete scores[nickname];
-    delete scoreUpdates[nickname];
-    sendStatus();
-    console.log(`${nickname} disconnected`);
-  }); */
+  });
 });
