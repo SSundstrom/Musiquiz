@@ -19,6 +19,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(process.env);
     on('connect', (data) => {
       const { nickname, scores } = this.state;
       if (this) {
