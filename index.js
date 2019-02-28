@@ -14,6 +14,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 const rooms = [];
+const timeouts = {};
 
 function getToken() {
   spotifyApi.clientCredentialsGrant().then(
@@ -168,7 +169,7 @@ function stopRound(room) {
   console.log('stopRound');
   const { leader, scoreUpdates, players, displayCorrectTime, selectedSong, totalPoints } = room;
   if (room.gamestate === 'midgame') {
-    clearTimeout(room.timeout);
+    clearTimeout(timeouts[room.name]);
     const leaderScore = Math.round(totalPoints / (players.length - 1));
     if (leaderScore > 0) {
       scoreUpdates[leader] = leaderScore;
@@ -185,10 +186,11 @@ function stopRound(room) {
 }
 
 function startRound(room) {
-  console.log('startRound');
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
-    setTimeout(stopRound, room.roundTime, room);
+    console.log('startRound', room.roundTime);
+    timeouts[room.name] = setTimeout(stopRound, room.roundTime, room);
+
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', room);
   }
@@ -231,6 +233,7 @@ io.on('connection', (socket) => {
       foundRoom.players.push(nick);
       foundRoom.scores[nick] = 0;
       socket.nickname = nick;
+      socket.name = name;
       socket.join(name);
       if (foundRoom.leader) {
         sendLeader(foundRoom);
@@ -242,16 +245,13 @@ io.on('connection', (socket) => {
 
   socket.on('hostJoin', (name) => {
     console.log('hostJoin', name);
-    let roundStartTime;
-    let timeout;
-    let leader;
-    let selectedSong;
+
     const roundTime = 30000;
     const displayCorrectTime = 10000;
     const room = {
       name,
-      leader,
-      selectedSong,
+      roundTime,
+      displayCorrectTime,
       players: [],
       guesses: 0,
       scores: {},
@@ -262,10 +262,6 @@ io.on('connection', (socket) => {
       energyArray: [],
       danceabilityArray: [],
       songArray: [],
-      roundStartTime,
-      timeout,
-      roundTime,
-      displayCorrectTime,
     };
     rooms.push(room);
     socket.join(name);
@@ -337,24 +333,25 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', ({ nickname, name }) => {
-    const foundRoom = rooms.find(r => r.name === name);
+  socket.on('disconnect', () => {
+    console.log('disc');
+    const foundRoom = rooms.find(r => r.name === socket.name);
     if (foundRoom) {
       const { leader, players } = foundRoom;
-      const allowReconnect = true;
-      if (leader === nickname) {
+      foundRoom.allowReconnect = true;
+      if (leader === socket.nickname) {
         pickLeader(foundRoom);
       }
-      foundRoom.players = players.filter(player => player !== nickname);
+      foundRoom.players = players.filter(player => player !== socket.nickname);
 
       if (players.length < 2) {
         resetRoom(foundRoom);
       }
 
-      delete foundRoom.scores[nickname];
-      delete foundRoom.scoreUpdates[nickname];
+      delete foundRoom.scores[socket.nickname];
+      delete foundRoom.scoreUpdates[socket.nickname];
       sendStatus(foundRoom);
-      console.log(`${nickname} disconnected`);
+      console.log(`${socket.nickname} disconnected`);
     }
   });
 });
