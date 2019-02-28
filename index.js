@@ -160,7 +160,6 @@ function startChoose(room) {
   if (gamestate === 'lobby' || gamestate === 'finished') {
     room.gamestate = 'choose';
     pickLeader(room);
-    sendLeader(room);
     sendStatus(room);
   }
 }
@@ -169,14 +168,14 @@ function stopRound(room) {
   console.log('stopRound');
   const { leader, scoreUpdates, players, displayCorrectTime, selectedSong, totalPoints } = room;
   if (room.gamestate === 'midgame') {
-    // clearTimeout(room.timeout);
+    clearTimeout(room.timeout);
     const leaderScore = Math.round(totalPoints / (players.length - 1));
     if (leaderScore > 0) {
       scoreUpdates[leader] = leaderScore;
     }
     room.totalPoints = 0;
     room.guesses = 0;
-    clearLeader(room);
+    clearLeader(room.name);
     room.gamestate = 'finished';
     sendStatus(room);
     io.to(room.name).emit('stopRound', { selectedSong });
