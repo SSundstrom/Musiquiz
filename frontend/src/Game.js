@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import JoinOrCreateRoom from './pages/JoinOrCreateRoom';
 import HostWaitingToStart from './pages/HostWaitingToStart';
 import PlayerWaitingToStart from './pages/PlayerWaitingToStart';
@@ -26,12 +27,12 @@ class Game extends Component {
   }
 
   renderWait() {
-    const { isHost, room, onStartGame, nickname } = this.props;
+    const { isHost, name, players, onStartGame, nickname } = this.props;
     if (isHost) {
-      return <HostWaitingToStart room={room} onStartGame={onStartGame} />;
+      return <HostWaitingToStart name={name} players={players} onStartGame={onStartGame} />;
     }
 
-    return <PlayerWaitingToStart room={room} nickname={nickname} />;
+    return <PlayerWaitingToStart name={name} players={players} nickname={nickname} />;
   }
 
   renderJoin() {
@@ -42,14 +43,15 @@ class Game extends Component {
   renderPlay() {
     const {
       isHost,
-      room,
-      songToPlay,
-      score,
+      scores,
       scoreUpdates,
+      songToPlay,
       correctSong,
       nickname,
+      leader,
       onChangeTimer,
       guessTimer,
+      name,
       isLeader,
       onGuess,
       onSelectSong,
@@ -58,12 +60,11 @@ class Game extends Component {
     if (isHost) {
       return (
         <HostMusicPlayer
-          room={room}
-          songToPlay={songToPlay}
-          score={score}
+          scores={scores}
           scoreUpdates={scoreUpdates}
+          songToPlay={songToPlay}
           correctSong={correctSong}
-          nickname={nickname}
+          name={name}
           onChangeTimer={onChangeTimer}
         />
       );
@@ -74,10 +75,9 @@ class Game extends Component {
       if (isLeader) {
         return (
           <LeaderWaitingForGuesses
-            room={room}
-            guessTimer={guessTimer}
-            score={score}
+            scores={scores}
             scoreUpdates={scoreUpdates}
+            guessTimer={guessTimer}
             nickname={nickname}
           />
         );
@@ -85,26 +85,25 @@ class Game extends Component {
 
       return (
         <PlayerGuess
+          scores={scores}
+          scoreUpdates={scoreUpdates}
           onGuess={onGuess}
           guessTimer={guessTimer}
           guessed={guessed}
-          score={score}
-          scoreUpdates={scoreUpdates}
           nickname={nickname}
         />
       );
     }
 
     if (isLeader) {
-      return <LeaderChooseSong onSelectSong={onSelectSong} />;
+      return <LeaderChooseSong name={name} onSelectSong={onSelectSong} />;
     }
 
     // If guess timer is 0 and correct song is known, show score view
     if (correctSong) {
       return (
         <ShowCorrectSong
-          room={room}
-          score={score}
+          scores={scores}
           scoreUpdates={scoreUpdates}
           correctSong={correctSong}
           nickname={nickname}
@@ -114,13 +113,44 @@ class Game extends Component {
 
     return (
       <PlayerWaitingForLeader
-        room={room}
-        score={score}
+        leader={leader}
         nickname={nickname}
+        scores={scores}
+        scoreUpdates={scoreUpdates}
         correctSong={correctSong}
       />
     );
   }
 }
+Game.propTypes = {
+  name: PropTypes.string,
+  leader: PropTypes.string,
+  isHost: PropTypes.bool.isRequired,
+  scores: PropTypes.object,
+  scoreUpdates: PropTypes.object,
+  songToPlay: PropTypes.string,
+  players: PropTypes.array,
+  correctSong: PropTypes.bool,
+  isLeader: PropTypes.bool.isRequired,
+  nickname: PropTypes.string,
+  guessTimer: PropTypes.number.isRequired,
+  onGuess: PropTypes.func.isRequired,
+  onStartGame: PropTypes.func.isRequired,
+  onChangeTimer: PropTypes.func.isRequired,
+  onSelectSong: PropTypes.func.isRequired,
+  onJoinAsHost: PropTypes.func.isRequired,
+  onJoinAsPlayer: PropTypes.func.isRequired,
+  guessed: PropTypes.bool.isRequired,
+};
 
+Game.defaultProps = {
+  name: '',
+  nickname: '',
+  leader: '',
+  scores: {},
+  scoreUpdates: {},
+  songToPlay: null,
+  players: [],
+  correctSong: false,
+};
 export default Game;
