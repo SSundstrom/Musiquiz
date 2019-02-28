@@ -158,7 +158,7 @@ class App extends Component {
         isHost: true,
         hasHost: true,
       },
-      () => emit('hostJoin', Math.floor(Math.random() * (9999 - 1000) + 1000).toString()),
+      () => emit('hostJoin'),
     );
   }
 

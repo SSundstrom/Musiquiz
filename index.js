@@ -243,13 +243,19 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('hostJoin', (name) => {
-    console.log('hostJoin', name);
-
+  socket.on('hostJoin', () => {
     const roundTime = 30000;
     const displayCorrectTime = 10000;
+    socket.host = true;
+    let creatingName = true;
+    let name;
+    while (creatingName) {
+      name = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      creatingName = rooms.find(r => r.name === name);
+    }
+    socket.name = name;
     const room = {
-      name,
+      name: socket.name,
       roundTime,
       displayCorrectTime,
       players: [],
@@ -263,8 +269,9 @@ io.on('connection', (socket) => {
       danceabilityArray: [],
       songArray: [],
     };
+    console.log('hostJoin', socket.name);
     rooms.push(room);
-    socket.join(name);
+    socket.join(socket.name);
     sendStatus(room);
   });
 
@@ -335,6 +342,8 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('disc');
+    if (socket.host) {
+    }
     const foundRoom = rooms.find(r => r.name === socket.name);
     if (foundRoom) {
       const { leader, players } = foundRoom;

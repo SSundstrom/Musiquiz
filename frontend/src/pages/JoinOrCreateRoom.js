@@ -6,8 +6,8 @@ class JoinOrCreateRoom extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nickname: '',
-      room: '',
+      nickname: undefined,
+      room: undefined,
     };
   }
 
@@ -20,7 +20,7 @@ class JoinOrCreateRoom extends Component {
 
   handleChange(event) {
     const field = event.target.name;
-    const { value } = event.target;
+    const value = event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value;
     this.setState({ [field]: value });
   }
 
@@ -37,7 +37,14 @@ class JoinOrCreateRoom extends Component {
           name="nickname"
         />
         <label>Room code</label>
-        <input value={room} onChange={this.handleChange.bind(this)} type="text" name="room" />
+        <input
+          value={room}
+          onChange={this.handleChange.bind(this)}
+          type="number"
+          min="1000"
+          max="9999"
+          name="room"
+        />
         <button type="button" className="button" onClick={() => onJoinAsPlayer(nickname, room)}>
           Join
         </button>
