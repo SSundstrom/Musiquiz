@@ -342,10 +342,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('disc');
-    if (socket.host) {
-    }
     const foundRoom = rooms.find(r => r.name === socket.name);
     if (foundRoom) {
+      if (socket.host) {
+        resetRoom(foundRoom);
+      }
       const { leader, players } = foundRoom;
       foundRoom.allowReconnect = true;
       if (leader === socket.nickname) {
