@@ -224,7 +224,11 @@ io.on('connection', (socket) => {
     console.log('join');
     const { nick, name } = data;
     const foundRoom = rooms.find(r => r.name === name);
-    if (foundRoom) {
+    if (!foundRoom) {
+      socket.emit('roomNotFound');
+    } else if (foundRoom.players.includes(nick)) {
+      socket.emit('playerAlreadyExists');
+    } else {
       foundRoom.players.push(nick);
       foundRoom.scores[nick] = 0;
       socket.nickname = nick;
@@ -233,8 +237,7 @@ io.on('connection', (socket) => {
         sendLeader(foundRoom);
       }
       sendStatus(foundRoom);
-    } else {
-      socket.to(name).emit('roomNotFound');
+      socket.emit('joined', nick);
     }
   });
 

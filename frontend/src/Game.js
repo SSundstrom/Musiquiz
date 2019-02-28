@@ -11,21 +11,6 @@ import PlayerWaitingForLeader from './pages/PlayerWaitingForLeader';
 import ShowCorrectSong from './pages/ShowCorrectSong';
 
 class Game extends Component {
-  render() {
-    const { started, nickname, isHost } = this.props;
-
-    // if the game has not yet started and we have not become host or entered nickname
-    if (!nickname && !isHost) {
-      return this.renderJoin();
-    }
-
-    if (!started) {
-      return this.renderWait();
-    }
-
-    return this.renderPlay();
-  }
-
   renderWait() {
     const { isHost, name, players, onStartGame, nickname } = this.props;
     if (isHost) {
@@ -120,6 +105,18 @@ class Game extends Component {
         correctSong={correctSong}
       />
     );
+  }
+
+  render() {
+    const { started, nickname, isHost } = this.props;
+    // if the game has not yet started and we have not become host or entered nickname
+    if (!nickname && !isHost) {
+      return this.renderJoin();
+    }
+    if (!started) {
+      return this.renderWait();
+    }
+    return this.renderPlay();
   }
 }
 Game.propTypes = {

@@ -38,13 +38,20 @@ class App extends Component {
 
     on('disconnect', () => {
       const { nickname, scores, scoreUpdates } = this.state;
-
       if (nickname in scoreUpdates) {
         scores[nickname] += scoreUpdates[nickname];
       }
     });
     on('roomNotFound', (data) => {
-      this.setState({ roomNotFound: true });
+      alert('No such room');
+    });
+    on('playerAlreadyExists', (data) => {
+      alert('Player Already Exists');
+    });
+    on('joined', (nickname) => {
+      this.setState({
+        nickname,
+      });
     });
     on('status', (data) => {
       console.log(data);
@@ -136,24 +143,12 @@ class App extends Component {
     emit('hostResetGame', name);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   joinAsPlayer(nick, name) {
-    const { nickname } = this.state;
     if (!nick.length) {
       return;
     }
-
-    if (nickname) {
-      return;
-    }
-
-    // TODO get players first to avoid duplicates;
-
-    this.setState(
-      {
-        nickname: nick,
-      },
-      () => emit('join', { nick, name }),
-    );
+    emit('join', { nick, name });
   }
 
   joinAsHost() {
