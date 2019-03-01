@@ -217,7 +217,26 @@ function addPlayer(room, nick, score) {
     sendLeader(room);
   }
   sendStatus(room);
+function compareSong(s1, s2) {
+  const re = /{remix|remaster| -.*|}/gi;
+  const clean1 = s1
+    .toLowerCase()
+    .replace(re, '')
+    .trim();
+  const clean2 = s2
+    .toLowerCase()
+    .replace(re, '')
+    .trim();
+  return clean1 === clean2;
 }
+
+function compareArtist(a1, a2) {
+  const subsetOf = (s1, s2) => s1.every(e1 => s2.includes(e1));
+  const names1 = a1.map(artist => artist.name);
+  const names2 = a2.map(artist => artist.name);
+  return subsetOf(names1, names2) || subsetOf(names2, names1);
+}
+
 // -------------- IO - Events --------------
 
 io.on('connection', (socket) => {
@@ -275,17 +294,21 @@ io.on('connection', (socket) => {
     sendStatus(room);
   });
 
-  socket.on('guess', (data) => {
-    const { uri, name, nickname } = data;
+  socket.on('guess', data => {
+    const { song: guessedSong, name, nickname } = data;
     const foundRoom = rooms.find(r => r.name === name);
     const { selectedSong, scoreUpdates, roundStartTime, roundTime, players } = foundRoom;
-    if (selectedSong.uri === uri) {
+    if (guessedSong.uri === selectedSong.uri || (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))) {
       const current = new Date();
       const diff = current.getTime() - roundStartTime.getTime();
       const roundScore = Math.round((roundTime - diff) / 1000);
       scoreUpdates[nickname] = roundScore;
       foundRoom.totalPoints += roundScore;
       console.log('correct');
+    } else {
+      const compA = compareArtist(selectedSong.artists, guessedSong.artists);
+      const compS = compareSong(selectedSong.name, guessedSong.name);
+      console.log('fault: artist:', compA, '  song:', compS);
     }
     foundRoom.guesses += 1;
     sendStatus(foundRoom);

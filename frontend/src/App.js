@@ -162,14 +162,14 @@ class App extends Component {
     );
   }
 
-  guess(uri) {
+  guess(song) {
     const { guessed, nickname, name } = this.state;
     if (!guessed) {
       this.setState(
         {
           guessed: true,
         },
-        () => emit('guess', { uri, name, nickname }),
+        () => emit('guess', { song, name, nickname }),
       );
     }
   }
@@ -232,7 +232,7 @@ class App extends Component {
           onStartGame={() => this.startGame()}
           onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
           onJoinAsHost={() => this.joinAsHost()}
-          onGuess={uri => this.guess(uri)}
+          onGuess={song => this.guess(song)}
           onSelectSong={song => this.selectSong(song)}
           onChangeTimer={time => this.sendTime(time)}
         />

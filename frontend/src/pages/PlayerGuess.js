@@ -60,7 +60,7 @@ class PlayerGuess extends Component {
               />
             </label>
             {results.map(track => (
-              <Track track={track} onClick={() => onGuess(track.uri)} />
+              <Track track={track} onClick={() => onGuess(track)} />
             ))}
           </div>
         )}
