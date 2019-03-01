@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { search as trackSearch } from '../api';
-import Track from '../components/Track'
-import Scores from '../components/Scores'
+import Track from '../components/Track';
+import Scores from '../components/Scores';
 
 class PlayerGuess extends Component {
   constructor(props) {
@@ -9,45 +10,13 @@ class PlayerGuess extends Component {
 
     this.state = {
       value: '',
-      results: []
+      results: [],
     };
-  }
-
-  render() {
-    return (
-      <div>
-          <h1>{this.props.guessTimer}</h1>
-
-          {this.props.guessed && (
-            <div>
-              <h2>Waiting for other players</h2>
-              <Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/>
-            </div>
-          )}
-
-          {!this.props.guessed && (
-            <div>
-              <label>
-                Guess the song name
-              <input
-                  type="text"
-                  onChange={(e) => this.onChange(e.currentTarget.value)}
-                  value={this.state.value}
-                />
-              </label>
-              {this.state.results.map(track => (
-                <Track track={track} onClick={() => this.props.onGuess(track.uri)}/>
-              ))}
-            </div>
-            
-          )}
-      </div>
-    );
   }
 
   onChange(value) {
     this.setState({
-      value: value
+      value,
     });
 
     this.search(value);
@@ -56,16 +25,57 @@ class PlayerGuess extends Component {
   search(value) {
     if (value.length < 2) {
       return this.setState({
-        results: []
+        results: [],
       });
     }
-    
+
     trackSearch(value, (results) => {
       if (value === this.state.value) {
-        this.setState({results:results})
+        this.setState({ results });
       }
     });
   }
+
+  render() {
+    const { guessTimer, guessed, scores, scoreUpdates, nickname, onGuess } = this.props;
+    const { value, results } = this.state;
+    return (
+      <div>
+        <h1>{guessTimer}</h1>
+        {guessed && (
+          <div>
+            <h2>Waiting for other players</h2>
+            <Scores scores={scores} nickname={nickname} scoreUpdates={scoreUpdates} />
+          </div>
+        )}
+
+        {!guessed && (
+          <div>
+            <label>
+              Guess the song name
+              <input
+                type="text"
+                onChange={e => this.onChange(e.currentTarget.value)}
+                value={value}
+              />
+            </label>
+            {results.map(track => (
+              <Track track={track} onClick={() => onGuess(track.uri)} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 }
+
+PlayerGuess.propTypes = {
+  guessTimer: PropTypes.number.isRequired,
+  guessed: PropTypes.bool.isRequired,
+  scores: PropTypes.object.isRequired,
+  scoreUpdates: PropTypes.object.isRequired,
+  nickname: PropTypes.string.isRequired,
+  onGuess: PropTypes.func.isRequired,
+};
 
 export default PlayerGuess;

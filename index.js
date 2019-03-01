@@ -1,30 +1,34 @@
-var SpotifyWebApi = require('spotify-web-api-node');
-var ds = require('datastructures-js');
-
+const SpotifyWebApi = require('spotify-web-api-node');
+require('dotenv').load();
 // credentials are optional
-var spotifyApi = new SpotifyWebApi({
-    clientId: 'c11d380eadd04921a083d5637c108f8c',
-    clientSecret: 'f8db5475fa7748e28203dd0ebac181e4',
-    redirectUri : ''
+const spotifyApi = new SpotifyWebApi({
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectUri: '',
 });
 
 const express = require('express');
-const app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
 
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+const rooms = [];
+const timeouts = {};
 
 function getToken() {
-    spotifyApi.clientCredentialsGrant()
-        .then(function(data) {
-            console.log('The access token expires in ' + data.body['expires_in']);
-            console.log('The access token is ' + data.body['access_token']);
-      
-            // Save the access token so that it's used in future calls
-            spotifyApi.setAccessToken(data.body['access_token']);
-        }, function(err) {
-            console.log('Something went wrong when retrieving an access token', err);
-        });
+  spotifyApi.clientCredentialsGrant().then(
+    (data) => {
+      console.log(`The access token expires in ${data.body.expires_in}`);
+      console.log(`The access token is ${data.body.access_token}`);
+
+      // Save the access token so that it's used in future calls
+      spotifyApi.setAccessToken(data.body.access_token);
+    },
+    (err) => {
+      console.log('Something went wrong when retrieving an access token', err);
+    },
+  );
 }
 
 getToken();
@@ -32,318 +36,332 @@ getToken();
 // Refresh token before 1h.
 setInterval(getToken, 3598000);
 
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
 });
 
-app.get('/search/:name', function(req, res) {
-    spotifyApi.searchTracks(req.params.name, {market:'SE'} )
-        .then(function(data) {
-            res.send(data);
-        }, function(err) {
-        console.error(err);
-        });
+app.get('/search/:name', (req, res) => {
+  spotifyApi.searchTracks(req.params.name, { market: 'SE' }).then(
+    (data) => {
+      res.send(data);
+    },
+    (err) => {
+      console.error(err);
+    },
+  );
 });
+let averageDanceability = 0.5;
+let averageEnergy = 0.5;
+// let deleteTemp = true;
 
-var averageDanceability = 0.5;
-var averageEnergy = 0.5;
-var energyArray = [];
-// var deleteTemp = true;
+app.get('/recommendations/:name', (req, res) => {
+  const foundRoom = rooms.find(r => r.name === req.params.name);
+  if (foundRoom) {
+    const { songArray, energyArray, danceabilityArray } = foundRoom;
+    let collectedDanceability = 0;
+    let collectedEnergy = 0;
 
-app.get('/recommendations', function(req, res) {
-    var collectedDanceability = 0;
-    var collectedEnergy = 0;
-
-    for (var i=0; i<energyArray.length; i++){
-        collectedEnergy = collectedEnergy + energyArray[i];
-        averageEnergy = collectedEnergy/energyArray.length;
+    for (let i = 0; i < energyArray.length; i += 1) {
+      collectedEnergy += energyArray[i];
+      averageEnergy = collectedEnergy / energyArray.length;
     }
-    for (i=0; i<danceabilityArray.length; i++){
-        collectedDanceability = collectedDanceability + danceabilityArray[i];
-        averageDanceability = collectedDanceability/danceabilityArray.length;
+    for (let i = 0; i < danceabilityArray.length; i += 1) {
+      collectedDanceability += danceabilityArray[i];
+      averageDanceability = collectedDanceability / danceabilityArray.length;
     }
-    if (songArray.length ==  0){
-        songArray.push('5QjJgPU8AJeickx34f7on6');
+    if (songArray.length === 0) {
+      songArray.push('5QjJgPU8AJeickx34f7on6');
     }
-    if (averageDanceability > 0.8){
-        averageDanceability = 0.8;
+    if (averageDanceability > 0.8) {
+      averageDanceability = 0.8;
     }
-    if (averageEnergy > 0.8){
-        averageEnergy = 0.8;
+    if (averageEnergy > 0.8) {
+      averageEnergy = 0.8;
     }
     console.log(songArray);
-    spotifyApi.getRecommendations({/*min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2, min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2,*/ seed_tracks: [songArray] })
-        .then(function(rec) {
-            res.send(rec);
-        }).catch(function(e) {
-            console.log(e);
-        });
+    spotifyApi
+      .getRecommendations({
+        /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
+       min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, */
+        seed_tracks: [songArray],
+      })
+      .then((rec) => {
+        res.send(rec);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 });
 
 app.use('/', express.static('frontend/build'));
 
-http.listen(8888, function () {
-    console.log('Example app listening on port 8888!');
+http.listen(8888, () => {
+  console.log('Example app listening on port 8888!');
 });
 
 // --------------------------- Functions ---------------------------------
 
-var playerList = ds.linkedList();
-var hostSocket;
-var leader;
-var guesses = 0;
-var scores = {};
-var scoreUpdates = {};
-var selectedSong;
-var gamestate = 'pregame';
-var totalPoints = 0;
-var allowReconnect = false;
-
-function hostReset() {
-    playerList = ds.linkedList();
-    hostSocket;
-    leader;
-    guesses = 0;
-    scores = {};
-    scoreUpdates = {};
-    selectedSong;
-    gamestate = 'pregame';
-    totalPoints = 0;
-    allowReconnect = false;
-    sendStatus();
+function sendStatus(room) {
+  io.to(room.name).emit('status', room);
+  console.log('sendStatus', room.name);
+}
+function resetRoom(room) {
+  room.players = [];
+  room.leader = undefined;
+  room.guesses = 0;
+  room.scores = {};
+  room.scoreUpdates = {};
+  room.selectedSong = undefined;
+  room.gamestate = 'pregame';
+  room.totalPoints = 0;
+  room.allowReconnect = false;
+  room.energyArray = [];
+  room.danceabilityArray = [];
+  room.songArray = [];
+  sendStatus(room);
+}
+function applyUpdates(room) {
+  Object.entries(room.scoreUpdates).forEach(([nick, score]) => {
+    room.scores[nick] += score;
+  });
+  room.scoreUpdates = {};
+  sendStatus(room);
 }
 
-function addPlayer(nick, score) {
-    playerList.addLast(nick);
-    console.log(nick);
-    scores[nick] = score;
-    if (leader) {
-        sendLeader();
+function playSong(song, name) {
+  console.log('playSong');
+  io.to(name).emit('hostPlaySong', song.uri);
+  io.to(name).emit('playing', song);
+}
+
+function sendLeader(name, leader) {
+  io.to(name).emit('leader', leader);
+  console.log('send leader', leader);
+}
+
+function clearLeader(name) {
+  io.to(name).emit('leader', null);
+  console.log('clear leader');
+}
+
+function pickLeader(room) {
+  const { players } = room;
+  const leader = players.shift();
+  room.leader = leader;
+  players.push(leader);
+  sendLeader(room.name, leader);
+}
+
+function startChoose(room) {
+  const { gamestate } = room;
+  console.log('startChoose', room.name, gamestate);
+  if (gamestate === 'lobby' || gamestate === 'finished') {
+    room.gamestate = 'choose';
+    pickLeader(room);
+    sendStatus(room);
+  }
+}
+
+function stopRound(room) {
+  console.log('stopRound');
+  const { leader, scoreUpdates, players, displayCorrectTime, selectedSong, totalPoints } = room;
+  if (room.gamestate === 'midgame') {
+    clearTimeout(timeouts[room.name]);
+    const leaderScore = Math.round(totalPoints / (players.length - 1));
+    if (leaderScore > 0) {
+      scoreUpdates[leader] = leaderScore;
     }
-    sendStatus();
+    room.totalPoints = 0;
+    room.guesses = 0;
+    clearLeader(room.name);
+    room.gamestate = 'finished';
+    sendStatus(room);
+    io.to(room.name).emit('stopRound', { selectedSong });
+    setTimeout(applyUpdates, displayCorrectTime / 2, room);
+    setTimeout(startChoose, displayCorrectTime, room);
+  }
 }
 
-function sendStatus() {
+function startRound(room) {
+  if (room.gamestate === 'choose') {
+    room.gamestate = 'midgame';
+    console.log('startRound', room.roundTime);
+    timeouts[room.name] = setTimeout(stopRound, room.roundTime, room);
 
-    function toArray(queue) {
-        var retArray = [];
-        if (queue) {
-            var tmp = queue.findFirst();
-            while (tmp) {
-                retArray.push(tmp.getValue());
-                tmp = tmp.getNext();
-            }
-        }
-        return retArray;
-    }
-
-    io.emit('status', {scores:scores, players:toArray(playerList), gamestate:gamestate, guesses:guesses, scoreUpdates:scoreUpdates});
-    console.log('sendStatus');
+    room.roundStartTime = new Date();
+    io.to(room.name).emit('startRound', room);
+  }
 }
 
-function playSong(uri) {
-    hostSocket.emit('hostPlaySong', uri);
-    io.emit('playing', selectedSong);
-    console.log('playSong');
+function analyzeSong(id, room) {
+  spotifyApi.getAudioFeaturesForTrack(id).then(
+    (data) => {
+      room.danceabilityArray.push(data.body.danceability);
+      room.energyArray.push(data.body.energy);
+      room.songArray.push(id);
+    },
+    (err) => {
+      console.error(err);
+    },
+  );
 }
 
-function sendLeader() {
-    io.emit('leader', leader);
-    console.log('leader');
+function addPlayer(room, nick, score) {
+  room.players.push(nick);
+  console.log(nick);
+  room.scores[nick] = score;
+  if (room.leader) {
+    sendLeader(room);
+  }
+  sendStatus(room);
 }
-
-function clearLeader() {
-    io.emit('leader', undefined);
-    console.log('leader');
-}
-
-function pickLeader() {
-    var node = playerList.findFirst();
-    if (node) {
-        leader = node.getValue();
-        playerList.removeFirst();
-        playerList.addLast(leader);    
-    }
-    sendLeader();
-}
-
-var roundStartTime;
-var timeout;
-var roundTime = 30000;
-var displayCorrectTime = 10000;
-
-function startRound() {
-    console.log('startRound');
-    if (gamestate == 'choose') {
-        gamestate = 'midgame';
-        io.emit('startRound', roundTime);
-        timeout = setTimeout(stopRound, roundTime);
-        roundStartTime = new Date();
-    }
-}
-
-function stopRound() {
-    console.log('stopRound');
-    if (gamestate == 'midgame') {
-        clearTimeout(timeout);
-        var leaderScore = Math.round(totalPoints/(playerList.count()-1));
-        if (leaderScore > 0) {
-            scoreUpdates[leader] = leaderScore;
-        }
-        totalPoints = 0;
-        guesses = 0;
-        clearLeader();
-        gamestate = 'finished';
-        sendStatus();
-        io.emit('stopRound', {'selectedSong':selectedSong});
-        setTimeout(applyUpdates, displayCorrectTime/2);
-        setTimeout(startChoose, displayCorrectTime);
-    }
-}
-
-var danceabilityArray = [];
-var songArray = [];
-
-function analyzeSong(id) {
-    spotifyApi.getAudioFeaturesForTrack(id)
-        .then(function(data) {
-            danceabilityArray.push(data.body.danceability);
-            energyArray.push(data.body.energy);
-            songArray.push(id);
-        }, function(err) {
-            console.error(err);
-        });
-}
-
-
-function startChoose() {
-    console.log('startChoose');
-    if (gamestate == 'lobby' || gamestate == 'finished') {
-        gamestate = 'choose';
-        pickLeader();
-        sendLeader();
-        sendStatus();
-    }
-}
-
-function applyUpdates() {
-    for (var nick in scoreUpdates) {
-        scores[nick] += scoreUpdates[nick];
-    }
-    scoreUpdates = {};
-    sendStatus();
-}
-  
 // -------------- IO - Events --------------
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-    sendStatus();
-    var nickname;
+  socket.on('join', (data) => {
+    console.log('join');
+    const { nick, name } = data;
+    const foundRoom = rooms.find(r => r.name === name);
+    if (!foundRoom) {
+      socket.emit('roomNotFound');
+    } else if (foundRoom.players.includes(nick)) {
+      socket.emit('playerAlreadyExists');
+    } else {
+      foundRoom.players.push(nick);
+      foundRoom.scores[nick] = 0;
+      socket.nickname = nick;
+      socket.name = name;
+      socket.join(name);
+      if (foundRoom.leader) {
+        sendLeader(foundRoom);
+      }
+      sendStatus(foundRoom);
+      socket.emit('joined', nick);
+    }
+  });
 
-    socket.on('join', function(name) {
-        console.log('got join from');
-        nickname = name;
-        addPlayer(nickname, 0);
-    });
+  socket.on('hostJoin', () => {
+    const roundTime = 30000;
+    const displayCorrectTime = 10000;
+    socket.host = true;
+    let creatingName = true;
+    let name;
+    while (creatingName) {
+      name = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      creatingName = rooms.find(r => r.name === name);
+    }
+    socket.name = name;
+    const room = {
+      name: socket.name,
+      roundTime,
+      displayCorrectTime,
+      players: [],
+      guesses: 0,
+      scores: {},
+      scoreUpdates: {},
+      gamestate: 'lobby',
+      totalPoints: 0,
+      allowReconnect: false,
+      energyArray: [],
+      danceabilityArray: [],
+      songArray: [],
+    };
+    console.log('hostJoin', socket.name);
+    rooms.push(room);
+    socket.join(socket.name);
+    sendStatus(room);
+  });
 
-    socket.on('hostJoin', function() {
-        console.log('hostJoin');
-        if (gamestate == 'pregame') {
-            gamestate = 'lobby';
-            hostSocket = socket;
-            hostSocket.on('disconnect', function() {
-                console.log('got host disconnect');
-                hostReset();
-            });
+  socket.on('guess', (data) => {
+    const { uri, name, nickname } = data;
+    const foundRoom = rooms.find(r => r.name === name);
+    const { selectedSong, scoreUpdates, roundStartTime, roundTime, players } = foundRoom;
+    if (selectedSong.uri === uri) {
+      const current = new Date();
+      const diff = current.getTime() - roundStartTime.getTime();
+      const roundScore = Math.round((roundTime - diff) / 1000);
+      scoreUpdates[nickname] = roundScore;
+      foundRoom.totalPoints += roundScore;
+      console.log('correct');
+    }
+    foundRoom.guesses += 1;
+    sendStatus(foundRoom);
+    if (foundRoom.guesses >= players.length - 1) {
+      stopRound(foundRoom);
+    }
+  });
 
-            hostSocket.on('timer', (time) => {
-                console.log('got new timer' + time);
-                roundTime = time*1000;
-            });
-            sendStatus();
-        }
-    });
+  socket.on('selectedSong', (data) => {
+    const { song, name } = data;
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      if (foundRoom.songArray.length === 1 && foundRoom.songArray[0] === '5QjJgPU8AJeickx34f7on6') {
+        foundRoom.songArray = [];
+      }
+      if (foundRoom.songArray.length > 3) {
+        foundRoom.songArray.splice(0, 1);
+      }
+      console.log('got selectedSong');
+      foundRoom.selectedSong = song;
+      playSong(song, foundRoom.name);
+      startRound(foundRoom);
+      analyzeSong(song.id, foundRoom);
+    }
+  });
 
-    socket.on('guess', function(uri) {
-        console.log('got guess from ' + nickname);
-        if (selectedSong.uri == uri) {
-            var current = new Date();
-            var diff = current.getTime() - roundStartTime.getTime();
-            var roundScore = Math.round((roundTime - diff)/1000);
+  socket.on('hostStartGame', (name) => {
+    console.log('got hostStartGame');
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      startChoose(foundRoom);
+    }
+  });
 
-            scoreUpdates[nickname] = roundScore;
-            totalPoints = totalPoints + roundScore;
+  socket.on('hostReset', (name) => {
+    console.log('got hostReset');
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      resetRoom(foundRoom);
+    }
+  });
 
-            console.log('correct');
-        }
-        guesses++;
-        sendStatus();
-        if (guesses >= playerList.count()-1) {
-            stopRound();
-        }
-    });
+  socket.on('reconnected', ({ nickname, name, score }) => {
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      if (foundRoom.allowReconnect) {
+        console.log(`reconnected ${nickname} with ${score}`);
+        addPlayer(foundRoom, nickname, score);
+      } else {
+        console.log(`Didnt allow reconnect from ${nickname}`);
+      }
+    }
+  });
 
-    socket.on('selectedSong', function(songObject) {
-        if (songArray.length ==  1 && songArray[0] == '5QjJgPU8AJeickx34f7on6'){
-            songArray = [];
-        }
-        if (songArray.length > 3){
-            songArray.splice(0,1);
-        }
-        console.log('got selectedSong');
-        selectedSong = songObject;
-        startRound();
-        playSong(songObject.uri);
-        sendStatus();
-        analyzeSong(songObject.id);
-    });
+  socket.on('disconnect', () => {
+    console.log('disc');
+    const foundRoom = rooms.find(r => r.name === socket.name);
+    if (foundRoom) {
+      if (socket.host) {
+        resetRoom(foundRoom);
+      }
+      const { leader, players } = foundRoom;
+      foundRoom.allowReconnect = true;
+      if (leader === socket.nickname) {
+        pickLeader(foundRoom);
+      }
+      foundRoom.players = players.filter(player => player !== socket.nickname);
 
-    socket.on('hostStartGame', function() {
-        console.log('got hostStartGame');
-        startChoose();
-    });
+      if (players.length < 2) {
+        resetRoom(foundRoom);
+      }
 
-    socket.on('hostReset', function() {
-        console.log('got hostReset');
-        hostReset();
-    });
-
-    socket.on('reconnected', (data) => {
-        nickname = data.nick;
-        var score = 0;
-        if (allowReconnect) {
-            if (data.score) {
-                score = data.score;
-            }
-            console.log('reconnected ' + data.nick + ' with ' + data.score);
-            addPlayer(data.nick, score);
-        } else {
-            console.log('Didnt allow reconnect from ' + data.nick );
-        }
-    });
-
-    socket.on('disconnect', function(){
-
-        allowReconnect = true;
-
-        if (leader == nickname) {
-            pickLeader();
-        }
-
-        if (playerList.find(nickname)) {
-            playerList.remove(nickname);
-        }
-        
-        if (playerList.count() < 2) {
-            hostReset();
-        }
-
-        delete scores[nickname];
-        delete scoreUpdates[nickname];
-        sendStatus();
-        console.log(nickname + ' disconnected');
-    });
+      delete foundRoom.scores[socket.nickname];
+      delete foundRoom.scoreUpdates[socket.nickname];
+      sendStatus(foundRoom);
+      console.log(`${socket.nickname} disconnected`);
+    }
+  });
 });

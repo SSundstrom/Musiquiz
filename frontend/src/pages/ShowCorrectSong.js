@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import Scores from '../components/Scores'
-import Track from '../components/Track'
+import PropTypes from 'prop-types';
+import Scores from '../components/Scores';
+import Track from '../components/Track';
 
-class ShowCorrectSong extends Component {
-  render() {
-    const track = this.props.correctSong
-    return (
-      <div>
-        <h2>Correct song was</h2>
-        <div>
-          <Track track={track}/> 
-          <Scores score={this.props.score} nickname={this.props.nickname} scoreUpdates={this.props.scoreUpdates}/>
-        </div>
-      </div>
-    );
-  }
-}
+const ShowCorrectSong = ({ correctSong, scores, scoreUpdates, nickname }) => (
+  <div>
+    <h2>Correct song was</h2>
+    <div>
+      <Track track={correctSong} />
+      <Scores scores={scores} nickname={nickname} scoreUpdates={scoreUpdates} />
+    </div>
+  </div>
+);
 
+ShowCorrectSong.propTypes = {
+  correctSong: PropTypes.object.isRequired,
+  scores: PropTypes.object.isRequired,
+  scoreUpdates: PropTypes.object.isRequired,
+  nickname: PropTypes.string.isRequired,
+};
 export default ShowCorrectSong;
