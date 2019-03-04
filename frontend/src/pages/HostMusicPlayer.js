@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Z_FULL_FLUSH } from 'zlib';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
 import SpotifyPlayer from '../playback';
@@ -13,6 +13,7 @@ class HostMusicPlayer extends Component {
       selectedDevice: SpotifyPlayer.device_id,
       time: 30,
       penalty: 0,
+      settings: false,
     };
   }
 
@@ -66,7 +67,7 @@ class HostMusicPlayer extends Component {
   }
 
   render() {
-    const { penalty, time, devices } = this.state;
+    const { settings, penalty, time, devices } = this.state;
     const {
       correctSong,
       onSaveSettings,
@@ -90,53 +91,81 @@ class HostMusicPlayer extends Component {
               <Track track={correctSong} />
             </div>
           )}
-
           <div>
-            <Scores isHost players={players} onKickPlayer={onKickPlayer} />
+            <Scores isHost kick={settings} players={players} onKickPlayer={onKickPlayer} />
           </div>
         </div>
         <div className="settings">
-          <h2>Settings</h2>
-          <form
-            className="settings-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSaveSettings({ time, penalty });
-              return false;
-            }}
-          >
-            <div>
-              <label className="setting" htmlFor="time">
-                Round time:
-                <input
-                  id="time"
-                  name="time"
-                  className="timer-input"
-                  type="number"
-                  onChange={this.handleChange.bind(this)}
-                  value={time}
-                  step="1"
-                  min="1"
-                  max="180"
-                />
-              </label>
-              <label className="setting" htmlFor="penalty">
-                Bad song penalty:
-                <input
-                  id="penalty"
-                  name="penalty"
-                  className="timer-input"
-                  type="number"
-                  onChange={this.handleChange.bind(this)}
-                  value={penalty}
-                  step="1"
-                  min="0"
-                  max="180"
-                />
-              </label>
+          {settings ? (
+            <React.Fragment>
+              <h2 className="settings-header">
+                Settings
+                <button
+                  onClick={() => this.setState({
+                    settings: !settings,
+                  })
+                  }
+                  className="icon"
+                  type="button"
+                >
+                  <FontAwesomeIcon icon="times" />
+                </button>
+              </h2>
+              <form
+                className="settings-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onSaveSettings({ time, penalty });
+                  return false;
+                }}
+              >
+                <div>
+                  <label className="setting" htmlFor="time">
+                    Round time:
+                    <input
+                      id="time"
+                      name="time"
+                      className="timer-input"
+                      type="number"
+                      onChange={this.handleChange.bind(this)}
+                      value={time}
+                      step="1"
+                      min="1"
+                      max="180"
+                    />
+                  </label>
+                  <label className="setting" htmlFor="penalty">
+                    Bad song penalty:
+                    <input
+                      id="penalty"
+                      name="penalty"
+                      className="timer-input"
+                      type="number"
+                      onChange={this.handleChange.bind(this)}
+                      value={penalty}
+                      step="1"
+                      min="0"
+                      max="180"
+                    />
+                  </label>
+                </div>
+                <input className="button" type="submit" value="Save settings" />
+              </form>
+            </React.Fragment>
+          ) : (
+            <div className="settings">
+              <button
+                onClick={() => this.setState({
+                  settings: !settings,
+                })
+                }
+                type="button"
+                className="icon"
+              >
+                <FontAwesomeIcon icon="cog" />
+              </button>
             </div>
-            <input className="button" type="submit" value="Save settings" />
-          </form>
+          )}
         </div>
       </React.Fragment>
     );
