@@ -34,6 +34,7 @@ class Game extends Component {
       leader,
       players,
       onSaveSettings,
+      onKickPlayer,
       guessTimer,
       name,
       isLeader,
@@ -49,6 +50,7 @@ class Game extends Component {
           correctSong={correctSong}
           name={name}
           onSaveSettings={onSaveSettings}
+          onKickPlayer={onKickPlayer}
         />
       );
     }
@@ -118,6 +120,7 @@ Game.propTypes = {
   onGuess: PropTypes.func.isRequired,
   onSaveSettings: PropTypes.func.isRequired,
   onSelectSong: PropTypes.func.isRequired,
+  onKickPlayer: PropTypes.func.isRequired,
   onJoinAsHost: PropTypes.func.isRequired,
   onJoinAsPlayer: PropTypes.func.isRequired,
   guessed: PropTypes.bool.isRequired,
