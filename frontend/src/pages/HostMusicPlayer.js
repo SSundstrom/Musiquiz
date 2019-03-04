@@ -67,7 +67,14 @@ class HostMusicPlayer extends Component {
 
   render() {
     const { penalty, time, devices } = this.state;
-    const { correctSong, onSaveSettings, correctSongTimer, players, name } = this.props;
+    const {
+      correctSong,
+      onSaveSettings,
+      onKickPlayer,
+      correctSongTimer,
+      players,
+      name,
+    } = this.props;
     return (
       <React.Fragment>
         <div className="game">
@@ -85,7 +92,7 @@ class HostMusicPlayer extends Component {
           )}
 
           <div>
-            <Scores players={players} />
+            <Scores isHost players={players} onKickPlayer={onKickPlayer} />
           </div>
         </div>
         <div className="settings">
@@ -138,6 +145,7 @@ class HostMusicPlayer extends Component {
 HostMusicPlayer.propTypes = {
   correctSong: PropTypes.object,
   onSaveSettings: PropTypes.func.isRequired,
+  onKickPlayer: PropTypes.func.isRequired,
   correctSongTimer: PropTypes.any,
   players: PropTypes.array.isRequired,
   name: PropTypes.number.isRequired,

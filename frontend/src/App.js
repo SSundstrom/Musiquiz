@@ -52,6 +52,22 @@ class App extends Component {
         nickname,
       });
     });
+    on('kick', (data) => {
+      const { nickname } = this.state;
+      if (nickname === data) {
+        this.setState({
+          nickname: null,
+          loading: false,
+          isHost: false,
+          hasHost: false,
+          started: false,
+          guessTimer: 0,
+          isLeader: false,
+          guessed: false,
+          playing: false,
+        });
+      }
+    });
     on('status', (data) => {
       console.log(data);
       const state = {
@@ -150,6 +166,11 @@ class App extends Component {
     );
   }
 
+  kickPlayer(player) {
+    const { name } = this.state;
+    emit('kick', { name, player });
+  }
+
   guess(song) {
     const { guessed, nickname, name } = this.state;
     if (!guessed) {
@@ -214,6 +235,7 @@ class App extends Component {
           songToPlay={songToPlay}
           guessed={guessed}
           playing={playing}
+          onKickPlayer={player => this.kickPlayer(player)}
           onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
           onJoinAsHost={() => this.joinAsHost()}
           onGuess={song => this.guess(song)}
