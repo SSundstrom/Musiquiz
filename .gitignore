@@ -66,6 +66,7 @@ bower_components
 # Dependency directories
 node_modules/
 jspm_packages/
+build
 
 # Typescript v1 declaration files
 typings/
