@@ -114,7 +114,7 @@ class HostMusicPlayer extends Component {
                 />
               </label>
               <label className="setting" htmlFor="penalty">
-                Unguessed song penalty:
+                Bad song penalty:
                 <input
                   id="penalty"
                   name="penalty"
