@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 const Players = ({ players, nickname }) => (
   <div className="players">
-    {players.map(name => (
-      <div key={name}>
-        {name}
-        <small>{name === nickname && ' (you)'}</small>
+    {players.map(player => (
+      <div key={player.nickname}>
+        {player.nickname}
+        <small>{player.nickname === nickname && ' (you)'}</small>
       </div>
     ))}
   </div>

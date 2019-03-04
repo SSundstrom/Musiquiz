@@ -21,13 +21,11 @@ class App extends Component {
   componentDidMount() {
     console.log(process.env);
     on('connect', (data) => {
-      const { nickname, scores } = this.state;
+      const { nickname } = this.state;
       if (this) {
         if (nickname) {
-          console.log(`reconnected ${nickname}${scores[nickname]}`);
           emit('reconnected', {
             nickname,
-            score: scores[nickname],
           });
         } else {
           console.log('Connected');
@@ -38,10 +36,9 @@ class App extends Component {
     });
 
     on('disconnect', () => {
-      const { nickname, scores, scoreUpdates } = this.state;
-      if (nickname in scoreUpdates) {
-        scores[nickname] += scoreUpdates[nickname];
-      }
+      const { nickname, players } = this.state;
+      const player = players.find(p => players.nickname === nickname);
+      player.score += player.scoreUpdate;
     });
     on('roomNotFound', (data) => {
       alert('No such room');
@@ -79,14 +76,18 @@ class App extends Component {
 
       this.setState(state);
     });
-
+    on('clearLeader', () => {
+      this.setState({
+        leader: null,
+      });
+    });
     on('leader', (data) => {
       const { nickname } = this.state;
       this.setState({
         leader: data,
         selectedSong: null,
         correctSong: false, // <-- chnage to view from correct song to showing who is up next.
-        isLeader: data == nickname,
+        isLeader: data.nickname === nickname,
       });
     });
 
@@ -139,17 +140,12 @@ class App extends Component {
     emit('hostStartGame', name);
   }
 
-  resetGame() {
-    const { name } = this.state;
-    emit('hostResetGame', name);
-  }
-
   // eslint-disable-next-line class-methods-use-this
-  joinAsPlayer(nick, name) {
-    if (!nick.length) {
+  joinAsPlayer(nickname, name) {
+    if (!nickname.length) {
       return;
     }
-    emit('join', { nick, name });
+    emit('join', { nickname, name });
   }
 
   joinAsHost() {
@@ -198,9 +194,7 @@ class App extends Component {
       players,
       nickname,
       started,
-      scores,
       leader,
-      scoreUpdates,
       guessTimer,
       correctSong,
       songToPlay,
@@ -216,8 +210,6 @@ class App extends Component {
         <Game
           name={name}
           players={players}
-          scores={scores}
-          scoreUpdates={scoreUpdates}
           isHost={isHost}
           hasHost={hasHost}
           nickname={nickname}

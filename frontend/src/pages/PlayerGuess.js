@@ -37,7 +37,7 @@ class PlayerGuess extends Component {
   }
 
   render() {
-    const { guessTimer, guessed, scores, scoreUpdates, nickname, onGuess } = this.props;
+    const { guessTimer, guessed, players, nickname, onGuess } = this.props;
     const { value, results } = this.state;
     return (
       <div>
@@ -45,7 +45,7 @@ class PlayerGuess extends Component {
         {guessed && (
           <div>
             <h2>Waiting for other players</h2>
-            <Scores scores={scores} nickname={nickname} scoreUpdates={scoreUpdates} />
+            <Scores players={players} nickname={nickname} />
           </div>
         )}
 
@@ -72,8 +72,7 @@ class PlayerGuess extends Component {
 PlayerGuess.propTypes = {
   guessTimer: PropTypes.number.isRequired,
   guessed: PropTypes.bool.isRequired,
-  scores: PropTypes.object.isRequired,
-  scoreUpdates: PropTypes.object.isRequired,
+  players: PropTypes.array.isRequired,
   nickname: PropTypes.string.isRequired,
   onGuess: PropTypes.func.isRequired,
 };

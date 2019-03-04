@@ -4,7 +4,7 @@ require('dotenv').load();
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: '',
+  redirectUri: ''
 });
 
 const express = require('express');
@@ -18,16 +18,16 @@ const timeouts = {};
 
 function getToken() {
   spotifyApi.clientCredentialsGrant().then(
-    (data) => {
+    data => {
       console.log(`The access token expires in ${data.body.expires_in}`);
       console.log(`The access token is ${data.body.access_token}`);
 
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body.access_token);
     },
-    (err) => {
+    err => {
       console.log('Something went wrong when retrieving an access token', err);
-    },
+    }
   );
 }
 
@@ -44,12 +44,12 @@ app.use((req, res, next) => {
 
 app.get('/search/:name', (req, res) => {
   spotifyApi.searchTracks(req.params.name, { market: 'SE' }).then(
-    (data) => {
+    data => {
       res.send(data);
     },
-    (err) => {
+    err => {
       console.error(err);
-    },
+    }
   );
 });
 let averageDanceability = 0.5;
@@ -85,12 +85,12 @@ app.get('/recommendations/:name', (req, res) => {
       .getRecommendations({
         /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
        min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, */
-        seed_tracks: [songArray],
+        seed_tracks: [songArray]
       })
-      .then((rec) => {
+      .then(rec => {
         res.send(rec);
       })
-      .catch((e) => {
+      .catch(e => {
         console.log(e);
       });
   }
@@ -112,22 +112,21 @@ function resetRoom(room) {
   room.players = [];
   room.leader = undefined;
   room.guesses = 0;
-  room.scores = {};
-  room.scoreUpdates = {};
   room.selectedSong = undefined;
   room.gamestate = 'pregame';
   room.totalPoints = 0;
-  room.allowReconnect = false;
   room.energyArray = [];
   room.danceabilityArray = [];
   room.songArray = [];
   sendStatus(room);
 }
 function applyUpdates(room) {
-  Object.entries(room.scoreUpdates).forEach(([nick, score]) => {
-    room.scores[nick] += score;
+  console.log('before', room.players);
+  room.players.forEach(player => {
+    player.score += player.scoreUpdate;
+    player.scoreUpdate = 0;
   });
-  room.scoreUpdates = {};
+  console.log('adfter', room.players);
   sendStatus(room);
 }
 
@@ -143,15 +142,15 @@ function sendLeader(name, leader) {
 }
 
 function clearLeader(name) {
-  io.to(name).emit('leader', null);
+  io.to(name).emit('clearLeader');
   console.log('clear leader');
 }
 
 function pickLeader(room) {
-  const { players } = room;
-  const leader = players.shift();
+  console.log('pickleader', room);
+  const leader = room.players.shift();
   room.leader = leader;
-  players.push(leader);
+  room.players.push(leader);
   sendLeader(room.name, leader);
 }
 
@@ -166,13 +165,13 @@ function startChoose(room) {
 }
 
 function stopRound(room) {
-  console.log('stopRound');
-  const { leader, scoreUpdates, players, displayCorrectTime, selectedSong, totalPoints } = room;
+  console.log('stopRound', room);
+  const { leader, players, displayCorrectTime, selectedSong, totalPoints } = room;
   if (room.gamestate === 'midgame') {
     clearTimeout(timeouts[room.name]);
     const leaderScore = Math.round(totalPoints / (players.length - 1));
     if (leaderScore > 0) {
-      scoreUpdates[leader] = leaderScore;
+      leader.scoreUpdate = leaderScore;
     }
     room.totalPoints = 0;
     room.guesses = 0;
@@ -189,8 +188,7 @@ function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
     console.log('startRound', room.roundTime);
-    timeouts[room.name] = setTimeout(stopRound, room.roundTime, room);
-
+    timeouts[room.name] = setTimeout(stopRound, room.roundTime);
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', room);
   }
@@ -198,25 +196,17 @@ function startRound(room) {
 
 function analyzeSong(id, room) {
   spotifyApi.getAudioFeaturesForTrack(id).then(
-    (data) => {
+    data => {
       room.danceabilityArray.push(data.body.danceability);
       room.energyArray.push(data.body.energy);
       room.songArray.push(id);
     },
-    (err) => {
+    err => {
       console.error(err);
-    },
+    }
   );
 }
 
-function addPlayer(room, nick, score) {
-  room.players.push(nick);
-  console.log(nick);
-  room.scores[nick] = score;
-  if (room.leader) {
-    sendLeader(room);
-  }
-  sendStatus(room);
 function compareSong(s1, s2) {
   const re = /{remix|remaster| -.*|}/gi;
   const clean1 = s1
@@ -239,26 +229,30 @@ function compareArtist(a1, a2) {
 
 // -------------- IO - Events --------------
 
-io.on('connection', (socket) => {
-  socket.on('join', (data) => {
+io.on('connection', socket => {
+  socket.on('join', data => {
     console.log('join');
-    const { nick, name } = data;
+    const { nickname, name } = data;
     const foundRoom = rooms.find(r => r.name === name);
+    const player = foundRoom ? foundRoom.players.find(p => p.nickname === nickname) : null;
     if (!foundRoom) {
       socket.emit('roomNotFound');
-    } else if (foundRoom.players.includes(nick)) {
+    } else if (player && player.active) {
       socket.emit('playerAlreadyExists');
-    } else {
-      foundRoom.players.push(nick);
-      foundRoom.scores[nick] = 0;
-      socket.nickname = nick;
+    } else if (player && !player.active) {
+      player.active = true;
+      socket.nickname = nickname;
       socket.name = name;
       socket.join(name);
-      if (foundRoom.leader) {
-        sendLeader(foundRoom);
-      }
       sendStatus(foundRoom);
-      socket.emit('joined', nick);
+      socket.emit('joined', nickname);
+    } else {
+      foundRoom.players.push({ nickname, active: true, score: 0, scoreUpdate: 0 });
+      socket.nickname = nickname;
+      socket.name = name;
+      socket.join(name);
+      sendStatus(foundRoom);
+      socket.emit('joined', nickname);
     }
   });
 
@@ -279,14 +273,11 @@ io.on('connection', (socket) => {
       displayCorrectTime,
       players: [],
       guesses: 0,
-      scores: {},
-      scoreUpdates: {},
       gamestate: 'lobby',
       totalPoints: 0,
-      allowReconnect: false,
       energyArray: [],
       danceabilityArray: [],
-      songArray: [],
+      songArray: []
     };
     console.log('hostJoin', socket.name);
     rooms.push(room);
@@ -297,12 +288,13 @@ io.on('connection', (socket) => {
   socket.on('guess', data => {
     const { song: guessedSong, name, nickname } = data;
     const foundRoom = rooms.find(r => r.name === name);
-    const { selectedSong, scoreUpdates, roundStartTime, roundTime, players } = foundRoom;
+    const { selectedSong, roundStartTime, roundTime, players } = foundRoom;
     if (guessedSong.uri === selectedSong.uri || (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))) {
       const current = new Date();
       const diff = current.getTime() - roundStartTime.getTime();
       const roundScore = Math.round((roundTime - diff) / 1000);
-      scoreUpdates[nickname] = roundScore;
+      const player = players.find(player => player.nickname === nickname);
+      player.scoreUpdate = roundScore;
       foundRoom.totalPoints += roundScore;
       console.log('correct');
     } else {
@@ -317,7 +309,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('selectedSong', (data) => {
+  socket.on('selectedSong', data => {
     const { song, name } = data;
     const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
@@ -335,7 +327,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('hostStartGame', (name) => {
+  socket.on('hostStartGame', name => {
     console.log('got hostStartGame');
     const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
@@ -343,23 +335,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('hostReset', (name) => {
-    console.log('got hostReset');
+  socket.on('reconnected', ({ nickname, name }) => {
     const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
-      resetRoom(foundRoom);
-    }
-  });
-
-  socket.on('reconnected', ({ nickname, name, score }) => {
-    const foundRoom = rooms.find(r => r.name === name);
-    if (foundRoom) {
-      if (foundRoom.allowReconnect) {
-        console.log(`reconnected ${nickname} with ${score}`);
-        addPlayer(foundRoom, nickname, score);
-      } else {
-        console.log(`Didnt allow reconnect from ${nickname}`);
-      }
+      // TODO: handle reconnect
     }
   });
 
@@ -371,18 +350,14 @@ io.on('connection', (socket) => {
         resetRoom(foundRoom);
       }
       const { leader, players } = foundRoom;
-      foundRoom.allowReconnect = true;
-      if (leader === socket.nickname) {
+      if (leader && leader.nickname === socket.nickname) {
         pickLeader(foundRoom);
       }
-      foundRoom.players = players.filter(player => player !== socket.nickname);
-
-      if (players.length < 2) {
-        resetRoom(foundRoom);
+      const player = players.find(player => player.nickname === socket.nickname);
+      if (player) {
+        player.active = false;
       }
-
-      delete foundRoom.scores[socket.nickname];
-      delete foundRoom.scoreUpdates[socket.nickname];
+      console.log(player, socket.nickname);
       sendStatus(foundRoom);
       console.log(`${socket.nickname} disconnected`);
     }

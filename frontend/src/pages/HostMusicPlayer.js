@@ -60,7 +60,7 @@ class HostMusicPlayer extends Component {
 
   render() {
     const { time, devices } = this.state;
-    const { correctSong, onChangeTimer, correctSongTimer, scores, scoreUpdates, name } = this.props;
+    const { correctSong, onChangeTimer, correctSongTimer, players, name } = this.props;
     return (
       <div>
         {devices.length > 0 && this.renderDevices()}
@@ -99,7 +99,7 @@ class HostMusicPlayer extends Component {
         )}
 
         <div>
-          <Scores scores={scores} scoreUpdates={scoreUpdates} />
+          <Scores players={players} />
         </div>
       </div>
     );
@@ -109,15 +109,13 @@ HostMusicPlayer.propTypes = {
   correctSong: PropTypes.object,
   onChangeTimer: PropTypes.any.isRequired,
   correctSongTimer: PropTypes.any,
-  scores: PropTypes.object.isRequired,
+  players: PropTypes.array.isRequired,
   name: PropTypes.string.isRequired,
-  scoreUpdates: PropTypes.any,
 };
 
 HostMusicPlayer.defaultProps = {
   correctSong: null,
   correctSongTimer: '',
-  scoreUpdates: {},
 };
 
 export default HostMusicPlayer;

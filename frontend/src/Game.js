@@ -28,12 +28,11 @@ class Game extends Component {
   renderPlay() {
     const {
       isHost,
-      scores,
-      scoreUpdates,
       songToPlay,
       correctSong,
       nickname,
       leader,
+      players,
       onChangeTimer,
       guessTimer,
       name,
@@ -45,8 +44,7 @@ class Game extends Component {
     if (isHost) {
       return (
         <HostMusicPlayer
-          scores={scores}
-          scoreUpdates={scoreUpdates}
+          players={players}
           songToPlay={songToPlay}
           correctSong={correctSong}
           name={name}
@@ -59,19 +57,13 @@ class Game extends Component {
     if (guessTimer > 0) {
       if (isLeader) {
         return (
-          <LeaderWaitingForGuesses
-            scores={scores}
-            scoreUpdates={scoreUpdates}
-            guessTimer={guessTimer}
-            nickname={nickname}
-          />
+          <LeaderWaitingForGuesses players={players} guessTimer={guessTimer} nickname={nickname} />
         );
       }
 
       return (
         <PlayerGuess
-          scores={scores}
-          scoreUpdates={scoreUpdates}
+          players={players}
           onGuess={onGuess}
           guessTimer={guessTimer}
           guessed={guessed}
@@ -80,28 +72,20 @@ class Game extends Component {
       );
     }
 
-    if (isLeader) {
-      return <LeaderChooseSong name={name} onSelectSong={onSelectSong} />;
-    }
-
     // If guess timer is 0 and correct song is known, show score view
     if (correctSong) {
-      return (
-        <ShowCorrectSong
-          scores={scores}
-          scoreUpdates={scoreUpdates}
-          correctSong={correctSong}
-          nickname={nickname}
-        />
-      );
+      return <ShowCorrectSong players={players} correctSong={correctSong} nickname={nickname} />;
+    }
+
+    if (isLeader) {
+      return <LeaderChooseSong name={name} onSelectSong={onSelectSong} />;
     }
 
     return (
       <PlayerWaitingForLeader
         leader={leader}
         nickname={nickname}
-        scores={scores}
-        scoreUpdates={scoreUpdates}
+        players={players}
         correctSong={correctSong}
       />
     );
@@ -123,8 +107,6 @@ Game.propTypes = {
   name: PropTypes.string,
   leader: PropTypes.string,
   isHost: PropTypes.bool.isRequired,
-  scores: PropTypes.object,
-  scoreUpdates: PropTypes.object,
   songToPlay: PropTypes.string,
   players: PropTypes.array,
   correctSong: PropTypes.bool,
@@ -144,8 +126,6 @@ Game.defaultProps = {
   name: '',
   nickname: '',
   leader: '',
-  scores: {},
-  scoreUpdates: {},
   songToPlay: null,
   players: [],
   correctSong: false,
