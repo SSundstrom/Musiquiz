@@ -14,9 +14,20 @@ body {
 }
 
 .content {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
+  display: grid;
+  grid-template-areas: ". game settings";
+  grid-template-columns: 1fr minmax(min-content, 500px) 1fr;
+  margin: 1rem;
+  grid-gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 980px) {
+  .content {
+    grid-template-areas: "game""settings";
+    grid-template-areas: "game""settings";
+    grid-template-columns: minmax(min-content, 500px);
+  }
 }
 
 body,
@@ -232,4 +243,22 @@ input.timer-input {
   display: inline-block;
   width: auto;
   margin-left: 20px;
+}
+
+.hostcontainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.game {
+  grid-area: game;
+}
+
+.settings {
+  grid-area: settings;
+}
+
+.setting {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
 }

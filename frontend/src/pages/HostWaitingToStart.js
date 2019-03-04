@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Players from '../components/Players';
 
 const HostWaitingToStart = ({ name, players }) => (
-  <div>
+  <div className="game">
     <h2>Waiting for more players</h2>
     <h2>{`Room code: ${name}`}</h2>
     <Players players={players} />
@@ -11,11 +11,11 @@ const HostWaitingToStart = ({ name, players }) => (
 );
 
 HostWaitingToStart.propTypes = {
-  name: PropTypes.string,
+  name: PropTypes.number,
   players: PropTypes.array,
 };
 HostWaitingToStart.defaultProps = {
-  name: '',
   players: [],
+  name: '',
 };
 export default HostWaitingToStart;

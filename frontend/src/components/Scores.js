@@ -8,7 +8,7 @@ const Scores = ({ players, nickname }) => (
       .filter(player => player.active)
       .sort((p1, p2) => p2.score - p1.score)
       .map(player => (
-        <div key={player}>
+        <div key={player.nickname}>
           <div className="score-row">
             <div className="score-name">
               {player.nickname}
@@ -30,6 +30,9 @@ const Scores = ({ players, nickname }) => (
               </div>
               {player.scoreUpdate > 0 && (
                 <div className="score-addition">{`+${player.scoreUpdate}`}</div>
+              )}
+              {player.scoreUpdate < 0 && (
+                <div className="score-addition">{`${player.scoreUpdate}`}</div>
               )}
             </div>
           </div>

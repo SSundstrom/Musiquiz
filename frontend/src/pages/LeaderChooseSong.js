@@ -40,7 +40,7 @@ class LeaderChooseSong extends Component {
     const { value, results } = this.state;
     const { onSelectSong, name } = this.props;
     return (
-      <div>
+      <div className="game">
         <label>
           <h2>Dude, enter a song name</h2>
           <input type="text" onChange={e => this.onChange(e.currentTarget.value)} value={value} />

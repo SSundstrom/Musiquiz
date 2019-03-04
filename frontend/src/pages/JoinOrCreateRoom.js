@@ -28,7 +28,7 @@ class JoinOrCreateRoom extends Component {
     const { onJoinAsPlayer } = this.props;
     const { room, nickname } = this.state;
     return (
-      <div>
+      <div className="game">
         <label>Nickname</label>
         <input
           value={nickname}

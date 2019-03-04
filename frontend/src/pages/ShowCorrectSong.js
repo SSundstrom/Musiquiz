@@ -4,7 +4,7 @@ import Scores from '../components/Scores';
 import Track from '../components/Track';
 
 const ShowCorrectSong = ({ correctSong, players, nickname }) => (
-  <div>
+  <div className="game">
     <h2>Correct song was</h2>
     <div>
       <Track track={correctSong} />

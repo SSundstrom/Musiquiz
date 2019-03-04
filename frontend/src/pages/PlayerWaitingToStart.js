@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Players from '../components/Players';
 
 const PlayerWaitingToStart = ({ name, players, nickname }) => (
-  <div>
+  <div className="game">
     <h2>Waiting for more players</h2>
     <h2>{`Room code: ${name}`}</h2>
     <Players players={players} nickname={nickname} />

@@ -171,6 +171,8 @@ function stopRound(room) {
     const leaderScore = Math.round(totalPoints / (players.length - 1));
     if (leaderScore > 0) {
       leader.scoreUpdate = leaderScore;
+    } else {
+      leader.scoreUpdate = -1 * room.penalty;
     }
     room.totalPoints = 0;
     room.guesses = 0;
@@ -275,6 +277,7 @@ io.on('connection', socket => {
       displayCorrectTime,
       players: [],
       guesses: 0,
+      penalty: 0,
       gamestate: 'lobby',
       totalPoints: 0,
       energyArray: [],
@@ -328,7 +331,14 @@ io.on('connection', socket => {
       analyzeSong(song.id, foundRoom);
     }
   });
-
+  socket.on('settings', ({ settings, name }) => {
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      foundRoom.roundTime = settings.time * 1000;
+      foundRoom.penalty = settings.penalty;
+      sendStatus(foundRoom);
+    }
+  });
   socket.on('reconnected', ({ nickname, name }) => {
     const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
