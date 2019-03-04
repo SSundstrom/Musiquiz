@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
 
 const LeaderWaitingForGuesses = ({ players, nickname, guessTimer }) => (
-  <div>
+  <div className="game">
     <h1>{guessTimer}</h1>
     <h2>Waiting for guesses</h2>
     <Scores players={players} nickname={nickname} />

@@ -33,7 +33,7 @@ class Game extends Component {
       nickname,
       leader,
       players,
-      onChangeTimer,
+      onSaveSettings,
       guessTimer,
       name,
       isLeader,
@@ -48,7 +48,7 @@ class Game extends Component {
           songToPlay={songToPlay}
           correctSong={correctSong}
           name={name}
-          onChangeTimer={onChangeTimer}
+          onSaveSettings={onSaveSettings}
         />
       );
     }
@@ -94,6 +94,7 @@ class Game extends Component {
   render() {
     const { started, nickname, isHost } = this.props;
     // if the game has not yet started and we have not become host or entered nickname
+    // return <HostMusicPlayer players={[]} name={1234} />;
     if (!nickname && !isHost) {
       return this.renderJoin();
     }
@@ -104,18 +105,18 @@ class Game extends Component {
   }
 }
 Game.propTypes = {
-  name: PropTypes.string,
-  leader: PropTypes.string,
+  name: PropTypes.number,
+  leader: PropTypes.object,
   isHost: PropTypes.bool.isRequired,
   songToPlay: PropTypes.string,
   players: PropTypes.array,
-  correctSong: PropTypes.bool,
+  correctSong: PropTypes.object,
   started: PropTypes.bool.isRequired,
   isLeader: PropTypes.bool.isRequired,
   nickname: PropTypes.string,
   guessTimer: PropTypes.number.isRequired,
   onGuess: PropTypes.func.isRequired,
-  onChangeTimer: PropTypes.func.isRequired,
+  onSaveSettings: PropTypes.func.isRequired,
   onSelectSong: PropTypes.func.isRequired,
   onJoinAsHost: PropTypes.func.isRequired,
   onJoinAsPlayer: PropTypes.func.isRequired,
@@ -123,11 +124,11 @@ Game.propTypes = {
 };
 
 Game.defaultProps = {
-  name: '',
   nickname: '',
-  leader: '',
+  name: '',
+  leader: {},
   songToPlay: null,
   players: [],
-  correctSong: false,
+  correctSong: null,
 };
 export default Game;

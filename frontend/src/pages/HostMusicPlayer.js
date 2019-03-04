@@ -12,6 +12,7 @@ class HostMusicPlayer extends Component {
       devices: [],
       selectedDevice: SpotifyPlayer.device_id,
       time: 30,
+      penalty: 0,
     };
   }
 
@@ -45,6 +46,12 @@ class HostMusicPlayer extends Component {
     });
   }
 
+  handleChange(event) {
+    const field = event.target.name;
+    const value = event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value;
+    this.setState({ [field]: value });
+  }
+
   renderDevices() {
     const { selectedDevice, devices } = this.state;
     return (
@@ -59,58 +66,81 @@ class HostMusicPlayer extends Component {
   }
 
   render() {
-    const { time, devices } = this.state;
-    const { correctSong, onChangeTimer, correctSongTimer, players, name } = this.props;
+    const { penalty, time, devices } = this.state;
+    const { correctSong, onSaveSettings, correctSongTimer, players, name } = this.props;
     return (
-      <div>
-        {devices.length > 0 && this.renderDevices()}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onChangeTimer(time);
-            return false;
-          }}
-        >
+      <React.Fragment>
+        <div className="game">
+          {devices.length > 0 && this.renderDevices()}
           <h2>{`Room code: ${name}`}</h2>
-          <label>
-            Time
-            <input
-              className="timer-input"
-              type="number"
-              onChange={e => this.setState({ time: e.currentTarget.value })}
-              value={time}
-              step="1"
-              min="1"
-              max="180"
-            />
-            <input className="button, timer-button" type="submit" value="Change" />
-          </label>
-        </form>
 
-        <h1>{correctSongTimer}</h1>
+          <h1>{correctSongTimer}</h1>
 
-        {correctSong && (
+          {correctSong && (
+            <div>
+              The correct song was...
+              {' '}
+              <Track track={correctSong} />
+            </div>
+          )}
+
           <div>
-            The correct song was...
-            {' '}
-            <Track track={correctSong} />
+            <Scores players={players} />
           </div>
-        )}
-
-        <div>
-          <Scores players={players} />
         </div>
-      </div>
+        <div className="settings">
+          <h2>Settings</h2>
+          <form
+            className="settings-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSaveSettings({ time, penalty });
+              return false;
+            }}
+          >
+            <div>
+              <label className="setting" htmlFor="time">
+                Round time:
+                <input
+                  id="time"
+                  name="time"
+                  className="timer-input"
+                  type="number"
+                  onChange={this.handleChange.bind(this)}
+                  value={time}
+                  step="1"
+                  min="1"
+                  max="180"
+                />
+              </label>
+              <label className="setting" htmlFor="penalty">
+                Unguessed song penalty:
+                <input
+                  id="penalty"
+                  name="penalty"
+                  className="timer-input"
+                  type="number"
+                  onChange={this.handleChange.bind(this)}
+                  value={penalty}
+                  step="1"
+                  min="0"
+                  max="180"
+                />
+              </label>
+            </div>
+            <input className="button" type="submit" value="Save settings" />
+          </form>
+        </div>
+      </React.Fragment>
     );
   }
 }
 HostMusicPlayer.propTypes = {
   correctSong: PropTypes.object,
-  onChangeTimer: PropTypes.any.isRequired,
+  onSaveSettings: PropTypes.func.isRequired,
   correctSongTimer: PropTypes.any,
   players: PropTypes.array.isRequired,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.number.isRequired,
 };
 
 HostMusicPlayer.defaultProps = {

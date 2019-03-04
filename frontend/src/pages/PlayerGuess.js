@@ -40,7 +40,7 @@ class PlayerGuess extends Component {
     const { guessTimer, guessed, players, nickname, onGuess } = this.props;
     const { value, results } = this.state;
     return (
-      <div>
+      <div className="game">
         <h1>{guessTimer}</h1>
         {guessed && (
           <div>
