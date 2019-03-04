@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Game from './Game';
 import { on, emit } from './api';
 import Layout from './components/Layout';
+
+library.add(faCog);
+library.add(faTimes);
 
 class App extends Component {
   constructor(props) {

@@ -197,16 +197,16 @@ select {
   justify-content: right;
 }
 
-.score-kick {
+.icon {
   background-color: transparent;
-  border: solid 3px white;
-  margin-right: 100px;
   color: #fff;
   font-size: 17px;
-  border-radius: 7px;
-  display: block;
-  margin: auto;
-  font-family: inherit;
+  border: none;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .score-addition {
