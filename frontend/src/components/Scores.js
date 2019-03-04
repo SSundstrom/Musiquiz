@@ -1,8 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import AnimatedNumber from 'react-animated-number';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const Scores = ({ isHost, players, onKickPlayer, nickname }) => (
+const Scores = ({ isHost, kick, players, onKickPlayer, nickname }) => (
   <div className="scores">
     {players
       .filter(player => player.active)
@@ -10,9 +11,9 @@ const Scores = ({ isHost, players, onKickPlayer, nickname }) => (
       .map(player => (
         <div key={player.nickname}>
           <div className="score-row">
-            {isHost && (
-              <button onClick={() => onKickPlayer(player)} type="button" className="score-kick">
-                X
+            {isHost && kick && (
+              <button onClick={() => onKickPlayer(player)} type="button" className="icon">
+                <FontAwesomeIcon icon="times" />
               </button>
             )}
             <div className="score-name">
@@ -47,6 +48,7 @@ const Scores = ({ isHost, players, onKickPlayer, nickname }) => (
 );
 Scores.propTypes = {
   isHost: PropTypes.bool,
+  kick: PropTypes.bool,
   onKickPlayer: PropTypes.func.isRequired,
   players: PropTypes.array.isRequired,
   nickname: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
@@ -54,5 +56,6 @@ Scores.propTypes = {
 Scores.defaultProps = {
   nickname: undefined,
   isHost: false,
+  kick: false,
 };
 export default Scores;
