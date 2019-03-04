@@ -141,16 +141,14 @@ function sendLeader(name, leader) {
   console.log('send leader', leader);
 }
 
-function clearLeader(name) {
-  io.to(name).emit('clearLeader');
-  console.log('clear leader');
-}
-
 function pickLeader(room) {
   console.log('pickleader', room);
-  const leader = room.players.shift();
+  const leader = room.players
+    .filter(player => player.active)
+    .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
+    .find(p => p);
+  leader.leader += 1;
   room.leader = leader;
-  room.players.push(leader);
   sendLeader(room.name, leader);
 }
 
@@ -159,6 +157,7 @@ function startChoose(room) {
   console.log('startChoose', room.name, gamestate);
   if (gamestate === 'lobby' || gamestate === 'finished') {
     room.gamestate = 'choose';
+    room.started = true;
     pickLeader(room);
     sendStatus(room);
   }
@@ -175,7 +174,6 @@ function stopRound(room) {
     }
     room.totalPoints = 0;
     room.guesses = 0;
-    clearLeader(room.name);
     room.gamestate = 'finished';
     sendStatus(room);
     io.to(room.name).emit('stopRound', { selectedSong });
@@ -188,7 +186,8 @@ function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
     console.log('startRound', room.roundTime);
-    timeouts[room.name] = setTimeout(stopRound, room.roundTime);
+    room.players.forEach(player => (player.rounds += 1));
+    timeouts[room.name] = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', room);
   }
@@ -247,12 +246,15 @@ io.on('connection', socket => {
       sendStatus(foundRoom);
       socket.emit('joined', nickname);
     } else {
-      foundRoom.players.push({ nickname, active: true, score: 0, scoreUpdate: 0 });
+      foundRoom.players.push({ nickname, active: true, score: 0, scoreUpdate: 0, rounds: 1, leader: 0 });
       socket.nickname = nickname;
       socket.name = name;
       socket.join(name);
       sendStatus(foundRoom);
       socket.emit('joined', nickname);
+    }
+    if (foundRoom && foundRoom.gamestate === 'lobby' && foundRoom.players.length > 1) {
+      startChoose(foundRoom);
     }
   });
 
@@ -304,7 +306,7 @@ io.on('connection', socket => {
     }
     foundRoom.guesses += 1;
     sendStatus(foundRoom);
-    if (foundRoom.guesses >= players.length - 1) {
+    if (foundRoom.guesses >= players.filter(player => player.active).length - 1) {
       stopRound(foundRoom);
     }
   });
@@ -324,14 +326,6 @@ io.on('connection', socket => {
       playSong(song, foundRoom.name);
       startRound(foundRoom);
       analyzeSong(song.id, foundRoom);
-    }
-  });
-
-  socket.on('hostStartGame', name => {
-    console.log('got hostStartGame');
-    const foundRoom = rooms.find(r => r.name === name);
-    if (foundRoom) {
-      startChoose(foundRoom);
     }
   });
 

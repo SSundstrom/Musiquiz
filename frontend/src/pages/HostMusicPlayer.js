@@ -80,7 +80,7 @@ class HostMusicPlayer extends Component {
               type="number"
               onChange={e => this.setState({ time: e.currentTarget.value })}
               value={time}
-              step="5"
+              step="1"
               min="1"
               max="180"
             />

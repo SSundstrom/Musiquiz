@@ -4,7 +4,7 @@ import Players from '../components/Players';
 
 const PlayerWaitingToStart = ({ name, players, nickname }) => (
   <div>
-    <h2>Waiting for host to start</h2>
+    <h2>Waiting for more players</h2>
     <h2>{`Room code: ${name}`}</h2>
     <Players players={players} nickname={nickname} />
   </div>

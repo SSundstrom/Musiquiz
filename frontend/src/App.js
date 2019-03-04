@@ -21,6 +21,7 @@ class App extends Component {
   componentDidMount() {
     console.log(process.env);
     on('connect', (data) => {
+      console.log(data);
       const { nickname } = this.state;
       if (this) {
         if (nickname) {
@@ -76,11 +77,7 @@ class App extends Component {
 
       this.setState(state);
     });
-    on('clearLeader', () => {
-      this.setState({
-        leader: null,
-      });
-    });
+
     on('leader', (data) => {
       const { nickname } = this.state;
       this.setState({
@@ -133,11 +130,6 @@ class App extends Component {
         playing: data,
       });
     });
-  }
-
-  startGame() {
-    const { name } = this.state;
-    emit('hostStartGame', name);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -221,7 +213,6 @@ class App extends Component {
           songToPlay={songToPlay}
           guessed={guessed}
           playing={playing}
-          onStartGame={() => this.startGame()}
           onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
           onJoinAsHost={() => this.joinAsHost()}
           onGuess={song => this.guess(song)}

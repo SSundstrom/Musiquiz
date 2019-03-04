@@ -5,7 +5,7 @@ import Track from '../components/Track';
 
 const PlayerWaitingForLeader = ({ correctSong, leader, nickname, players }) => (
   <div>
-    <h2>{`Waiting for ${leader.nickname} to choose a song`}</h2>
+    <h2>{`Waiting for ${leader} to choose a song`}</h2>
     <div>
       {correctSong && <Track track={correctSong} />}
       {players && <Scores nickname={nickname} players={players} />}

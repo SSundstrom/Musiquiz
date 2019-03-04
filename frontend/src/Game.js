@@ -12,9 +12,9 @@ import ShowCorrectSong from './pages/ShowCorrectSong';
 
 class Game extends Component {
   renderWait() {
-    const { isHost, name, players, onStartGame, nickname } = this.props;
+    const { isHost, name, players, nickname } = this.props;
     if (isHost) {
-      return <HostWaitingToStart name={name} players={players} onStartGame={onStartGame} />;
+      return <HostWaitingToStart name={name} players={players} />;
     }
 
     return <PlayerWaitingToStart name={name} players={players} nickname={nickname} />;
@@ -83,7 +83,7 @@ class Game extends Component {
 
     return (
       <PlayerWaitingForLeader
-        leader={leader}
+        leader={leader.nickname}
         nickname={nickname}
         players={players}
         correctSong={correctSong}
@@ -110,11 +110,11 @@ Game.propTypes = {
   songToPlay: PropTypes.string,
   players: PropTypes.array,
   correctSong: PropTypes.bool,
+  started: PropTypes.bool.isRequired,
   isLeader: PropTypes.bool.isRequired,
   nickname: PropTypes.string,
   guessTimer: PropTypes.number.isRequired,
   onGuess: PropTypes.func.isRequired,
-  onStartGame: PropTypes.func.isRequired,
   onChangeTimer: PropTypes.func.isRequired,
   onSelectSong: PropTypes.func.isRequired,
   onJoinAsHost: PropTypes.func.isRequired,
