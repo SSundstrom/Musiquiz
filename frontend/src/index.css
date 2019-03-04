@@ -185,13 +185,28 @@ select {
 }
 
 .score-name {
-  font-size: 17px
+  font-size: 17px;
+  justify-content: left;
+  padding: 0 20px;
+  flex-grow: 1;
 }
 
 .score-score {
   display: flex;
   min-width: 60px;
-  justify-content: right
+  justify-content: right;
+}
+
+.score-kick {
+  background-color: transparent;
+  border: solid 3px white;
+  margin-right: 100px;
+  color: #fff;
+  font-size: 17px;
+  border-radius: 7px;
+  display: block;
+  margin: auto;
+  font-family: inherit;
 }
 
 .score-addition {

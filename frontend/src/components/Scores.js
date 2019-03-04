@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import AnimatedNumber from 'react-animated-number';
 
-const Scores = ({ players, nickname }) => (
+const Scores = ({ isHost, players, onKickPlayer, nickname }) => (
   <div className="scores">
     {players
       .filter(player => player.active)
@@ -10,6 +10,11 @@ const Scores = ({ players, nickname }) => (
       .map(player => (
         <div key={player.nickname}>
           <div className="score-row">
+            {isHost && (
+              <button onClick={() => onKickPlayer(player)} type="button" className="score-kick">
+                X
+              </button>
+            )}
             <div className="score-name">
               {player.nickname}
               {player.nickname === nickname && <small> (you)</small>}
@@ -41,10 +46,13 @@ const Scores = ({ players, nickname }) => (
   </div>
 );
 Scores.propTypes = {
+  isHost: PropTypes.bool,
+  onKickPlayer: PropTypes.func.isRequired,
   players: PropTypes.array.isRequired,
   nickname: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 Scores.defaultProps = {
   nickname: undefined,
+  isHost: false,
 };
 export default Scores;

@@ -339,6 +339,16 @@ io.on('connection', socket => {
       sendStatus(foundRoom);
     }
   });
+  socket.on('kick', ({ player, name }) => {
+    const foundRoom = rooms.find(r => r.name === name);
+    console.log(player);
+    foundRoom.players = foundRoom.players.filter(p => p.nickname !== player.nickname);
+    io.to(name).emit('kick', player.nickname);
+    if (foundRoom.leader.nickname === player.nickname) {
+      pickLeader(foundRoom);
+    }
+    sendStatus(foundRoom);
+  });
   socket.on('reconnected', ({ nickname, name }) => {
     const foundRoom = rooms.find(r => r.name === name);
     if (foundRoom) {
