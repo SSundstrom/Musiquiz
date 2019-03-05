@@ -81,7 +81,7 @@ app.get('/recommendations/:name', (req, res) => {
     if (averageEnergy > 0.8) {
       averageEnergy = 0.8;
     }
-    console.log(songArray);
+
     spotifyApi
       .getRecommendations({
         /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
@@ -122,12 +122,11 @@ function resetRoom(room) {
   sendStatus(room);
 }
 function applyUpdates(room) {
-  console.log('before', room.players);
   room.players.forEach(player => {
     player.score += player.scoreUpdate;
     player.scoreUpdate = 0;
   });
-  console.log('adfter', room.players);
+
   sendStatus(room);
 }
 
@@ -142,7 +141,7 @@ function sendLeader(name, leader) {
 }
 
 function pickLeader(room) {
-  console.log('pickleader', room);
+  console.log('pickleader', room.name);
   const leader = room.players
     .filter(player => player.active)
     .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
@@ -154,7 +153,7 @@ function pickLeader(room) {
 
 function startChoose(room) {
   const { gamestate } = room;
-  console.log('startChoose', room.name, gamestate);
+  console.log('startChoose', room.name);
   if (gamestate === 'lobby' || gamestate === 'finished') {
     room.gamestate = 'choose';
     room.started = true;
@@ -164,7 +163,7 @@ function startChoose(room) {
 }
 
 function stopRound(room) {
-  console.log('stopRound', room);
+  console.log('stopRound', room.name);
   const { leader, players, displayCorrectTime, selectedSong, totalPoints } = room;
   if (room.gamestate === 'midgame') {
     clearTimeout(timeouts[room.name]);
@@ -344,7 +343,7 @@ io.on('connection', socket => {
   });
   socket.on('kick', ({ player, name }) => {
     const foundRoom = rooms.find(r => r.name === name);
-    console.log(player);
+
     foundRoom.players = foundRoom.players.filter(p => p.nickname !== player.nickname);
     io.to(name).emit('kick', player.nickname);
     if (foundRoom.leader.nickname === player.nickname) {

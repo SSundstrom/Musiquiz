@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import SpotifyPlayer, { auth } from '../playback';
 import Button from '../components/styles/Button';
 import GameStyles from '../components/styles/GameStyles';
+import { GameConsumer, GameContext } from '../game-context';
 
 class JoinOrCreateRoom extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nickname: undefined,
-      room: undefined,
+      nickname: '',
+      name: '',
     };
   }
 
   componentDidMount() {
-    const { onJoinAsHost } = this.props;
+    const { context } = this;
     if (SpotifyPlayer.access_token) {
-      onJoinAsHost();
+      context.onJoinAsHost();
     }
   }
 
@@ -27,34 +27,34 @@ class JoinOrCreateRoom extends Component {
   }
 
   render() {
-    const { onJoinAsPlayer } = this.props;
-    const { room, nickname } = this.state;
+    const { name, nickname } = this.state;
     return (
-      <GameStyles>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            onJoinAsPlayer(nickname, room);
-            return false;
-          }}
-        >
-          <label htmlFor="nickname">
-            Nickname
-            <input id="nickname" value={nickname} onChange={this.handleChange.bind(this)} type="text" name="nickname" />
-          </label>
-          <label htmlFor="room">
-            Room code
-            <input id="room" value={room} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="room" />
-          </label>
-          <Button type="submit" value="Join" />
-        </form>
-        <Button type="button" onClick={() => auth()} value="Start a new game" />
-      </GameStyles>
+      <GameConsumer>
+        {context => (
+          <GameStyles>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                context.onJoinAsPlayer(nickname, name);
+                return false;
+              }}
+            >
+              <label htmlFor="nickname">
+                Nickname
+                <input id="nickname" value={nickname} onChange={this.handleChange.bind(this)} type="text" name="nickname" />
+              </label>
+              <label htmlFor="name">
+                Room code
+                <input id="name" value={name} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="name" />
+              </label>
+              <Button type="submit" value="Join" />
+            </form>
+            <Button type="button" onClick={() => auth()} value="Start a new game" />
+          </GameStyles>
+        )}
+      </GameConsumer>
     );
   }
 }
-JoinOrCreateRoom.propTypes = {
-  onJoinAsPlayer: PropTypes.func.isRequired,
-  onJoinAsHost: PropTypes.func.isRequired,
-};
+JoinOrCreateRoom.contextType = GameContext;
 export default JoinOrCreateRoom;

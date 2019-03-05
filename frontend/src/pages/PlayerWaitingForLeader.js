@@ -1,22 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
 import GameStyles from '../components/styles/GameStyles';
+import { GameConsumer } from '../game-context';
 
-const PlayerWaitingForLeader = ({ correctSong, leader, nickname, players }) => (
-  <GameStyles>
-    <h2>{`Waiting for ${leader} to choose a song`}</h2>
-    <div>
-      {correctSong && <Track track={correctSong} />}
-      {players && <Scores nickname={nickname} players={players} />}
-    </div>
-  </GameStyles>
+const PlayerWaitingForLeader = () => (
+  <GameConsumer>
+    {context => (
+      <GameStyles>
+        <h2>{`Waiting for ${context.state.leader.nickname} to choose a song`}</h2>
+        <div>
+          {context.state.correctSong && <Track track={context.state.correctSong} />}
+          <Scores />
+        </div>
+      </GameStyles>
+    )}
+  </GameConsumer>
 );
-PlayerWaitingForLeader.propTypes = {
-  correctSong: PropTypes.bool.isRequired,
-  leader: PropTypes.string.isRequired,
-  nickname: PropTypes.string.isRequired,
-  players: PropTypes.array.isRequired,
-};
+
 export default PlayerWaitingForLeader;
