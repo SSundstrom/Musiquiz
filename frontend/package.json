@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {
     "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
@@ -32,9 +33,12 @@
     "eject": "react-scripts eject"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
+    "*.{js}": [
       "eslint --fix",
-      "prettier --single-quote --write",
+      "git add"
+    ],
+    "*.{css,json}": [
+      "prettier --write",
       "git add"
     ]
   },
