@@ -24,7 +24,7 @@ function on(event, callback) {
   });
 }
 
-function emit(event, data, callback) {
+function emit(event, data) {
   console.log('sending', event, data);
   socket.emit(event, data);
 }
