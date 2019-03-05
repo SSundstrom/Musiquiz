@@ -1,23 +1,16 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import { GameConsumer } from '../game-context';
 
-const Players = ({ players, nickname }) => (
-  <div>
-    {players.map(player => (
-      <div key={player.nickname}>
-        {player.nickname}
-        <small>{player.nickname === nickname && ' (you)'}</small>
-      </div>
-    ))}
-  </div>
+const Players = () => (
+  <GameConsumer>
+    {context =>
+      context.state.players.map(player => (
+        <div key={player.nickname}>
+          {player.nickname}
+          <small>{player.nickname === context.state.nickname && ' (you)'}</small>
+        </div>
+      ))
+    }
+  </GameConsumer>
 );
-Players.propTypes = {
-  players: PropTypes.array,
-  nickname: PropTypes.string,
-};
-
-Players.defaultProps = {
-  players: [],
-  nickname: '',
-};
 export default Players;

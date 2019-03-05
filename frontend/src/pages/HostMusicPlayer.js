@@ -8,6 +8,7 @@ import Button from '../components/styles/Button';
 import GameStyles from '../components/styles/GameStyles';
 import IconButton from '../components/styles/IconButton';
 import SettingsStyles from '../components/styles/SettingsStyles';
+import { GameConsumer } from '../game-context';
 
 class HostMusicPlayer extends Component {
   constructor(props) {
@@ -72,112 +73,112 @@ class HostMusicPlayer extends Component {
 
   render() {
     const { settings, penalty, time, devices } = this.state;
-    const { correctSong, onSaveSettings, onKickPlayer, correctSongTimer, players, name } = this.props;
+
     return (
-      <React.Fragment>
-        <GameStyles>
-          {devices.length > 0 && this.renderDevices()}
-          <h2>{`Room code: ${name}`}</h2>
+      <GameConsumer>
+        {context => {
+          const { correctSong, players, name } = context.state;
+          const { onSaveSettings, onKickPlayer, correctSongTimer } = context;
+          return (
+            <React.Fragment>
+              <GameStyles>
+                {devices.length > 0 && this.renderDevices()}
+                <h2>{`Room code: ${name}`}</h2>
 
-          <h1>{correctSongTimer}</h1>
+                <h1>{correctSongTimer}</h1>
 
-          {correctSong && (
-            <div>
-              <span>The correct song was...</span>
-              <Track track={correctSong} />
-            </div>
-          )}
-          <div>
-            <Scores isHost kick={settings} players={players} onKickPlayer={onKickPlayer} />
-          </div>
-        </GameStyles>
-        <SettingsStyles>
-          {settings ? (
-            <div className="settings">
-              <h2 className="settings-header">
-                Settings
-                <IconButton
-                  onClick={() =>
-                    this.setState({
-                      settings: !settings,
-                    })
-                  }
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="times" />
-                </IconButton>
-              </h2>
-              <form
-                className="settings-form"
-                onSubmit={e => {
-                  e.preventDefault();
-                  onSaveSettings({ time, penalty });
-                  return false;
-                }}
-              >
-                <label className="setting" htmlFor="time">
-                  Round time:
-                  <input
-                    id="time"
-                    name="time"
-                    className="timer-input"
-                    type="number"
-                    onChange={this.handleChange.bind(this)}
-                    value={time}
-                    step="1"
-                    min="1"
-                    max="180"
-                  />
-                </label>
-                <label className="setting" htmlFor="penalty">
-                  Bad song penalty:
-                  <input
-                    id="penalty"
-                    name="penalty"
-                    className="timer-input"
-                    type="number"
-                    onChange={this.handleChange.bind(this)}
-                    value={penalty}
-                    step="1"
-                    min="0"
-                    max="180"
-                  />
-                </label>
+                {correctSong && (
+                  <div>
+                    <span>The correct song was...</span>
+                    <Track track={correctSong} />
+                  </div>
+                )}
+                <div>
+                  <Scores isHost kick={settings} players={players} onKickPlayer={onKickPlayer} />
+                </div>
+              </GameStyles>
+              <SettingsStyles>
+                {settings ? (
+                  <div className="settings">
+                    <h2 className="settings-header">
+                      Settings
+                      <IconButton
+                        onClick={() =>
+                          this.setState({
+                            settings: !settings,
+                          })
+                        }
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon="times" />
+                      </IconButton>
+                    </h2>
+                    <form
+                      className="settings-form"
+                      onSubmit={e => {
+                        e.preventDefault();
+                        onSaveSettings({ time, penalty });
+                        return false;
+                      }}
+                    >
+                      <label className="setting" htmlFor="time">
+                        Round time:
+                        <input
+                          id="time"
+                          name="time"
+                          className="timer-input"
+                          type="number"
+                          onChange={this.handleChange.bind(this)}
+                          value={time}
+                          step="1"
+                          min="1"
+                          max="180"
+                        />
+                      </label>
+                      <label className="setting" htmlFor="penalty">
+                        Bad song penalty:
+                        <input
+                          id="penalty"
+                          name="penalty"
+                          className="timer-input"
+                          type="number"
+                          onChange={this.handleChange.bind(this)}
+                          value={penalty}
+                          step="1"
+                          min="0"
+                          max="180"
+                        />
+                      </label>
 
-                <Button type="submit" value="Save settings" />
-              </form>
-            </div>
-          ) : (
-            <IconButton
-              onClick={() =>
-                this.setState({
-                  settings: !settings,
-                })
-              }
-              type="button"
-            >
-              <FontAwesomeIcon icon="cog" />
-            </IconButton>
-          )}
-        </SettingsStyles>
-      </React.Fragment>
+                      <Button type="submit" value="Save settings" />
+                    </form>
+                  </div>
+                ) : (
+                  <IconButton
+                    onClick={() =>
+                      this.setState({
+                        settings: !settings,
+                      })
+                    }
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="cog" />
+                  </IconButton>
+                )}
+              </SettingsStyles>
+            </React.Fragment>
+          );
+        }}
+      </GameConsumer>
     );
   }
 }
 HostMusicPlayer.propTypes = {
-  correctSong: PropTypes.object,
   songToPlay: PropTypes.string,
-  onSaveSettings: PropTypes.func.isRequired,
-  onKickPlayer: PropTypes.func.isRequired,
-  correctSongTimer: PropTypes.any,
-  players: PropTypes.array.isRequired,
-  name: PropTypes.number.isRequired,
 };
 
 HostMusicPlayer.defaultProps = {
-  correctSong: null,
   songToPlay: null,
-  correctSongTimer: '',
 };
 
 export default HostMusicPlayer;
