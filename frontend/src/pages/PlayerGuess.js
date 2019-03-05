@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { search as trackSearch } from '../api';
-import Track from '../components/Track';
 import Scores from '../components/Scores';
 import Search from '../components/Search';
 
