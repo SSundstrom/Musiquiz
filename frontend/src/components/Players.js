@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 
 const Players = ({ players, nickname }) => (
-  <div className="players">
+  <div>
     {players.map(player => (
       <div key={player.nickname}>
         {player.nickname}

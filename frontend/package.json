@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "babel-plugin-emotion": "^10.0.7",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-emotion": "^10.0.7",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
@@ -14,11 +16,12 @@
     "react-scripts": "^2.1.5"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.7",
+    "@emotion/styled": "^10.0.7",
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "@emotion/core": "^10.0.7",
-    "@emotion/styled": "^10.0.7",
+    "emotion-theming": "^10.0.7",
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
     "react-animated-number": "^0.4.3",
