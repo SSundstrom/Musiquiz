@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import ContentStyles from './styles/ContentStyles';
+import { GameConsumer } from '../game-context';
 
 const Background = styled.div`
   position: relative;
@@ -19,14 +20,16 @@ const Background = styled.div`
   padding-top: 50px;
 `;
 
-const Layout = ({ isLeader, isHost, children }) => (
-  <Background isLeader={isLeader} isHost={isHost}>
-    <ContentStyles>{children}</ContentStyles>
-  </Background>
+const Layout = ({ children }) => (
+  <GameConsumer>
+    {context => (
+      <Background isLeader={context.state.isLeader} isHost={context.state.isHost}>
+        <ContentStyles>{children}</ContentStyles>
+      </Background>
+    )}
+  </GameConsumer>
 );
 Layout.propTypes = {
-  isLeader: PropTypes.bool.isRequired,
-  isHost: PropTypes.bool.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
 };
 Layout.defaultProps = {

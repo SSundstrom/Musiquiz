@@ -1,28 +1,25 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
 import Search from '../components/Search';
 import GameStyles from '../components/styles/GameStyles';
+import { GameConsumer } from '../game-context';
 
-const PlayerGuess = ({ guessTimer, guessed, players, nickname, onGuess }) => (
-  <GameStyles>
-    <h1>{guessTimer}</h1>
-    {!guessed ? (
-      <Search title="Guess the song name" onSelectSong={onGuess} />
-    ) : (
-      <div>
-        <h2>Waiting for other players</h2>
-        <Scores players={players} nickname={nickname} />
-      </div>
+const PlayerGuess = () => (
+  <GameConsumer>
+    {context => (
+      <GameStyles>
+        <h1>{context.state.guessTimer}</h1>
+        {!context.state.guessed ? (
+          <Search title="Guess the song name" onSelectSong={context.onGuess} />
+        ) : (
+          <div>
+            <h2>Waiting for other players</h2>
+            <Scores />
+          </div>
+        )}
+      </GameStyles>
     )}
-  </GameStyles>
+  </GameConsumer>
 );
-PlayerGuess.propTypes = {
-  guessTimer: PropTypes.number.isRequired,
-  guessed: PropTypes.bool.isRequired,
-  players: PropTypes.array.isRequired,
-  nickname: PropTypes.string.isRequired,
-  onGuess: PropTypes.func.isRequired,
-};
 
 export default PlayerGuess;
