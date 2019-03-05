@@ -11,20 +11,11 @@ const Track = ({ onClick, track }) => (
       <TrackStyles onClick={onClick}>
         {!track.album.images.length - 1 && <img alt="Album img" src={track.album.images[track.album.images.length - 1].url} />}
         <div className="trackinfo">
-          <div className="trackname"> 
-            {' '}
-            {track.name}
-            {' '}
-          </div>
+          <div className="trackname">{track.name}</div>
           <div className="trackartists">
-            {' '}
             {track.artists.map(artist => (
-              <span key={artist.name}>
-                {artist.name}
-                {' '}
-              </span>
+              <span key={artist.name}>{artist.name}</span>
             ))}
-            {' '}
           </div>
         </div>
       </TrackStyles>
