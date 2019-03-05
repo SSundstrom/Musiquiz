@@ -168,7 +168,7 @@ class HostMusicPlayer extends Component {
 }
 HostMusicPlayer.propTypes = {
   correctSong: PropTypes.object,
-  songToPlay: PropTypes.object,
+  songToPlay: PropTypes.string,
   onSaveSettings: PropTypes.func.isRequired,
   onKickPlayer: PropTypes.func.isRequired,
   correctSongTimer: PropTypes.any,
