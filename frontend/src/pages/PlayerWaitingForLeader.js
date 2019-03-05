@@ -2,15 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
+import GameStyles from '../components/styles/GameStyles';
 
 const PlayerWaitingForLeader = ({ correctSong, leader, nickname, players }) => (
-  <div className="game">
+  <GameStyles>
     <h2>{`Waiting for ${leader} to choose a song`}</h2>
     <div>
       {correctSong && <Track track={correctSong} />}
       {players && <Scores nickname={nickname} players={players} />}
     </div>
-  </div>
+  </GameStyles>
 );
 PlayerWaitingForLeader.propTypes = {
   correctSong: PropTypes.bool.isRequired,

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import SpotifyPlayer, { auth } from '../playback';
+import Button from '../components/styles/Button';
+import GameStyles from '../components/styles/GameStyles';
 
 class JoinOrCreateRoom extends Component {
   constructor(props) {
@@ -28,7 +30,7 @@ class JoinOrCreateRoom extends Component {
     const { onJoinAsPlayer } = this.props;
     const { room, nickname } = this.state;
     return (
-      <div className="game">
+      <GameStyles>
         <form
           onSubmit={e => {
             e.preventDefault();
@@ -44,12 +46,10 @@ class JoinOrCreateRoom extends Component {
             Room code
             <input id="room" value={room} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="room" />
           </label>
-          <input type="submit" className="button" value="Join" />
+          <Button type="submit" value="Join" />
         </form>
-        <button type="button" className="button" onClick={() => auth()}>
-          Start a new game
-        </button>
-      </div>
+        <Button type="button" onClick={() => auth()} value="Start a new game" />
+      </GameStyles>
     );
   }
 }

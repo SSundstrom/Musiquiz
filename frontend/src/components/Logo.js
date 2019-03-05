@@ -1,9 +1,18 @@
 import * as React from 'react';
+import styled from '@emotion/styled';
 
+const StyledLogo = styled.div`
+  img {
+    display: block;
+    margin: auto;
+    width: 100%;
+    max-width: 200px;
+  }
+`;
 const Logo = () => (
-  <div className="logo">
+  <StyledLogo>
     <img alt="logo" src="/logo.png" />
-  </div>
+  </StyledLogo>
 );
 
 export default Logo;

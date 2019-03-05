@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
+import GameStyles from '../components/styles/GameStyles';
 
 const LeaderWaitingForGuesses = ({ players, nickname, guessTimer }) => (
-  <div className="game">
+  <GameStyles>
     <h1>{guessTimer}</h1>
     <h2>Waiting for guesses</h2>
     <Scores players={players} nickname={nickname} />
-  </div>
+  </GameStyles>
 );
 
 LeaderWaitingForGuesses.propTypes = {

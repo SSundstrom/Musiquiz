@@ -4,6 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
 import SpotifyPlayer from '../playback';
+import Button from '../components/styles/Button';
+import GameStyles from '../components/styles/GameStyles';
+import IconButton from '../components/styles/IconButton';
+import SettingsStyles from '../components/styles/SettingsStyles';
 
 class HostMusicPlayer extends Component {
   constructor(props) {
@@ -71,7 +75,7 @@ class HostMusicPlayer extends Component {
     const { correctSong, onSaveSettings, onKickPlayer, correctSongTimer, players, name } = this.props;
     return (
       <React.Fragment>
-        <div className="game">
+        <GameStyles>
           {devices.length > 0 && this.renderDevices()}
           <h2>{`Room code: ${name}`}</h2>
 
@@ -87,23 +91,22 @@ class HostMusicPlayer extends Component {
           <div>
             <Scores isHost kick={settings} players={players} onKickPlayer={onKickPlayer} />
           </div>
-        </div>
-        <div className="settings">
+        </GameStyles>
+        <SettingsStyles>
           {settings ? (
             <React.Fragment>
               <h2 className="settings-header">
                 Settings
-                <button
+                <IconButton
                   onClick={() =>
                     this.setState({
                       settings: !settings,
                     })
                   }
-                  className="icon"
                   type="button"
                 >
                   <FontAwesomeIcon icon="times" />
-                </button>
+                </IconButton>
               </h2>
               <form
                 className="settings-form"
@@ -143,25 +146,22 @@ class HostMusicPlayer extends Component {
                     />
                   </label>
                 </div>
-                <input className="button" type="submit" value="Save settings" />
+                <Button type="submit" value="Save settings" />
               </form>
             </React.Fragment>
           ) : (
-            <div className="settings">
-              <button
-                onClick={() =>
-                  this.setState({
-                    settings: !settings,
-                  })
-                }
-                type="button"
-                className="icon"
-              >
-                <FontAwesomeIcon icon="cog" />
-              </button>
-            </div>
+            <IconButton
+              onClick={() =>
+                this.setState({
+                  settings: !settings,
+                })
+              }
+              type="button"
+            >
+              <FontAwesomeIcon icon="cog" />
+            </IconButton>
           )}
-        </div>
+        </SettingsStyles>
       </React.Fragment>
     );
   }
