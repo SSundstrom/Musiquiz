@@ -9,16 +9,18 @@ export const theme = {
 export const GlobalSyles = () => (
   <Global
     styles={css`
-      @import url('https://fonts.googleapis.com/css?family=Slackey');
+      @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
       body {
         margin: 0;
         padding: 0;
-        font-family: 'Slackey', cursive;
+
+        font-weight: 700;
         font-size: 20px;
         color: #fff;
       }
 
       * {
+        font-family: 'Montserrat';
         box-sizing: border-box;
         text-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
       }
@@ -58,7 +60,7 @@ export const GlobalSyles = () => (
       input[type='number'] {
         border: none;
         border-radius: 7px;
-        padding: 15px;
+        padding: 0.5em;
         font-size: 18px;
         display: block;
         width: 100%;
