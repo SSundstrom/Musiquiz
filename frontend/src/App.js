@@ -25,7 +25,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log(process.env);
     on('connect', data => {
       console.log(data);
       const { nickname } = this.state;
@@ -104,7 +103,7 @@ class App extends Component {
       const { nickname } = this.state;
       this.setState({
         leader: data,
-        correctSong: false, // <-- chnage to view from correct song to showing who is up next.
+        correctSong: null, // <-- chnage to view from correct song to showing who is up next.
         isLeader: data.nickname === nickname,
       });
     });
@@ -117,7 +116,7 @@ class App extends Component {
 
     on('startRound', ({ roundTime }) => {
       this.setState({
-        correctSong: false,
+        correctSong: null,
         guessed: false,
         guessTimer: roundTime / 1000,
       });
