@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/* global window fetch */
 import io from 'socket.io-client';
 
 const api = window.location.origin.replace(/3000/, '8888');
@@ -18,7 +18,7 @@ window.disconnect = disconnect;
 window.reconnect = reconnect;
 
 function on(event, callback) {
-  socket.on(event, (data) => {
+  socket.on(event, data => {
     console.log('receiving', event, data);
     callback(data);
   });
@@ -33,12 +33,12 @@ function search(song, callback) {
   song = encodeURIComponent(song);
   console.log('search');
   fetch(`${api}/search/${song}`)
-    .then((response) => {
+    .then(response => {
       console.log('fetch');
       return response.json();
     })
     .then(res => callback(res.body.tracks.items))
-    .catch((e) => {
+    .catch(e => {
       console.log(e);
     });
 }
@@ -46,12 +46,12 @@ function search(song, callback) {
 function getAudioAnalysis(name, callback) {
   console.log('getAudioAnalysis');
   fetch(`${api}/recommendations/${name}`)
-    .then((response) => {
+    .then(response => {
       console.log('fetch audio analysis');
       return response.json();
     })
     .then(res => callback(res.body.tracks))
-    .catch((e) => {
+    .catch(e => {
       console.log(e);
     });
 }
