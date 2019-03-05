@@ -57,7 +57,8 @@ let averageEnergy = 0.5;
 // let deleteTemp = true;
 
 app.get('/recommendations/:name', (req, res) => {
-  const foundRoom = rooms.find(r => r.name === req.params.name);
+  const name = parseInt(req.params.name, 10);
+  const foundRoom = rooms.find(r => r.name === name);
   if (foundRoom) {
     const { songArray, energyArray, danceabilityArray } = foundRoom;
     let collectedDanceability = 0;
