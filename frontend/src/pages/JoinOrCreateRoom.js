@@ -29,25 +29,23 @@ class JoinOrCreateRoom extends Component {
     const { room, nickname } = this.state;
     return (
       <div className="game">
-        <label>Nickname</label>
-        <input
-          value={nickname}
-          onChange={this.handleChange.bind(this)}
-          type="text"
-          name="nickname"
-        />
-        <label>Room code</label>
-        <input
-          value={room}
-          onChange={this.handleChange.bind(this)}
-          type="number"
-          min="1000"
-          max="9999"
-          name="room"
-        />
-        <button type="button" className="button" onClick={() => onJoinAsPlayer(nickname, room)}>
-          Join
-        </button>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            onJoinAsPlayer(nickname, room);
+            return false;
+          }}
+        >
+          <label htmlFor="nickname">
+            Nickname
+            <input id="nickname" value={nickname} onChange={this.handleChange.bind(this)} type="text" name="nickname" />
+          </label>
+          <label htmlFor="room">
+            Room code
+            <input id="room" value={room} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="room" />
+          </label>
+          <input type="submit" className="button" value="Join" />
+        </form>
         <button type="button" className="button" onClick={() => auth()}>
           Start a new game
         </button>
