@@ -4,7 +4,7 @@ require('dotenv').load();
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: ''
+  redirectUri: '',
 });
 
 const express = require('express');
@@ -27,7 +27,7 @@ function getToken() {
     },
     err => {
       console.log('Something went wrong when retrieving an access token', err);
-    }
+    },
   );
 }
 
@@ -49,7 +49,7 @@ app.get('/search/:name', (req, res) => {
     },
     err => {
       console.error(err);
-    }
+    },
   );
 });
 let averageDanceability = 0.5;
@@ -86,7 +86,7 @@ app.get('/recommendations/:name', (req, res) => {
       .getRecommendations({
         /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
        min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, */
-        seed_tracks: [songArray]
+        seed_tracks: [songArray],
       })
       .then(rec => {
         res.send(rec);
@@ -134,7 +134,6 @@ function applyUpdates(room) {
 function playSong(song, name) {
   console.log('playSong');
   io.to(name).emit('hostPlaySong', song.uri);
-  io.to(name).emit('playing', song);
 }
 
 function sendLeader(name, leader) {
@@ -205,7 +204,7 @@ function analyzeSong(id, room) {
     },
     err => {
       console.error(err);
-    }
+    },
   );
 }
 
@@ -283,7 +282,7 @@ io.on('connection', socket => {
       totalPoints: 0,
       energyArray: [],
       danceabilityArray: [],
-      songArray: []
+      songArray: [],
     };
     console.log('hostJoin', socket.name);
     rooms.push(room);
@@ -295,7 +294,10 @@ io.on('connection', socket => {
     const { song: guessedSong, name, nickname } = data;
     const foundRoom = rooms.find(r => r.name === name);
     const { selectedSong, roundStartTime, roundTime, players } = foundRoom;
-    if (guessedSong.uri === selectedSong.uri || (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))) {
+    if (
+      guessedSong.uri === selectedSong.uri ||
+      (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))
+    ) {
       const current = new Date();
       const diff = current.getTime() - roundStartTime.getTime();
       const roundScore = Math.round((roundTime - diff) / 1000);

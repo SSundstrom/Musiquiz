@@ -22,7 +22,6 @@ class App extends Component {
       guessTimer: 0,
       isLeader: false,
       guessed: false,
-      playing: false,
     };
   }
 
@@ -71,7 +70,6 @@ class App extends Component {
           guessTimer: 0,
           isLeader: false,
           guessed: false,
-          playing: false,
         });
       }
     });
@@ -146,12 +144,6 @@ class App extends Component {
         songToPlay: data,
       });
     });
-
-    on('playingSong', data => {
-      this.setState({
-        playing: data,
-      });
-    });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -200,22 +192,7 @@ class App extends Component {
   }
 
   render() {
-    const {
-      name,
-      loading,
-      isLeader,
-      isHost,
-      hasHost,
-      players,
-      nickname,
-      started,
-      leader,
-      guessTimer,
-      correctSong,
-      songToPlay,
-      guessed,
-      playing,
-    } = this.state;
+    const { name, loading, isLeader, isHost, hasHost, players, nickname, started, leader, guessTimer, correctSong, songToPlay, guessed } = this.state;
     if (loading) {
       return <div>Loading...</div>;
     }
@@ -237,7 +214,6 @@ class App extends Component {
             correctSong={correctSong}
             songToPlay={songToPlay}
             guessed={guessed}
-            playing={playing}
             onKickPlayer={player => this.kickPlayer(player)}
             onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
             onJoinAsHost={() => this.joinAsHost()}

@@ -1,93 +1,55 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import JoinOrCreateRoom from './pages/JoinOrCreateRoom';
-import HostWaitingToStart from './pages/HostWaitingToStart';
-import PlayerWaitingToStart from './pages/PlayerWaitingToStart';
-import LeaderWaitingForGuesses from './pages/LeaderWaitingForGuesses';
-import PlayerGuess from './pages/PlayerGuess';
-import HostMusicPlayer from './pages/HostMusicPlayer';
-import LeaderChooseSong from './pages/LeaderChooseSong';
-import PlayerWaitingForLeader from './pages/PlayerWaitingForLeader';
-import ShowCorrectSong from './pages/ShowCorrectSong';
+import Wait from './pages/Wait';
+import Play from './pages/Play';
 
-class Game extends Component {
-  renderWait() {
-    const { isHost, name, players, nickname } = this.props;
-    if (isHost) {
-      return <HostWaitingToStart name={name} players={players} />;
-    }
-
-    return <PlayerWaitingToStart name={name} players={players} nickname={nickname} />;
-  }
-
-  renderJoin() {
-    const { onJoinAsHost, onJoinAsPlayer } = this.props;
+const Game = ({
+  started,
+  nickname,
+  isHost,
+  songToPlay,
+  correctSong,
+  leader,
+  players,
+  onSaveSettings,
+  guessed,
+  onKickPlayer,
+  guessTimer,
+  name,
+  isLeader,
+  onGuess,
+  onSelectSong,
+  onJoinAsHost,
+  onJoinAsPlayer,
+}) => {
+  // if the game has not yet started and we have not become host or entered nickname
+  if (!nickname && !isHost) {
     return <JoinOrCreateRoom onJoinAsHost={onJoinAsHost} onJoinAsPlayer={onJoinAsPlayer} />;
   }
-
-  renderPlay() {
-    const {
-      isHost,
-      songToPlay,
-      correctSong,
-      nickname,
-      leader,
-      players,
-      onSaveSettings,
-      onKickPlayer,
-      guessTimer,
-      name,
-      isLeader,
-      onGuess,
-      onSelectSong,
-      guessed,
-    } = this.props;
-    if (isHost) {
-      return (
-        <HostMusicPlayer
-          players={players}
-          songToPlay={songToPlay}
-          correctSong={correctSong}
-          name={name}
-          onSaveSettings={onSaveSettings}
-          onKickPlayer={onKickPlayer}
-        />
-      );
-    }
-
-    // If there is a guessing timer, we are on the guess screen
-    if (guessTimer > 0) {
-      if (isLeader) {
-        return <LeaderWaitingForGuesses players={players} guessTimer={guessTimer} nickname={nickname} />;
-      }
-
-      return <PlayerGuess players={players} onGuess={onGuess} guessTimer={guessTimer} guessed={guessed} nickname={nickname} />;
-    }
-
-    // If guess timer is 0 and correct song is known, show score view
-    if (correctSong) {
-      return <ShowCorrectSong players={players} correctSong={correctSong} nickname={nickname} />;
-    }
-
-    if (isLeader) {
-      return <LeaderChooseSong name={name} onSelectSong={onSelectSong} />;
-    }
-
-    return <PlayerWaitingForLeader leader={leader.nickname} nickname={nickname} players={players} correctSong={correctSong} />;
+  if (!started) {
+    return <Wait isHost={isHost} name={name} nickname={nickname} players={players} />;
   }
+  return (
+    <Play
+      name={name}
+      players={players}
+      isHost={isHost}
+      nickname={nickname}
+      guessTimer={guessTimer}
+      isLeader={isLeader}
+      leader={leader}
+      correctSong={correctSong}
+      songToPlay={songToPlay}
+      guessed={guessed}
+      onKickPlayer={onKickPlayer}
+      onGuess={onGuess}
+      onSelectSong={onSelectSong}
+      onSaveSettings={onSaveSettings}
+    />
+  );
+};
 
-  render() {
-    const { started, nickname, isHost } = this.props;
-    // if the game has not yet started and we have not become host or entered nickname
-    if (!nickname && !isHost) {
-      return this.renderJoin();
-    }
-    if (!started) {
-      return this.renderWait();
-    }
-    return this.renderPlay();
-  }
-}
 Game.propTypes = {
   name: PropTypes.number,
   leader: PropTypes.object,
