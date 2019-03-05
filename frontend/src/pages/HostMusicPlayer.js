@@ -93,7 +93,7 @@ class HostMusicPlayer extends Component {
         </GameStyles>
         <SettingsStyles>
           {settings ? (
-            <React.Fragment>
+            <div className="settings">
               <h2 className="settings-header">
                 Settings
                 <IconButton
@@ -115,39 +115,38 @@ class HostMusicPlayer extends Component {
                   return false;
                 }}
               >
-                <div>
-                  <label className="setting" htmlFor="time">
-                    Round time:
-                    <input
-                      id="time"
-                      name="time"
-                      className="timer-input"
-                      type="number"
-                      onChange={this.handleChange.bind(this)}
-                      value={time}
-                      step="1"
-                      min="1"
-                      max="180"
-                    />
-                  </label>
-                  <label className="setting" htmlFor="penalty">
-                    Bad song penalty:
-                    <input
-                      id="penalty"
-                      name="penalty"
-                      className="timer-input"
-                      type="number"
-                      onChange={this.handleChange.bind(this)}
-                      value={penalty}
-                      step="1"
-                      min="0"
-                      max="180"
-                    />
-                  </label>
-                </div>
+                <label className="setting" htmlFor="time">
+                  Round time:
+                  <input
+                    id="time"
+                    name="time"
+                    className="timer-input"
+                    type="number"
+                    onChange={this.handleChange.bind(this)}
+                    value={time}
+                    step="1"
+                    min="1"
+                    max="180"
+                  />
+                </label>
+                <label className="setting" htmlFor="penalty">
+                  Bad song penalty:
+                  <input
+                    id="penalty"
+                    name="penalty"
+                    className="timer-input"
+                    type="number"
+                    onChange={this.handleChange.bind(this)}
+                    value={penalty}
+                    step="1"
+                    min="0"
+                    max="180"
+                  />
+                </label>
+
                 <Button type="submit" value="Save settings" />
               </form>
-            </React.Fragment>
+            </div>
           ) : (
             <IconButton
               onClick={() =>

@@ -13,6 +13,7 @@ const Button = styled.input`
   max-width: 50%;
   margin-bottom: 20px;
   font-family: inherit;
+  font-weight: inherit;
 `;
 
 export default Button;
