@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import Logo from './Logo';
 import ContentStyles from './styles/ContentStyles';
 
 const Background = styled.div`
@@ -17,18 +16,11 @@ const Background = styled.div`
   }};
   height: auto;
   min-height: 100%;
-  .navbar {
-    padding: 20px;
-    text-align: center;
-    font-weight: bold;
-  }
+  padding-top: 50px;
 `;
 
 const Layout = ({ isLeader, isHost, children }) => (
   <Background isLeader={isLeader} isHost={isHost}>
-    <div className="navbar">
-      <Logo />
-    </div>
     <ContentStyles>{children}</ContentStyles>
   </Background>
 );
