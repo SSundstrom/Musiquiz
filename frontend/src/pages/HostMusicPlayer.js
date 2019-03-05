@@ -83,8 +83,7 @@ class HostMusicPlayer extends Component {
 
           {correctSong && (
             <div>
-              The correct song was... 
-              {' '}
+              <span>The correct song was...</span>
               <Track track={correctSong} />
             </div>
           )}
