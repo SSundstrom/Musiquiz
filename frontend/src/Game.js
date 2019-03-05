@@ -58,20 +58,10 @@ class Game extends Component {
     // If there is a guessing timer, we are on the guess screen
     if (guessTimer > 0) {
       if (isLeader) {
-        return (
-          <LeaderWaitingForGuesses players={players} guessTimer={guessTimer} nickname={nickname} />
-        );
+        return <LeaderWaitingForGuesses players={players} guessTimer={guessTimer} nickname={nickname} />;
       }
 
-      return (
-        <PlayerGuess
-          players={players}
-          onGuess={onGuess}
-          guessTimer={guessTimer}
-          guessed={guessed}
-          nickname={nickname}
-        />
-      );
+      return <PlayerGuess players={players} onGuess={onGuess} guessTimer={guessTimer} guessed={guessed} nickname={nickname} />;
     }
 
     // If guess timer is 0 and correct song is known, show score view
@@ -83,14 +73,7 @@ class Game extends Component {
       return <LeaderChooseSong name={name} onSelectSong={onSelectSong} />;
     }
 
-    return (
-      <PlayerWaitingForLeader
-        leader={leader.nickname}
-        nickname={nickname}
-        players={players}
-        correctSong={correctSong}
-      />
-    );
+    return <PlayerWaitingForLeader leader={leader.nickname} nickname={nickname} players={players} correctSong={correctSong} />;
   }
 
   render() {
@@ -128,7 +111,7 @@ Game.propTypes = {
 
 Game.defaultProps = {
   nickname: '',
-  name: '',
+  name: -1,
   leader: {},
   songToPlay: null,
   players: [],

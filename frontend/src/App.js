@@ -1,6 +1,6 @@
+/* global alert */
 import React, { Component } from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Game from './Game';
 import { on, emit } from './api';
@@ -26,7 +26,7 @@ class App extends Component {
 
   componentDidMount() {
     console.log(process.env);
-    on('connect', (data) => {
+    on('connect', data => {
       console.log(data);
       const { nickname } = this.state;
       if (this) {
@@ -47,18 +47,18 @@ class App extends Component {
       const player = players.find(p => players.nickname === nickname);
       player.score += player.scoreUpdate;
     });
-    on('roomNotFound', (data) => {
+    on('roomNotFound', data => {
       alert('No such room');
     });
-    on('playerAlreadyExists', (data) => {
+    on('playerAlreadyExists', data => {
       alert('Player Already Exists');
     });
-    on('joined', (nickname) => {
+    on('joined', nickname => {
       this.setState({
         nickname,
       });
     });
-    on('kick', (data) => {
+    on('kick', data => {
       const { nickname } = this.state;
       if (nickname === data) {
         this.setState({
@@ -74,7 +74,7 @@ class App extends Component {
         });
       }
     });
-    on('status', (data) => {
+    on('status', data => {
       console.log(data);
       const state = {
         ...data,
@@ -100,17 +100,16 @@ class App extends Component {
       this.setState(state);
     });
 
-    on('leader', (data) => {
+    on('leader', data => {
       const { nickname } = this.state;
       this.setState({
         leader: data,
-        selectedSong: null,
         correctSong: false, // <-- chnage to view from correct song to showing who is up next.
         isLeader: data.nickname === nickname,
       });
     });
 
-    on('stopRound', (data) => {
+    on('stopRound', data => {
       this.setState({
         correctSong: data.selectedSong,
       });
@@ -141,13 +140,13 @@ class App extends Component {
       }, 1000);
     });
 
-    on('hostPlaySong', (data) => {
+    on('hostPlaySong', data => {
       this.setState({
         songToPlay: data,
       });
     });
 
-    on('playingSong', (data) => {
+    on('playingSong', data => {
       this.setState({
         playing: data,
       });
@@ -196,12 +195,7 @@ class App extends Component {
 
   selectSong(song) {
     const { name } = this.state;
-    this.setState(
-      {
-        selectedSong: true,
-      },
-      () => emit('selectedSong', { song, name }),
-    );
+    emit('selectedSong', { song, name });
   }
 
   render() {

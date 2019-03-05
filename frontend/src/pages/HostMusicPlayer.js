@@ -42,7 +42,7 @@ class HostMusicPlayer extends Component {
   }
 
   updateDevices(id) {
-    SpotifyPlayer.controls.getDevices((results) => {
+    SpotifyPlayer.controls.getDevices(results => {
       this.setState({ devices: results, selectedDevice: id });
     });
   }
@@ -68,14 +68,7 @@ class HostMusicPlayer extends Component {
 
   render() {
     const { settings, penalty, time, devices } = this.state;
-    const {
-      correctSong,
-      onSaveSettings,
-      onKickPlayer,
-      correctSongTimer,
-      players,
-      name,
-    } = this.props;
+    const { correctSong, onSaveSettings, onKickPlayer, correctSongTimer, players, name } = this.props;
     return (
       <React.Fragment>
         <div className="game">
@@ -86,9 +79,7 @@ class HostMusicPlayer extends Component {
 
           {correctSong && (
             <div>
-              The correct song was...
-              {' '}
-              <Track track={correctSong} />
+              The correct song was... <Track track={correctSong} />
             </div>
           )}
           <div>
@@ -101,9 +92,10 @@ class HostMusicPlayer extends Component {
               <h2 className="settings-header">
                 Settings
                 <button
-                  onClick={() => this.setState({
-                    settings: !settings,
-                  })
+                  onClick={() =>
+                    this.setState({
+                      settings: !settings,
+                    })
                   }
                   className="icon"
                   type="button"
@@ -113,7 +105,7 @@ class HostMusicPlayer extends Component {
               </h2>
               <form
                 className="settings-form"
-                onSubmit={(e) => {
+                onSubmit={e => {
                   e.preventDefault();
                   onSaveSettings({ time, penalty });
                   return false;
@@ -155,9 +147,10 @@ class HostMusicPlayer extends Component {
           ) : (
             <div className="settings">
               <button
-                onClick={() => this.setState({
-                  settings: !settings,
-                })
+                onClick={() =>
+                  this.setState({
+                    settings: !settings,
+                  })
                 }
                 type="button"
                 className="icon"
@@ -173,6 +166,7 @@ class HostMusicPlayer extends Component {
 }
 HostMusicPlayer.propTypes = {
   correctSong: PropTypes.object,
+  songToPlay: PropTypes.object,
   onSaveSettings: PropTypes.func.isRequired,
   onKickPlayer: PropTypes.func.isRequired,
   correctSongTimer: PropTypes.any,
@@ -182,6 +176,7 @@ HostMusicPlayer.propTypes = {
 
 HostMusicPlayer.defaultProps = {
   correctSong: null,
+  songToPlay: null,
   correctSongTimer: '',
 };
 
