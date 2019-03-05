@@ -44,13 +44,13 @@ class App extends Component {
 
     on('disconnect', () => {
       const { nickname, players } = this.state;
-      const player = players.find(p => players.nickname === nickname);
+      const player = players.find(p => p.nickname === nickname);
       player.score += player.scoreUpdate;
     });
-    on('roomNotFound', data => {
+    on('roomNotFound', () => {
       alert('No such room');
     });
-    on('playerAlreadyExists', data => {
+    on('playerAlreadyExists', () => {
       alert('Player Already Exists');
     });
     on('joined', nickname => {
@@ -167,7 +167,7 @@ class App extends Component {
         isHost: true,
         hasHost: true,
       },
-      () => emit('hostJoin'),
+      () => emit('hostJoin')
     );
   }
 
@@ -183,7 +183,7 @@ class App extends Component {
         {
           guessed: true,
         },
-        () => emit('guess', { song, name, nickname }),
+        () => emit('guess', { song, name, nickname })
       );
     }
   }
