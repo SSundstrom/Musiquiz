@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
 import Search from '../components/Search';
+import GameStyles from '../components/styles/GameStyles';
 
 const PlayerGuess = ({ guessTimer, guessed, players, nickname, onGuess }) => (
-  <div className="game">
+  <GameStyles>
     <h1>{guessTimer}</h1>
     {!guessed ? (
       <Search title="Guess the song name" onSelectSong={onGuess} />
@@ -14,7 +15,7 @@ const PlayerGuess = ({ guessTimer, guessed, players, nickname, onGuess }) => (
         <Scores players={players} nickname={nickname} />
       </div>
     )}
-  </div>
+  </GameStyles>
 );
 PlayerGuess.propTypes = {
   guessTimer: PropTypes.number.isRequired,

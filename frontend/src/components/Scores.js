@@ -2,9 +2,11 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import AnimatedNumber from 'react-animated-number';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ScoreStyles from './styles/ScoreStyles';
+import IconButton from './styles/IconButton';
 
 const Scores = ({ isHost, kick, players, onKickPlayer, nickname }) => (
-  <div className="scores">
+  <ScoreStyles>
     {players
       .filter(player => player.active)
       .sort((p1, p2) => p2.score - p1.score)
@@ -12,9 +14,9 @@ const Scores = ({ isHost, kick, players, onKickPlayer, nickname }) => (
         <div key={player.nickname}>
           <div className="score-row">
             {isHost && kick && (
-              <button onClick={() => onKickPlayer(player)} type="button" className="icon">
+              <IconButton onClick={() => onKickPlayer(player)} type="button">
                 <FontAwesomeIcon icon="times" />
-              </button>
+              </IconButton>
             )}
             <div className="score-name">
               {player.nickname}
@@ -34,17 +36,13 @@ const Scores = ({ isHost, kick, players, onKickPlayer, nickname }) => (
                   value={player.score}
                 />
               </div>
-              {player.scoreUpdate > 0 && (
-                <div className="score-addition">{`+${player.scoreUpdate}`}</div>
-              )}
-              {player.scoreUpdate < 0 && (
-                <div className="score-addition">{`${player.scoreUpdate}`}</div>
-              )}
+              {player.scoreUpdate > 0 && <div className="score-addition">{`+${player.scoreUpdate}`}</div>}
+              {player.scoreUpdate < 0 && <div className="score-addition">{`${player.scoreUpdate}`}</div>}
             </div>
           </div>
         </div>
       ))}
-  </div>
+  </ScoreStyles>
 );
 Scores.propTypes = {
   isHost: PropTypes.bool,

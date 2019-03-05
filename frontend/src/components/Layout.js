@@ -1,17 +1,36 @@
 import * as React from 'react';
+import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import Logo from './Logo';
+import ContentStyles from './styles/ContentStyles';
+
+const Background = styled.div`
+  position: relative;
+  background-color: ${({ isLeader, isHost }) => {
+    if (isLeader) {
+      return '#f3bd34';
+    }
+    if (isHost) {
+      return '#3466f3';
+    }
+    return '#c42ae6';
+  }};
+  height: auto;
+  min-height: 100%;
+  .navbar {
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+`;
 
 const Layout = ({ isLeader, isHost, children }) => (
-  <div className={`background ${isLeader ? 'is-leader ' : ''}${isHost ? 'is-host ' : ''}`}>
-    <div className="wrapper">
-      <div className="navbar">
-        <Logo />
-      </div>
-
-      <div className="content">{children}</div>
+  <Background isLeader={isLeader} isHost={isHost}>
+    <div className="navbar">
+      <Logo />
     </div>
-  </div>
+    <ContentStyles>{children}</ContentStyles>
+  </Background>
 );
 Layout.propTypes = {
   isLeader: PropTypes.bool.isRequired,

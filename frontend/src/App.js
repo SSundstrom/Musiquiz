@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ThemeProvider } from 'emotion-theming';
+import { theme, GlobalSyles } from './constants/styling';
 import Game from './Game';
 import { on, emit } from './api';
 import Layout from './components/Layout';
@@ -166,7 +168,7 @@ class App extends Component {
         isHost: true,
         hasHost: true,
       },
-      () => emit('hostJoin')
+      () => emit('hostJoin'),
     );
   }
 
@@ -182,7 +184,7 @@ class App extends Component {
         {
           guessed: true,
         },
-        () => emit('guess', { song, name, nickname })
+        () => emit('guess', { song, name, nickname }),
       );
     }
   }
@@ -219,29 +221,32 @@ class App extends Component {
     }
 
     return (
-      <Layout isLeader={isLeader} isHost={isHost}>
-        <Game
-          name={name}
-          players={players}
-          isHost={isHost}
-          hasHost={hasHost}
-          nickname={nickname}
-          started={started}
-          guessTimer={guessTimer}
-          isLeader={isLeader}
-          leader={leader}
-          correctSong={correctSong}
-          songToPlay={songToPlay}
-          guessed={guessed}
-          playing={playing}
-          onKickPlayer={player => this.kickPlayer(player)}
-          onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
-          onJoinAsHost={() => this.joinAsHost()}
-          onGuess={song => this.guess(song)}
-          onSelectSong={song => this.selectSong(song)}
-          onSaveSettings={time => this.sendSettings(time)}
-        />
-      </Layout>
+      <ThemeProvider theme={theme}>
+        <GlobalSyles />
+        <Layout isLeader={isLeader} isHost={isHost}>
+          <Game
+            name={name}
+            players={players}
+            isHost={isHost}
+            hasHost={hasHost}
+            nickname={nickname}
+            started={started}
+            guessTimer={guessTimer}
+            isLeader={isLeader}
+            leader={leader}
+            correctSong={correctSong}
+            songToPlay={songToPlay}
+            guessed={guessed}
+            playing={playing}
+            onKickPlayer={player => this.kickPlayer(player)}
+            onJoinAsPlayer={(n, r) => this.joinAsPlayer(n, r)}
+            onJoinAsHost={() => this.joinAsHost()}
+            onGuess={song => this.guess(song)}
+            onSelectSong={song => this.selectSong(song)}
+            onSaveSettings={time => this.sendSettings(time)}
+          />
+        </Layout>
+      </ThemeProvider>
     );
   }
 }

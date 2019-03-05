@@ -3,34 +3,31 @@
 // TODO FIX
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import TrackStyles from './styles/TrackStyles';
 
 const Track = ({ onClick, track }) => (
   <React.Fragment>
     {track && (
-      <div className="coverArt" onClick={onClick}>
-        <div className="trackitem">
-          {!track.album.images.length - 1 && (
-            <img alt="Album img" src={track.album.images[track.album.images.length - 1].url} />
-          )}
-          <div className="trackinfo">
-            <div className="trackname">
-              {' '}
-              {track.name}
-              {' '}
-            </div>
-            <div className="trackartists">
-              {' '}
-              {track.artists.map(artist => (
-                <span key={artist.name}>
-                  {artist.name}
-                  {' '}
-                </span>
-              ))}
-              {' '}
-            </div>
+      <TrackStyles onClick={onClick}>
+        {!track.album.images.length - 1 && <img alt="Album img" src={track.album.images[track.album.images.length - 1].url} />}
+        <div className="trackinfo">
+          <div className="trackname"> 
+            {' '}
+            {track.name}
+            {' '}
+          </div>
+          <div className="trackartists">
+            {' '}
+            {track.artists.map(artist => (
+              <span key={artist.name}>
+                {artist.name}
+                {' '}
+              </span>
+            ))}
+            {' '}
           </div>
         </div>
-      </div>
+      </TrackStyles>
     )}
   </React.Fragment>
 );
