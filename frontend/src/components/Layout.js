@@ -19,19 +19,21 @@ const Background = styled.div`
     0% {
       background-color: ${({ theme }) => theme.blue};
     }
-
-    30% {
+    17% {
+      background-color: ${({ theme }) => theme.teal};
+    }
+    34% {
       background-color: ${({ theme }) => theme.green};
     }
-
-    60% {
+    51% {
+      background-color: ${({ theme }) => theme.yellow};
+    }
+    67% {
       background-color: ${({ theme }) => theme.orange};
     }
-
-    90% {
+    84% {
       background-color: ${({ theme }) => theme.red};
     }
-
     100% {
       background-color: ${({ theme }) => theme.purple};
     }

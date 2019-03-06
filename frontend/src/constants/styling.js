@@ -2,10 +2,12 @@ import React from 'react';
 import { Global, css } from '@emotion/core';
 
 export const theme = {
-  green: '#66bf39',
-  red: '#f35',
-  orange: '#eb670f',
   blue: '#45a3e5',
+  teal: '#3cc',
+  yellow: '#ffa602',
+  green: '#66bf39',
+  orange: '#eb670f',
+  red: '#f35',
   purple: '#864cbf',
 };
 
