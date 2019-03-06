@@ -22,7 +22,7 @@ const Scores = () => (
                 )}
                 <div className="score-name">
                   {player.nickname}
-                  {player.nickname === context.nickname && <small> (you)</small>}
+                  {player.nickname === context.state.nickname && <small> (you)</small>}
                 </div>
                 <div className="score-score">
                   <div>
