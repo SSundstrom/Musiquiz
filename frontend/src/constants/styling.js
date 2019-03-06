@@ -2,9 +2,9 @@ import React from 'react';
 import { Global, css } from '@emotion/core';
 
 export const theme = {
-  host: '#BADA55',
+  default: '#BADA55',
   leader: '#F3BD34',
-  player: '#3466F3',
+  host: '#3466F3',
 };
 export const GlobalSyles = () => (
   <Global

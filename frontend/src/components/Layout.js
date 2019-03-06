@@ -6,14 +6,14 @@ import { GameConsumer } from '../game-context';
 
 const Background = styled.div`
   position: relative;
-  background-color: ${({ isLeader, isHost }) => {
+  background-color: ${({ isLeader, isHost, theme }) => {
     if (isLeader) {
-      return '#f3bd34';
+      return theme.leader;
     }
     if (isHost) {
-      return '#3466f3';
+      return theme.host;
     }
-    return '#c42ae6';
+    return theme.default;
   }};
   height: auto;
   min-height: 100%;
