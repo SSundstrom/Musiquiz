@@ -6,24 +6,49 @@ import { GameConsumer } from '../game-context';
 
 const Background = styled.div`
   position: relative;
-  background-color: ${({ isLeader, isHost, theme }) => {
+  background-color: ${({ isLeader, theme }) => {
     if (isLeader) {
-      return theme.leader;
+      return theme.purple;
     }
-    if (isHost) {
-      return theme.host;
-    }
-    return theme.default;
+    return theme.blue;
   }};
   height: auto;
   min-height: 100%;
   padding-top: 50px;
+  @keyframes bgcolor {
+    0% {
+      background-color: ${({ theme }) => theme.blue};
+    }
+
+    30% {
+      background-color: ${({ theme }) => theme.green};
+    }
+
+    60% {
+      background-color: ${({ theme }) => theme.orange};
+    }
+
+    90% {
+      background-color: ${({ theme }) => theme.red};
+    }
+
+    100% {
+      background-color: ${({ theme }) => theme.purple};
+    }
+  }
+  ${({ isHost, started }) => {
+    if (isHost || !started) {
+      return `animation: bgcolor 10s infinite;
+              animation-direction: alternate;`;
+    }
+    return '';
+  }}
 `;
 
 const Layout = ({ children }) => (
   <GameConsumer>
     {context => (
-      <Background isLeader={context.state.isLeader} isHost={context.state.isHost}>
+      <Background isLeader={context.state.isLeader} isHost={context.state.isHost} started={context.state.started}>
         <ContentStyles>{children}</ContentStyles>
       </Background>
     )}
