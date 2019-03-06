@@ -2,7 +2,7 @@ import React from 'react';
 import { Global, css } from '@emotion/core';
 
 export const theme = {
-  host: '#C42AE6',
+  host: '#BADA55',
   leader: '#F3BD34',
   player: '#3466F3',
 };
