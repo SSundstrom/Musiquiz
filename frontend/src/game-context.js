@@ -49,17 +49,21 @@ export class GameProvider extends Component {
       const player = players.find(p => p.nickname === nickname);
       player.score += player.scoreUpdate;
     });
+
     on('roomNotFound', () => {
       alert('No such room');
     });
+
     on('playerAlreadyExists', () => {
       alert('Player Already Exists');
     });
+
     on('joined', nickname => {
       this.setState({
         nickname,
       });
     });
+
     on('kick', data => {
       const { nickname } = this.state;
       if (nickname === data) {
@@ -75,6 +79,7 @@ export class GameProvider extends Component {
         });
       }
     });
+
     on('status', data => {
       console.log(data);
       const state = {

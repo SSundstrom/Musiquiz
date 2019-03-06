@@ -13,7 +13,6 @@ class RecommendedSongs extends Component {
 
   componentDidMount() {
     const { context } = this;
-
     getAudioAnalysis(context.state.name, data => {
       this.setState({
         results: data,
