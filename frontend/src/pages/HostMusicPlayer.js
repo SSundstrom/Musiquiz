@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
 import SpotifyPlayer from '../playback';
-import Button from '../components/styles/Button';
 import GameStyles from '../components/styles/GameStyles';
-import IconButton from '../components/styles/IconButton';
-import SettingsStyles from '../components/styles/SettingsStyles';
 import { GameConsumer } from '../game-context';
+import Settings from '../components/Settings';
 
 class HostMusicPlayer extends Component {
   constructor(props) {
@@ -16,8 +13,6 @@ class HostMusicPlayer extends Component {
     this.state = {
       devices: [],
       selectedDevice: SpotifyPlayer.device_id,
-      time: 30,
-      penalty: 0,
       settings: false,
     };
   }
@@ -52,12 +47,6 @@ class HostMusicPlayer extends Component {
     });
   }
 
-  handleChange(event) {
-    const field = event.target.name;
-    const value = event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value;
-    this.setState({ [field]: value });
-  }
-
   renderDevices() {
     const { selectedDevice, devices } = this.state;
     return (
@@ -72,21 +61,19 @@ class HostMusicPlayer extends Component {
   }
 
   render() {
-    const { settings, penalty, time, devices } = this.state;
+    const { settings, devices } = this.state;
 
     return (
       <GameConsumer>
         {context => {
           const { correctSong, players, name } = context.state;
-          const { onSaveSettings, onKickPlayer, correctSongTimer } = context;
+          const { onKickPlayer, correctSongTimer } = context;
           return (
             <React.Fragment>
               <GameStyles>
                 {devices.length > 0 && this.renderDevices()}
                 <h2>{`Room code: ${name}`}</h2>
-
                 <h1>{correctSongTimer}</h1>
-
                 {correctSong && (
                   <div>
                     <span>The correct song was...</span>
@@ -97,75 +84,7 @@ class HostMusicPlayer extends Component {
                   <Scores isHost kick={settings} players={players} onKickPlayer={onKickPlayer} />
                 </div>
               </GameStyles>
-              <SettingsStyles>
-                {settings ? (
-                  <div className="settings">
-                    <h2 className="settings-header">
-                      Settings
-                      <IconButton
-                        onClick={() =>
-                          this.setState({
-                            settings: !settings,
-                          })
-                        }
-                        type="button"
-                      >
-                        <FontAwesomeIcon icon="times" />
-                      </IconButton>
-                    </h2>
-                    <form
-                      className="settings-form"
-                      onSubmit={e => {
-                        e.preventDefault();
-                        onSaveSettings({ time, penalty });
-                        return false;
-                      }}
-                    >
-                      <label className="setting" htmlFor="time">
-                        Round time:
-                        <input
-                          id="time"
-                          name="time"
-                          className="timer-input"
-                          type="number"
-                          onChange={this.handleChange.bind(this)}
-                          value={time}
-                          step="1"
-                          min="1"
-                          max="180"
-                        />
-                      </label>
-                      <label className="setting" htmlFor="penalty">
-                        Bad song penalty:
-                        <input
-                          id="penalty"
-                          name="penalty"
-                          className="timer-input"
-                          type="number"
-                          onChange={this.handleChange.bind(this)}
-                          value={penalty}
-                          step="1"
-                          min="0"
-                          max="180"
-                        />
-                      </label>
-
-                      <Button type="submit" value="Save settings" />
-                    </form>
-                  </div>
-                ) : (
-                  <IconButton
-                    onClick={() =>
-                      this.setState({
-                        settings: !settings,
-                      })
-                    }
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon="cog" />
-                  </IconButton>
-                )}
-              </SettingsStyles>
+              <Settings />
             </React.Fragment>
           );
         }}
