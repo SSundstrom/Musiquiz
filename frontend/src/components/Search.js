@@ -56,7 +56,7 @@ class Search extends Component {
 Search.propTypes = {
   onSelectSong: PropTypes.func.isRequired,
   recommendations: PropTypes.bool,
-  name: PropTypes.string,
+  name: PropTypes.number,
   title: PropTypes.string,
 };
 Search.defaultProps = {
