@@ -6,9 +6,15 @@ import { GameConsumer } from '../game-context';
 
 const Background = styled.div`
   position: relative;
-  background-color: ${({ isLeader, theme }) => {
+  background-color: ${({ isLeader, guessed, correct, theme }) => {
     if (isLeader) {
       return theme.purple;
+    }
+    if (guessed) {
+      if (correct) {
+        return theme.green;
+      }
+      return theme.red;
     }
     return theme.blue;
   }};
@@ -40,7 +46,7 @@ const Background = styled.div`
   }
   ${({ isHost, started }) => {
     if (isHost || !started) {
-      return `animation: bgcolor 10s infinite;
+      return `animation: bgcolor 20s infinite;
               animation-direction: alternate;`;
     }
     return '';
@@ -50,7 +56,13 @@ const Background = styled.div`
 const Layout = ({ children }) => (
   <GameConsumer>
     {context => (
-      <Background isLeader={context.state.isLeader} isHost={context.state.isHost} started={context.state.started}>
+      <Background
+        isLeader={context.state.isLeader}
+        isHost={context.state.isHost}
+        started={context.state.started}
+        correct={context.state.correct}
+        guessed={context.state.guessed}
+      >
         <ContentStyles>{children}</ContentStyles>
       </Background>
     )}

@@ -293,6 +293,7 @@ io.on('connection', socket => {
     const { song: guessedSong, name, nickname } = data;
     const foundRoom = rooms.find(r => r.name === name);
     const { selectedSong, roundStartTime, roundTime, players } = foundRoom;
+    const player = players.find(player => player.nickname === nickname);
     if (
       guessedSong.uri === selectedSong.uri ||
       (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))
@@ -300,14 +301,12 @@ io.on('connection', socket => {
       const current = new Date();
       const diff = current.getTime() - roundStartTime.getTime();
       const roundScore = Math.round((roundTime - diff) / 1000);
-      const player = players.find(player => player.nickname === nickname);
       player.scoreUpdate = roundScore;
+      player.correct = true;
       foundRoom.totalPoints += roundScore;
       console.log('correct');
     } else {
-      const compA = compareArtist(selectedSong.artists, guessedSong.artists);
-      const compS = compareSong(selectedSong.name, guessedSong.name);
-      console.log('fault: artist:', compA, '  song:', compS);
+      player.correct = false;
     }
     foundRoom.guesses += 1;
     sendStatus(foundRoom);
