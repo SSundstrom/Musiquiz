@@ -47,7 +47,9 @@ export class GameProvider extends Component {
     on('disconnect', () => {
       const { nickname, players } = this.state;
       const player = players.find(p => p.nickname === nickname);
-      player.score += player.scoreUpdate;
+      if (player) {
+        player.score += player.scoreUpdate;
+      }
     });
 
     on('roomNotFound', () => {
