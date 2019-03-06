@@ -2,10 +2,15 @@ import React from 'react';
 import { Global, css } from '@emotion/core';
 
 export const theme = {
-  default: '#BADA55',
-  leader: '#F3BD34',
-  host: '#3466F3',
+  blue: '#45a3e5',
+  teal: '#3cc',
+  yellow: '#ffa602',
+  green: '#66bf39',
+  orange: '#eb670f',
+  red: '#f35',
+  purple: '#864cbf',
 };
+
 export const GlobalSyles = () => (
   <Global
     styles={css`

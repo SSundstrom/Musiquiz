@@ -82,8 +82,11 @@ export class GameProvider extends Component {
 
     on('status', data => {
       console.log(data);
+      const { nickname } = this.state;
+      const player = data.players.find(p => p.nickname === nickname);
       const state = {
         ...data,
+        correct: player ? player.correct : null,
         loading: false,
       };
       if (data.gamestate === 'pregame') {
