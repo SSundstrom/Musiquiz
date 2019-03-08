@@ -1,3 +1,4 @@
+/* global window */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Scores from '../components/Scores';
@@ -6,6 +7,7 @@ import SpotifyPlayer from '../playback';
 import GameStyles from '../components/styles/GameStyles';
 import { GameConsumer } from '../game-context';
 import Settings from '../components/Settings';
+import QR from '../components/QR';
 
 class HostMusicPlayer extends Component {
   constructor(props) {
@@ -70,6 +72,7 @@ class HostMusicPlayer extends Component {
           const { onKickPlayer, correctSongTimer } = context;
           return (
             <React.Fragment>
+              <QR size={256} renderAs="svg" value={`${window.location.href}${name}`} />
               <GameStyles>
                 {devices.length > 0 && this.renderDevices()}
                 <h2>{`Room code: ${name}`}</h2>
