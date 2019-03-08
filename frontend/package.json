@@ -27,9 +27,11 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
     "react-animated-number": "^0.4.3",
+    "react-cookie": "^3.0.8",
     "react-countup": "^2.3.0",
     "react-dom": "^16.8.3",
-    "socket.io-client": "^2.0.3"
+    "socket.io-client": "^2.2.0",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
