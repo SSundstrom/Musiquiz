@@ -49,6 +49,13 @@ export const GlobalSyles = () => (
         text-align: center;
         margin-top: 0;
       }
+      a {
+        color: white;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
       select {
         background-color: #fff;
         display: block;

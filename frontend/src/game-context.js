@@ -190,7 +190,6 @@ class GameProvider extends Component {
     });
   }
 
-
   onShowSettings() {
     const { settings } = this.state;
     this.setState({

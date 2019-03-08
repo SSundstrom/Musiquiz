@@ -1,11 +1,10 @@
-import * as React from 'react';
 import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
-import ContentStyles from './styles/ContentStyles';
-import { GameConsumer } from '../game-context';
 
-const Background = styled.div`
+const BackgroundStyles = styled.div`
   position: relative;
+  display: grid;
+  padding-top: 50px;
+  grid-template-rows: minmax(calc(100vh - 100px), auto) 50px;
   background-color: ${({ isLeader, guessed, correct, theme }) => {
     if (isLeader) {
       return theme.purple;
@@ -19,8 +18,7 @@ const Background = styled.div`
     return theme.blue;
   }};
   height: auto;
-  min-height: 100%;
-  padding-top: 50px;
+  min-height: 100vh;
   @keyframes bgcolor {
     0% {
       background-color: ${({ theme }) => theme.blue};
@@ -53,25 +51,4 @@ const Background = styled.div`
   }}
 `;
 
-const Layout = ({ children }) => (
-  <GameConsumer>
-    {context => (
-      <Background
-        isLeader={context.state.isLeader}
-        isHost={context.state.isHost}
-        started={context.state.started}
-        correct={context.state.correct}
-        guessed={context.state.guessed}
-      >
-        <ContentStyles>{children}</ContentStyles>
-      </Background>
-    )}
-  </GameConsumer>
-);
-Layout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
-};
-Layout.defaultProps = {
-  children: null,
-};
-export default Layout;
+export default BackgroundStyles;

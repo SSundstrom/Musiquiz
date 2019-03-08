@@ -6,9 +6,9 @@ import LogRocket from 'logrocket';
 import setupLogRocketReact from 'logrocket-react';
 import { theme, GlobalSyles } from './constants/styling';
 import Game from './Game';
-
-import Layout from './components/Layout';
 import GameProvider from './game-context';
+import Footer from './components/Footer';
+import Background from './components/Background';
 
 LogRocket.init('bdomyd/dwims');
 setupLogRocketReact(LogRocket);
@@ -20,9 +20,10 @@ const App = () => (
   <ThemeProvider theme={theme}>
     <GameProvider>
       <GlobalSyles />
-      <Layout>
+      <Background>
         <Game />
-      </Layout>
+        <Footer />
+      </Background>
     </GameProvider>
   </ThemeProvider>
 );
