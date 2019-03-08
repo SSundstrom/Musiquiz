@@ -46,12 +46,14 @@ class GameProvider extends Component {
         emit('join', { nickname, name });
       }
     });
+
     on('playerDisconnected', player => {
       const { players } = this.state;
       if (player) {
         this.setState({ players: players.filter(p => p.nickname !== player.nickname) });
       }
     });
+    
     on('roomNotFound', () => {
       // alert('No such room');
     });
