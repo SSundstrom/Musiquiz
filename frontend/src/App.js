@@ -8,7 +8,7 @@ import { theme, GlobalSyles } from './constants/styling';
 import Game from './Game';
 
 import Layout from './components/Layout';
-import { GameProvider } from './game-context';
+import GameProvider from './game-context';
 
 LogRocket.init('bdomyd/dwims');
 setupLogRocketReact(LogRocket);

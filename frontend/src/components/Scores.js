@@ -10,7 +10,6 @@ const Scores = () => (
     {context => (
       <ScoreStyles>
         {context.state.players
-          .filter(player => player.active)
           .sort((p1, p2) => p2.score - p1.score)
           .map(player => (
             <div key={player.nickname}>
