@@ -7,10 +7,10 @@ const Button = styled.input`
   font-size: 20px;
   border-radius: 7px;
   display: block;
-  width: 100%;
   padding: 10px;
   margin: auto;
   max-width: 50%;
+  min-width: 250px;
   margin-bottom: 20px;
   font-family: inherit;
   font-weight: inherit;

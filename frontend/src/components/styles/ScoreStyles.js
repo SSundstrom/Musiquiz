@@ -12,18 +12,20 @@ const ScoreStyles = styled.div`
   .score-name {
     font-size: 17px;
     justify-content: left;
-    padding: 0 20px;
     flex-grow: 1;
   }
-
   .score-score {
     display: flex;
     min-width: 60px;
-    justify-content: right;
+    justify-self: right;
+    justify-content: space-between;
+  }
+  .score-score-score {
+    justify-self: left;
   }
 
-  .score-addition {
-    width: 55px;
+  .score-score-addition {
+    justify-self: right;
   }
 `;
 

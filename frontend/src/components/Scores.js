@@ -10,12 +10,11 @@ const Scores = () => (
     {context => (
       <ScoreStyles>
         {context.state.players
-          .filter(player => player.active)
           .sort((p1, p2) => p2.score - p1.score)
           .map(player => (
             <div key={player.nickname}>
               <div className="score-row">
-                {context.state.isHost && context.state.kick && (
+                {context.state.isHost && context.state.showSettings && (
                   <IconButton onClick={() => context.onKickPlayer(player)} type="button">
                     <FontAwesomeIcon icon="times" />
                   </IconButton>

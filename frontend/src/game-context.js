@@ -3,19 +3,22 @@
 // first we will make a new context
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Cookies, withCookies } from 'react-cookie';
+import uuidv4 from 'uuid';
 import { on, emit } from './api';
 
 export const GameContext = React.createContext();
+export const GameConsumer = GameContext.Consumer;
 
 // Then create a provider Component
-export class GameProvider extends Component {
+class GameProvider extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       name: null,
       players: [],
       isHost: false,
-      hasHost: false,
       nickname: null,
       started: false,
       guessTimer: null,
@@ -24,129 +27,154 @@ export class GameProvider extends Component {
       correctSong: null,
       songToPlay: null,
       guessed: false,
+      showSettings: false,
     };
   }
 
   componentDidMount() {
-    on('connect', data => {
-      console.log(data);
-      const { nickname } = this.state;
-      if (this) {
-        if (nickname) {
-          emit('reconnected', {
-            nickname,
-          });
-        } else {
-          console.log('Connected');
-        }
-      } else {
-        console.log('Connected');
+    const { cookies } = this.props;
+    const session = cookies.get('session');
+    if (session && session.nickname && session.name) {
+      console.log(session);
+      this.joinAsPlayer(session.nickname, session.name);
+    }
+    on('disconnect', () => {
+      console.log('disc');
+    });
+    on('connect', () => {
+      const { nickname, name } = this.state;
+      if (nickname) {
+        emit('join', { nickname, name });
       }
     });
 
-    on('disconnect', () => {
-      const { nickname, players } = this.state;
-      const player = players.find(p => p.nickname === nickname);
-      player.score += player.scoreUpdate;
+    on('playerDisconnected', player => {
+      const { players } = this.state;
+      if (player) {
+        this.setState({ players: players.filter(p => p.nickname !== player.nickname) });
+      }
     });
 
     on('roomNotFound', () => {
-      alert('No such room');
+      // alert('No such room');
     });
 
     on('playerAlreadyExists', () => {
-      alert('Player Already Exists');
+      // alert('Player Already Exists');
     });
 
-    on('joined', nickname => {
+    on('joinSuccess', ({ nickname, foundRoom }) => {
+      const { leader } = foundRoom;
       this.setState({
         nickname,
+        isLeader: leader ? leader.nickname === nickname : false,
+        ...foundRoom,
       });
+      this.startGuessTimer();
     });
-
+    on('playerJoined', player => {
+      const { players, nickname } = this.state;
+      const foundPlayer = players.find(p => p.nickname === player.nickname);
+      if (foundPlayer) {
+        this.setState({
+          players: this.updatePlayers(foundPlayer),
+        });
+      } else if (player.nickname !== nickname) {
+        players.push(player);
+      }
+      this.setState({ players });
+    });
     on('kick', data => {
       const { nickname } = this.state;
       if (nickname === data) {
         this.setState({
-          nickname: null,
-          loading: false,
+          name: null,
+          players: [],
           isHost: false,
-          hasHost: false,
+          nickname: null,
           started: false,
-          guessTimer: 0,
+          guessTimer: null,
           isLeader: false,
+          leader: null,
+          correctSong: null,
+          songToPlay: null,
           guessed: false,
+        });
+        cookies.remove('session');
+      } else {
+        const { players } = this.state;
+        const newPlayers = players.filter(p => p.nickname !== data);
+        this.setState({
+          players: newPlayers,
         });
       }
     });
 
-    on('status', data => {
-      console.log(data);
-      const { nickname } = this.state;
-      const player = data.players.find(p => p.nickname === nickname);
-      const state = {
-        ...data,
-        correct: player ? player.correct : null,
-        loading: false,
-      };
-      if (data.gamestate === 'pregame') {
-        state.hasHost = false;
-        state.started = false;
-        state.nickname = false;
-        state.isHost = false;
-      } else if (data.gamestate === 'lobby') {
-        state.hasHost = true;
-      } else if (data.gamestate === 'choose') {
-        state.started = true;
-        state.hasHost = true;
-      } else if (data.gamestate === 'midgame') {
-        state.hasHost = true;
-      } else if (data.gamestate === 'finished') {
-        state.guessTimer = 0;
-        state.hasHost = true;
-      }
-
-      this.setState(state);
+    on('updatePlayer', player => {
+      const players = this.updatePlayers(player);
+      this.setState({
+        players,
+      });
     });
 
-    on('leader', data => {
+    on('playerGuess', player => {
+      console.log('playerGuess');
+      const { nickname, guessed, correct } = this.state;
+      const newPlayers = this.updatePlayers(player);
+      const thisPlayer = player.nickname === nickname;
+      this.setState({
+        players: newPlayers,
+        correct: thisPlayer ? player.correct : correct,
+        guessed: thisPlayer ? true : guessed,
+      });
+    });
+    on('updatePlayers', players => {
+      this.setState({ players });
+    });
+    on('reset', () => {
+      this.setState({
+        name: null,
+        players: [],
+        isHost: false,
+        nickname: null,
+        started: false,
+        guessTimer: null,
+        isLeader: false,
+        leader: null,
+        correctSong: null,
+        songToPlay: null,
+        guessed: false,
+      });
+    });
+
+    on('leader', leader => {
       const { nickname } = this.state;
       this.setState({
-        leader: data,
-        correctSong: null, // <-- chnage to view from correct song to showing who is up next.
-        isLeader: data.nickname === nickname,
+        leader,
+        isLeader: leader.nickname === nickname,
       });
     });
 
     on('stopRound', data => {
       this.setState({
+        guessTimer: 0,
         correctSong: data.selectedSong,
       });
     });
-
-    on('startRound', ({ roundTime }) => {
+    on('startChoose', () => {
+      this.setState({
+        started: true,
+        guessed: false,
+        correctSong: null,
+      });
+    });
+    on('startRound', roundTime => {
       this.setState({
         correctSong: null,
         guessed: false,
         guessTimer: roundTime / 1000,
       });
-
-      clearInterval(this.guessInterval);
-      this.guessInterval = undefined;
-      this.guessInterval = setInterval(() => {
-        const { guessTimer } = this.state;
-        if (guessTimer < 1) {
-          clearInterval(this.guessInterval);
-          this.guessInterval = undefined;
-          this.setState({
-            guessTimer: 0,
-          });
-          return;
-        }
-        this.setState({
-          guessTimer: guessTimer - 1,
-        });
-      }, 1000);
+      this.startGuessTimer();
     });
 
     on('hostPlaySong', data => {
@@ -154,22 +182,66 @@ export class GameProvider extends Component {
         songToPlay: data,
       });
     });
+
+    on('hostJoin', data => {
+      this.setState({
+        ...data,
+      });
+    });
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
+  onShowSettings() {
+    const { settings } = this.state;
+    this.setState({
+      showSettings: !settings,
+    });
+  }
+
+  updatePlayers(player) {
+    const { players } = this.state;
+    const newPlayers = players.filter(p => p.nickname !== player.nickname);
+    newPlayers.push(player);
+    return newPlayers;
+  }
+
+  startGuessTimer() {
+    clearInterval(this.guessInterval);
+    this.guessInterval = undefined;
+    this.guessInterval = setInterval(() => {
+      const { guessTimer } = this.state;
+      if (guessTimer < 1) {
+        clearInterval(this.guessInterval);
+        this.guessInterval = undefined;
+        this.setState({
+          guessTimer: 0,
+        });
+        return;
+      }
+      this.setState({
+        guessTimer: guessTimer - 1,
+      });
+    }, 1000);
+  }
+
   joinAsPlayer(nickname, name) {
-    console.log(name);
+    const { cookies } = this.props;
+    const session = cookies.get('session');
+    if (!session || session.name !== name) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      cookies.set('session', { sessionId: uuidv4(), nickname, name }, { path: '/', expires: tomorrow });
+    }
     if (!nickname.length) {
       return;
     }
-    emit('join', { nickname, name });
+    emit('join', { nickname, name, sessionId: cookies.get('session').sessionId });
   }
 
   joinAsHost() {
     this.setState(
       {
         isHost: true,
-        hasHost: true,
       },
       () => emit('hostJoin'),
     );
@@ -183,12 +255,7 @@ export class GameProvider extends Component {
   guess(song) {
     const { guessed, nickname, name } = this.state;
     if (!guessed) {
-      this.setState(
-        {
-          guessed: true,
-        },
-        () => emit('guess', { song, name, nickname }),
-      );
+      emit('guess', { song, name, nickname });
     }
   }
 
@@ -214,6 +281,7 @@ export class GameProvider extends Component {
           onGuess: song => this.guess(song),
           onSelectSong: song => this.selectSong(song),
           onSaveSettings: time => this.sendSettings(time),
+          onShowSettings: () => this.onShowSettings(),
         }}
       >
         {children}
@@ -223,8 +291,9 @@ export class GameProvider extends Component {
 }
 GameProvider.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
+  cookies: PropTypes.instanceOf(Cookies).isRequired,
 };
 GameProvider.defaultProps = {
   children: null,
 };
-export const GameConsumer = GameContext.Consumer;
+export default withCookies(GameProvider);
