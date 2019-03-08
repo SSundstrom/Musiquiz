@@ -27,6 +27,7 @@ class GameProvider extends Component {
       correctSong: null,
       songToPlay: null,
       guessed: false,
+      showSettings: false,
     };
   }
 
@@ -53,7 +54,7 @@ class GameProvider extends Component {
         this.setState({ players: players.filter(p => p.nickname !== player.nickname) });
       }
     });
-    
+
     on('roomNotFound', () => {
       // alert('No such room');
     });
@@ -98,6 +99,13 @@ class GameProvider extends Component {
           correctSong: null,
           songToPlay: null,
           guessed: false,
+        });
+        cookies.remove('session');
+      } else {
+        const { players } = this.state;
+        const newPlayers = players.filter(p => p.nickname !== data);
+        this.setState({
+          players: newPlayers,
         });
       }
     });
@@ -179,6 +187,14 @@ class GameProvider extends Component {
       this.setState({
         ...data,
       });
+    });
+  }
+
+
+  onShowSettings() {
+    const { settings } = this.state;
+    this.setState({
+      showSettings: !settings,
     });
   }
 
@@ -265,6 +281,7 @@ class GameProvider extends Component {
           onGuess: song => this.guess(song),
           onSelectSong: song => this.selectSong(song),
           onSaveSettings: time => this.sendSettings(time),
+          onShowSettings: () => this.onShowSettings(),
         }}
       >
         {children}

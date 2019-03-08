@@ -279,7 +279,7 @@ io.on('connection', socket => {
       foundRoom.correctSong = foundRoom.selectedSong;
     }
     socket.emit('joinSuccess', { nickname, foundRoom });
-    if (foundRoom && foundRoom.gamestate === 'lobby' && foundRoom.players.length > 1) {
+    if (foundRoom && foundRoom.gamestate === 'lobby') {
       startChoose(foundRoom);
     }
   });

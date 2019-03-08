@@ -14,7 +14,7 @@ const Scores = () => (
           .map(player => (
             <div key={player.nickname}>
               <div className="score-row">
-                {context.state.isHost && context.state.kick && (
+                {context.state.isHost && context.state.showSettings && (
                   <IconButton onClick={() => context.onKickPlayer(player)} type="button">
                     <FontAwesomeIcon icon="times" />
                   </IconButton>
