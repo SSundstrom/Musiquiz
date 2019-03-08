@@ -141,7 +141,6 @@ class GameProvider extends Component {
       const { nickname } = this.state;
       this.setState({
         leader,
-        correctSong: null, // <-- chnage to view from correct song to showing who is up next.
         isLeader: leader.nickname === nickname,
       });
     });
@@ -153,7 +152,11 @@ class GameProvider extends Component {
       });
     });
     on('startChoose', () => {
-      this.setState({ started: true, guessed: false });
+      this.setState({
+        started: true,
+        guessed: false,
+        correctSong: null,
+      });
     });
     on('startRound', roundTime => {
       this.setState({

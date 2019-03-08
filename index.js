@@ -134,7 +134,7 @@ function pickLeader(room) {
   console.log('pickleader', room.name);
   // if picked leader has disconnected recently give them 30 seconds to reconnect before picking new leader.
   if (!leader.connected) {
-    timeouts[room.name].players[player.nickname] = setTimeout(
+    timeouts[room.name].players[leader.nickname] = setTimeout(
       ({ leader, room }) => {
         leader.active = false;
         pickLeader(room);
@@ -153,6 +153,7 @@ function startChoose(room) {
   if (gamestate === 'lobby' || gamestate === 'finished') {
     room.gamestate = 'choose';
     room.started = true;
+    room.selectedSong = null;
     pickLeader(room);
     io.to(room.name).emit('startChoose');
   }
@@ -183,7 +184,21 @@ function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
     console.log('startRound', room.roundTime);
-    room.players.forEach(player => (player.rounds += 1));
+    room.players.forEach(player => {
+      if (!player.connected) {
+        timeouts[room.name].players[player.nickname] = setTimeout(
+          ({ player, room }) => {
+            player.active = false;
+            pickLeader(room);
+            io.to(room.name).emit('playerDisconnected', player);
+            console.log(`${player.nickname} disconnected from ${room.name}`);
+          },
+          120000,
+          { player, room },
+        );
+      }
+      player.rounds += 1;
+    });
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', room.roundTime);
@@ -235,6 +250,7 @@ function calculateTime(roundStartTime, roundTime) {
 io.on('connection', socket => {
   socket.on('join', data => {
     const { nickname, name, sessionId } = data;
+    console.log('join', nickname);
     const foundRoom = rooms.find(r => r.name === name);
     const foundPlayer = foundRoom ? foundRoom.players.find(p => p.nickname === nickname) : null;
     if (!foundRoom) {
@@ -363,6 +379,7 @@ io.on('connection', socket => {
   });
 
   socket.on('disconnect', () => {
+    console.log('disonnect', socket.nickname);
     const foundRoom = rooms.find(r => r.name === socket.name);
     if (foundRoom) {
       if (socket.host) {
