@@ -124,7 +124,6 @@ function playSong(song, name) {
 }
 
 function pickLeader(room) {
-  console.log('pickleader', room.name);
   const leader = room.players
     .filter(player => player.active)
     .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
@@ -132,6 +131,20 @@ function pickLeader(room) {
   leader.leader += 1;
   room.leader = leader;
   io.to(room.name).emit('leader', leader);
+  console.log('pickleader', room.name);
+  // if picked leader has disconnected recently give them 30 seconds to reconnect before picking new leader.
+  if (!leader.connected) {
+    timeouts[room.name].players[player.nickname] = setTimeout(
+      ({ leader, room }) => {
+        leader.active = false;
+        pickLeader(room);
+        io.to(room.name).emit('playerDisconnected', leader);
+        console.log(`${leader.nickname} disconnected from ${room.name}`);
+      },
+      30000,
+      { leader, room },
+    );
+  }
 }
 
 function startChoose(room) {
@@ -231,13 +244,14 @@ io.on('connection', socket => {
       return socket.emit('playerAlreadyExists');
     }
     if (!foundPlayer) {
-      player = { nickname, active: true, score: 0, scoreUpdate: 0, rounds: 1, leader: 0, sessionId };
+      player = { nickname, active: true, connected: true, score: 0, scoreUpdate: 0, rounds: 1, leader: 0, sessionId };
       foundRoom.players.push(player);
       io.to(foundRoom.name).emit('playerJoined', player);
     } else {
       clearTimeout(timeouts[name].players[nickname]);
       foundPlayer.sessionId = sessionId;
       foundPlayer.active = true;
+      foundPlayer.connected = true;
       io.to(foundRoom.name).emit('playerJoined', foundPlayer);
     }
     socket.nickname = nickname;
@@ -357,19 +371,7 @@ io.on('connection', socket => {
       const { players } = foundRoom;
       const player = players.find(player => player.nickname === socket.nickname);
       if (player) {
-        // timeouts[foundRoom.name].players[player.nickname] = setTimeout(
-        //   ({ player, foundRoom }) => {
-        //     const { leader } = foundRoom;
-        //     if (leader && leader.nickname === socket.nickname) {
-        //       pickLeader(foundRoom);
-        //     }
-        //     player.active = false;
-        //     io.to(foundRoom.name).emit('playerDisconnected', player);
-        //     console.log(`${player.nickname} disconnected from ${foundRoom.name}`);
-        //   },
-        //   40000,
-        //   { player, foundRoom },
-        // );
+        player.connected = false;
       }
     }
   });

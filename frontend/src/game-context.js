@@ -57,11 +57,6 @@ class GameProvider extends Component {
     });
 
     on('playerAlreadyExists', () => {
-      const { cookies } = this.props;
-      const session = cookies.get('session');
-      if (session) {
-        this.setState();
-      }
       // alert('Player Already Exists');
     });
 
