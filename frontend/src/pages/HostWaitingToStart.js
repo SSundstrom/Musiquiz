@@ -7,7 +7,7 @@ const HostWaitingToStart = () => (
   <GameConsumer>
     {context => (
       <GameStyles>
-        <h2>Waiting for more players</h2>
+        <h2>Waiting for players</h2>
         <h2>{`Room code: ${context.state.name}`}</h2>
         <Players />
       </GameStyles>

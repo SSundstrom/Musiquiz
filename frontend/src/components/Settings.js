@@ -6,18 +6,17 @@ import { GameContext } from '../game-context';
 import Button from './styles/Button';
 
 const Settings = () => {
-  const [settings, changeSettings] = useState(false);
   const [time, changeTime] = useState(30);
   const [penalty, changePenalty] = useState(0);
   const context = useContext(GameContext);
-
+  const { state } = context;
   return (
     <SettingsStyles>
-      {settings ? (
+      {state.showSettings ? (
         <div className="settings">
           <h2 className="settings-header">
             Settings
-            <IconButton onClick={() => changeSettings(!settings)} type="button">
+            <IconButton onClick={() => context.onShowSettings()} type="button">
               <FontAwesomeIcon icon="times" />
             </IconButton>
           </h2>
@@ -61,7 +60,7 @@ const Settings = () => {
           </form>
         </div>
       ) : (
-        <IconButton onClick={() => changeSettings(!settings)} type="button">
+        <IconButton onClick={() => context.onShowSettings()} type="button">
           <FontAwesomeIcon icon="cog" />
         </IconButton>
       )}
