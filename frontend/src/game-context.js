@@ -155,24 +155,25 @@ class GameProvider extends Component {
       });
     });
 
-    on('stopRound', data => {
+    on('stopRound', ({ correctSong, gamestate }) => {
       this.setState({
         guessTimer: 0,
-        correctSong: data.selectedSong,
+        correctSong,
+        gamestate,
       });
     });
-    on('startChoose', () => {
+    on('startChoose', ({ gamestate }) => {
       this.setState({
         started: true,
         guessed: false,
-        correctSong: null,
+        gamestate,
       });
     });
-    on('startRound', roundTime => {
+    on('startRound', ({ roundTime, gamestate }) => {
       this.setState({
-        correctSong: null,
         guessed: false,
         guessTimer: roundTime / 1000,
+        gamestate,
       });
       this.startGuessTimer();
     });

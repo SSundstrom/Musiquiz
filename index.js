@@ -155,7 +155,7 @@ function startChoose(room) {
     room.started = true;
     room.selectedSong = null;
     pickLeader(room);
-    io.to(room.name).emit('startChoose');
+    io.to(room.name).emit('startChoose', { gamestate: room.gamestate });
   }
 }
 
@@ -174,7 +174,7 @@ function stopRound(room) {
     room.guesses = 0;
     room.gamestate = 'finished';
     room.guessTimer = 0;
-    io.to(room.name).emit('stopRound', { selectedSong });
+    io.to(room.name).emit('stopRound', { correctSong: selectedSong, gamestate: room.gamestate });
     setTimeout(applyUpdates, displayCorrectTime / 2, room);
     setTimeout(startChoose, displayCorrectTime, room);
   }
@@ -183,13 +183,12 @@ function stopRound(room) {
 function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
-    console.log('startRound', room.roundTime);
+    // start timeout conter for players
     room.players.forEach(player => {
       if (!player.connected) {
         timeouts[room.name].players[player.nickname] = setTimeout(
           ({ player, room }) => {
             player.active = false;
-            pickLeader(room);
             io.to(room.name).emit('playerDisconnected', player);
             console.log(`${player.nickname} disconnected from ${room.name}`);
           },
@@ -201,7 +200,7 @@ function startRound(room) {
     });
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
-    io.to(room.name).emit('startRound', room.roundTime);
+    io.to(room.name).emit('startRound', { roundTime: room.roundTime, gamestate: room.gamestate });
   }
 }
 

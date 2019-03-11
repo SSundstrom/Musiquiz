@@ -11,31 +11,36 @@ import HostScreen from './HostScreen';
 const Play = () => (
   <GameConsumer>
     {context => {
-      const { isHost, correctSong, guessTimer, isLeader } = context.state;
+      const { isHost, gamestate, isLeader } = context.state;
       if (isHost) {
         LogRocket.identify('Host', {});
         return <HostScreen />;
       }
       LogRocket.identify('Player', {});
-      // If there is a guessing timer, we are on the guess screen
-      if (guessTimer > 0) {
+
+      if (gamestate === 'midgame') {
         if (isLeader) {
           return <LeaderWaitingForGuesses />;
         }
-
         return <PlayerGuess />;
       }
 
       // If guess timer is 0 and correct song is known, show score view
-      if (correctSong) {
+      if (gamestate === 'finished') {
         return <ShowCorrectSong />;
       }
-
-      if (isLeader) {
-        return <LeaderChooseSong />;
+      if (gamestate === 'choose') {
+        if (isLeader) {
+          return <LeaderChooseSong />;
+        }
+        return <PlayerWaitingForLeader />;
       }
-
-      return <PlayerWaitingForLeader />;
+      return (
+        <div>
+          <h1>Error...</h1>
+          <h2> Please refresh page</h2>
+        </div>
+      );
     }}
   </GameConsumer>
 );

@@ -8,7 +8,7 @@ const ShowCorrectSong = () => (
   <GameConsumer>
     {context => (
       <PlayerStyles>
-        <h2>Correct song was</h2>
+        <h2>The correct song was...</h2>
         <div>
           <Track track={context.state.correctSong} />
           <Scores />

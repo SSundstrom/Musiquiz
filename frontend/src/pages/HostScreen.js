@@ -12,14 +12,15 @@ const HostScreen = () => {
   const context = useContext(GameContext);
 
   const { state } = context;
-  const { correctSong, players, name } = state;
+  const { correctSong, players, name, gamestate, leader, guessTimer } = state;
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
       <QR className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
       <div className="game">
-        <h1>{`Room code: ${name}`}</h1>
-        {state.guessTimer > 0 && <h1>{state.guessTimer}</h1>}
+        <h1>{name}</h1>
+        {gamestate === 'choose' && <h2>{`Waiting for ${leader.nickname} to choose a song`}</h2>}
+        {guessTimer > 0 && <h1>{guessTimer}</h1>}
         {correctSong && (
           <div>
             <span>The correct song was...</span>
