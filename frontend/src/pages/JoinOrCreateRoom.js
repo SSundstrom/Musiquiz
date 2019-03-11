@@ -1,7 +1,8 @@
+/* global window */
 import React, { Component } from 'react';
 import SpotifyPlayer, { auth } from '../playback';
 import Button from '../components/styles/Button';
-import GameStyles from '../components/styles/GameStyles';
+import PlayerStyles from '../components/styles/PlayerStyles';
 import { GameConsumer, GameContext } from '../game-context';
 
 class JoinOrCreateRoom extends Component {
@@ -15,6 +16,10 @@ class JoinOrCreateRoom extends Component {
 
   componentDidMount() {
     const { context } = this;
+    const name = parseInt(window.location.pathname.replace('/', ''), 10);
+    if (name) {
+      this.setState({ name });
+    }
     if (SpotifyPlayer.access_token) {
       context.onJoinAsHost();
     }
@@ -28,10 +33,11 @@ class JoinOrCreateRoom extends Component {
 
   render() {
     const { name, nickname } = this.state;
+
     return (
       <GameConsumer>
         {context => (
-          <GameStyles>
+          <PlayerStyles>
             <form
               onSubmit={e => {
                 e.preventDefault();
@@ -50,7 +56,7 @@ class JoinOrCreateRoom extends Component {
               <Button type="submit" value="Join" />
             </form>
             <Button type="button" onClick={() => auth()} value="Start a new game" />
-          </GameStyles>
+          </PlayerStyles>
         )}
       </GameConsumer>
     );

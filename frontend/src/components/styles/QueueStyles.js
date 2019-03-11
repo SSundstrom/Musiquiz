@@ -1,28 +1,19 @@
 import styled from '@emotion/styled';
 
-const ScoreStyles = styled.div`
-  .score-row {
+const QueueStyles = styled.div`
+  .queue-heading {
     display: flex;
     width: 100%;
     justify-content: space-between;
   }
-
-  .score-name {
+  .queue-label {
     justify-content: left;
     flex-grow: 1;
   }
-  .score-score {
+  .queue-name {
     display: flex;
     justify-self: right;
     justify-content: space-between;
   }
-  .score-score-score {
-    justify-self: left;
-  }
-
-  .score-score-addition {
-    justify-self: right;
-  }
 `;
-
-export default ScoreStyles;
+export default QueueStyles;

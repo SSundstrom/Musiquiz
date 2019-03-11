@@ -1,10 +1,6 @@
 import styled from '@emotion/styled';
 
 const SettingsStyles = styled.div`
-  grid-area: settings;
-  .settings {
-    padding: 0 5rem;
-  }
   .setting {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -12,6 +8,12 @@ const SettingsStyles = styled.div`
   .settings-header {
     display: flex;
     justify-content: space-between;
+  }
+  .cog {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
   }
 `;
 

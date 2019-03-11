@@ -9,58 +9,58 @@ import { on, emit } from './api';
 
 export const GameContext = React.createContext();
 export const GameConsumer = GameContext.Consumer;
-
+const initialState = {
+  name: null,
+  players: [],
+  isHost: false,
+  nickname: null,
+  started: false,
+  guessTimer: null,
+  isLeader: false,
+  leader: null,
+  correctSong: null,
+  songToPlay: null,
+  guessed: false,
+  showSettings: false,
+};
 // Then create a provider Component
 class GameProvider extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      name: null,
-      players: [],
-      isHost: false,
-      nickname: null,
-      started: false,
-      guessTimer: null,
-      isLeader: false,
-      leader: null,
-      correctSong: null,
-      songToPlay: null,
-      guessed: false,
-      showSettings: false,
+      ...initialState,
     };
   }
 
   componentDidMount() {
     const { cookies } = this.props;
-    const session = cookies.get('session');
-    if (session && session.nickname && session.name) {
-      console.log(session);
-      this.joinAsPlayer(session.nickname, session.name);
-    }
     on('disconnect', () => {
       console.log('disc');
     });
+
     on('connect', () => {
-      const { nickname, name } = this.state;
-      if (nickname) {
-        emit('join', { nickname, name });
+      const session = cookies.get('session');
+      if (session && session.nickname && session.name && session.sessionId) {
+        emit('join', { ...session });
       }
     });
 
     on('playerDisconnected', player => {
-      const { players } = this.state;
       if (player) {
-        this.setState({ players: players.filter(p => p.nickname !== player.nickname) });
+        this.setState({ players: this.updatePlayers(player) });
       }
     });
 
     on('roomNotFound', () => {
-      // alert('No such room');
+      this.setState({
+        ...initialState,
+      });
     });
 
     on('playerAlreadyExists', () => {
-      // alert('Player Already Exists');
+      this.setState({
+        ...initialState,
+      });
     });
 
     on('joinSuccess', ({ nickname, foundRoom }) => {
@@ -70,20 +70,24 @@ class GameProvider extends Component {
         isLeader: leader ? leader.nickname === nickname : false,
         ...foundRoom,
       });
-      this.startGuessTimer();
+      if (foundRoom.gamestate === 'midgame') {
+        this.startGuessTimer();
+      }
     });
+
     on('playerJoined', player => {
       const { players, nickname } = this.state;
       const foundPlayer = players.find(p => p.nickname === player.nickname);
       if (foundPlayer) {
         this.setState({
-          players: this.updatePlayers(foundPlayer),
+          players: this.updatePlayers(player),
         });
       } else if (player.nickname !== nickname) {
         players.push(player);
+        this.setState({ players });
       }
-      this.setState({ players });
     });
+
     on('kick', data => {
       const { nickname } = this.state;
       if (nickname === data) {
@@ -128,9 +132,11 @@ class GameProvider extends Component {
         guessed: thisPlayer ? true : guessed,
       });
     });
+
     on('updatePlayers', players => {
       this.setState({ players });
     });
+
     on('reset', () => {
       this.setState({
         name: null,
@@ -155,24 +161,27 @@ class GameProvider extends Component {
       });
     });
 
-    on('stopRound', data => {
+    on('stopRound', ({ correctSong, gamestate }) => {
       this.setState({
         guessTimer: 0,
-        correctSong: data.selectedSong,
+        correctSong,
+        gamestate,
       });
     });
-    on('startChoose', () => {
+
+    on('startChoose', ({ gamestate }) => {
       this.setState({
         started: true,
         guessed: false,
-        correctSong: null,
+        gamestate,
       });
     });
-    on('startRound', roundTime => {
+
+    on('startRound', ({ roundTime, gamestate }) => {
       this.setState({
-        correctSong: null,
         guessed: false,
         guessTimer: roundTime / 1000,
+        gamestate,
       });
       this.startGuessTimer();
     });
@@ -190,11 +199,10 @@ class GameProvider extends Component {
     });
   }
 
-
   onShowSettings() {
-    const { settings } = this.state;
+    const { showSettings } = this.state;
     this.setState({
-      showSettings: !settings,
+      showSettings: !showSettings,
     });
   }
 
