@@ -1,10 +1,9 @@
 import styled from '@emotion/styled';
 
 const BackgroundStyles = styled.div`
-  position: relative;
   display: grid;
   padding-top: 50px;
-  grid-template-rows: minmax(calc(100% - 50px), auto) 50px;
+  grid-template-rows: minmax(calc(100% - 50vh), auto) 50px;
   background-color: ${({ isLeader, guessed, correct, theme }) => {
     if (isLeader) {
       return theme.purple;

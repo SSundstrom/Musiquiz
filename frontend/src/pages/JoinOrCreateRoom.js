@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import SpotifyPlayer, { auth } from '../playback';
 import Button from '../components/styles/Button';
-import GameStyles from '../components/styles/GameStyles';
+import PlayerStyles from '../components/styles/PlayerStyles';
 import { GameConsumer, GameContext } from '../game-context';
 
 class JoinOrCreateRoom extends Component {
@@ -37,28 +37,26 @@ class JoinOrCreateRoom extends Component {
     return (
       <GameConsumer>
         {context => (
-          <React.Fragment>
-            <GameStyles>
-              <form
-                onSubmit={e => {
-                  e.preventDefault();
-                  context.onJoinAsPlayer(nickname, name);
-                  return false;
-                }}
-              >
-                <label htmlFor="nickname">
-                  Nickname
-                  <input id="nickname" value={nickname} onChange={this.handleChange.bind(this)} type="text" name="nickname" />
-                </label>
-                <label htmlFor="name">
-                  Room code
-                  <input id="name" value={name} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="name" />
-                </label>
-                <Button type="submit" value="Join" />
-              </form>
-              <Button type="button" onClick={() => auth()} value="Start a new game" />
-            </GameStyles>
-          </React.Fragment>
+          <PlayerStyles>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                context.onJoinAsPlayer(nickname, name);
+                return false;
+              }}
+            >
+              <label htmlFor="nickname">
+                Nickname
+                <input id="nickname" value={nickname} onChange={this.handleChange.bind(this)} type="text" name="nickname" />
+              </label>
+              <label htmlFor="name">
+                Room code
+                <input id="name" value={name} onChange={this.handleChange.bind(this)} type="number" min="1000" max="9999" name="name" />
+              </label>
+              <Button type="submit" value="Join" />
+            </form>
+            <Button type="button" onClick={() => auth()} value="Start a new game" />
+          </PlayerStyles>
         )}
       </GameConsumer>
     );

@@ -1,19 +1,19 @@
 import React from 'react';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
-import GameStyles from '../components/styles/GameStyles';
 import { GameConsumer } from '../game-context';
+import PlayerStyles from '../components/styles/PlayerStyles';
 
 const ShowCorrectSong = () => (
   <GameConsumer>
     {context => (
-      <GameStyles>
+      <PlayerStyles>
         <h2>Correct song was</h2>
         <div>
           <Track track={context.state.correctSong} />
           <Scores />
         </div>
-      </GameStyles>
+      </PlayerStyles>
     )}
   </GameConsumer>
 );

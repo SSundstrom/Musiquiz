@@ -16,7 +16,6 @@ const ScoreStyles = styled.div`
   }
   .score-score {
     display: flex;
-    min-width: 60px;
     justify-self: right;
     justify-content: space-between;
   }

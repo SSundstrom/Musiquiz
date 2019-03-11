@@ -1,6 +1,6 @@
 import React from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faExpand, faCompress, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ThemeProvider } from 'emotion-theming';
 import LogRocket from 'logrocket';
 import setupLogRocketReact from 'logrocket-react';

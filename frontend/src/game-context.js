@@ -191,9 +191,9 @@ class GameProvider extends Component {
   }
 
   onShowSettings() {
-    const { settings } = this.state;
+    const { showSettings } = this.state;
     this.setState({
-      showSettings: !settings,
+      showSettings: !showSettings,
     });
   }
 

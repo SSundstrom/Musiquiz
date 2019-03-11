@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 
 const QRStyles = styled.div`
-  display: grid;
-  justify-items: center;
-  align-items: center;
+  display: flex;
+  justify-content: center;
 `;
 
 export default QRStyles;
