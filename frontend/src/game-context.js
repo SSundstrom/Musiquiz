@@ -33,18 +33,14 @@ class GameProvider extends Component {
 
   componentDidMount() {
     const { cookies } = this.props;
-    const session = cookies.get('session');
-    if (session && session.nickname && session.name) {
-      console.log(session);
-      this.joinAsPlayer(session.nickname, session.name);
-    }
     on('disconnect', () => {
       console.log('disc');
     });
+
     on('connect', () => {
-      const { nickname, name } = this.state;
-      if (nickname) {
-        emit('join', { nickname, name });
+      const session = cookies.get('session');
+      if (session && session.nickname && session.name && session.sessionId) {
+        emit('join', { ...session });
       }
     });
 
@@ -56,11 +52,17 @@ class GameProvider extends Component {
     });
 
     on('roomNotFound', () => {
-      // alert('No such room');
+      this.setState({
+        nickname: null,
+        name: null,
+      });
     });
 
     on('playerAlreadyExists', () => {
-      // alert('Player Already Exists');
+      this.setState({
+        nickname: null,
+        name: null,
+      });
     });
 
     on('joinSuccess', ({ nickname, foundRoom }) => {
@@ -70,8 +72,11 @@ class GameProvider extends Component {
         isLeader: leader ? leader.nickname === nickname : false,
         ...foundRoom,
       });
-      this.startGuessTimer();
+      if (foundRoom.gamestate === 'midgame') {
+        this.startGuessTimer();
+      }
     });
+
     on('playerJoined', player => {
       const { players, nickname } = this.state;
       const foundPlayer = players.find(p => p.nickname === player.nickname);
@@ -84,6 +89,7 @@ class GameProvider extends Component {
       }
       this.setState({ players });
     });
+
     on('kick', data => {
       const { nickname } = this.state;
       if (nickname === data) {
@@ -128,9 +134,11 @@ class GameProvider extends Component {
         guessed: thisPlayer ? true : guessed,
       });
     });
+
     on('updatePlayers', players => {
       this.setState({ players });
     });
+
     on('reset', () => {
       this.setState({
         name: null,
@@ -162,6 +170,7 @@ class GameProvider extends Component {
         gamestate,
       });
     });
+
     on('startChoose', ({ gamestate }) => {
       this.setState({
         started: true,
@@ -169,6 +178,7 @@ class GameProvider extends Component {
         gamestate,
       });
     });
+
     on('startRound', ({ roundTime, gamestate }) => {
       this.setState({
         guessed: false,

@@ -248,8 +248,8 @@ function calculateTime(roundStartTime, roundTime) {
 
 io.on('connection', socket => {
   socket.on('join', data => {
+    console.log('join', data);
     const { nickname, name, sessionId } = data;
-    console.log('join', nickname);
     const foundRoom = rooms.find(r => r.name === name);
     const foundPlayer = foundRoom ? foundRoom.players.find(p => p.nickname === nickname) : null;
     if (!foundRoom) {
@@ -259,11 +259,13 @@ io.on('connection', socket => {
       return socket.emit('playerAlreadyExists');
     }
     if (!foundPlayer) {
+      console.log('join new', nickname);
       player = { nickname, active: true, connected: true, score: 0, scoreUpdate: 0, rounds: 1, leader: 0, sessionId };
       foundRoom.players.push(player);
       io.to(foundRoom.name).emit('playerJoined', player);
     } else {
-      clearTimeout(timeouts[name].players[nickname]);
+      console.log('join existing', nickname);
+      //clearTimeout(timeouts[name].players[nickname]);
       foundPlayer.sessionId = sessionId;
       foundPlayer.active = true;
       foundPlayer.connected = true;
@@ -326,7 +328,6 @@ io.on('connection', socket => {
       player.scoreUpdate = roundScore;
       player.correct = true;
       foundRoom.totalPoints += roundScore;
-      console.log('correct');
     } else {
       player.correct = false;
     }

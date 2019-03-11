@@ -11,7 +11,7 @@ import HostScreen from './HostScreen';
 const Play = () => (
   <GameConsumer>
     {context => {
-      const { isHost, gamestate, isLeader } = context.state;
+      const { isHost, gamestate, isLeader, loading } = context.state;
       if (isHost) {
         LogRocket.identify('Host', {});
         return <HostScreen />;
