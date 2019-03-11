@@ -7,6 +7,7 @@ import { GameContext } from '../game-context';
 import Settings from '../components/Settings';
 import HostScreenStyles from '../components/styles/HostScreenStyles';
 import QR from '../components/QR';
+import QueueStyles from '../components/styles/QueueStyles';
 
 const HostScreen = () => {
   const context = useContext(GameContext);
@@ -19,9 +20,19 @@ const HostScreen = () => {
       <div className="qr">
         <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
         {players && (
-          <div className="leader-queue">
-            {players.length > 0 && <p>{`Choosing now: ${players[0].nickname}`}</p>}
-            {players.length > 1 && <p>{`Next: ${players[1].nickname}`}</p>}
+          <QueueStyles>
+            {players.length > 0 && (
+              <div className="queue-heading">
+                <div className="queue-label">Choosing now:</div>
+                <div className="queue-name">{players[0].nickname}</div>
+              </div>
+            )}
+            {players.length > 1 && (
+              <div className="queue-heading">
+                <div className="queue-label">Next:</div>
+                <div className="queue-label">{players[1].nickname}</div>
+              </div>
+            )}
             {players.length > 2 && (
               <React.Fragment>
                 <hr />
@@ -33,7 +44,7 @@ const HostScreen = () => {
                   ))}
               </React.Fragment>
             )}
-          </div>
+          </QueueStyles>
         )}
       </div>
       <div className="game">
