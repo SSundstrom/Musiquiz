@@ -16,12 +16,31 @@ const HostScreen = () => {
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
-      <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
+      <div className="qr">
+        <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
+        {players && (
+          <div className="leader-queue">
+            {players.length > 0 && <p>{`Choosing now: ${players[0].nickname}`}</p>}
+            {players.length > 1 && <p>{`Next: ${players[1].nickname}`}</p>}
+            {players.length > 2 && (
+              <React.Fragment>
+                <hr />
+                {players
+                  .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
+                  .filter((p, index) => index > 1)
+                  .map(player => (
+                    <div>{player.nickname}</div>
+                  ))}
+              </React.Fragment>
+            )}
+          </div>
+        )}
+      </div>
       <div className="game">
         {gamestate === 'choose' && <h1>{`Waiting for ${leader.nickname}`}</h1>}
         {guessTimer > 0 && <h1>{`Time left: ${guessTimer}`}</h1>}
         <div className="content">
-          {correctSong && (
+          {gamestate !== 'midgame' && (
             <div>
               <span>The correct song was...</span>
               <Track track={correctSong} />
