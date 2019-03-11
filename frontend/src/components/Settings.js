@@ -57,7 +57,7 @@ class Settings extends Component {
           return (
             <SettingsStyles>
               {context.state.showSettings ? (
-                <div className="settings">
+                <div>
                   <h2 className="settings-header">
                     Settings
                     <IconButton onClick={() => context.onShowSettings()} type="button">

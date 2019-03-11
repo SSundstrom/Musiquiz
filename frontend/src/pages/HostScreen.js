@@ -16,24 +16,21 @@ const HostScreen = () => {
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
-      <QR className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
+      <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
       <div className="game">
-        <h1>{name}</h1>
-        {gamestate === 'choose' && <h2>{`Waiting for ${leader.nickname} to choose a song`}</h2>}
-        {guessTimer > 0 && <h1>{guessTimer}</h1>}
-        {correctSong && (
-          <div>
-            <span>The correct song was...</span>
-            <Track track={correctSong} />
-          </div>
-        )}
-        <div>
+        {gamestate === 'choose' && <h1>{`Waiting for ${leader.nickname}`}</h1>}
+        {guessTimer > 0 && <h1>{`Time left: ${guessTimer}`}</h1>}
+        <div className="content">
+          {correctSong && (
+            <div>
+              <span>The correct song was...</span>
+              <Track track={correctSong} />
+            </div>
+          )}
           <Scores isHost players={players} onKickPlayer={onKickPlayer} />
         </div>
       </div>
-      <div className="settings">
-        <Settings />
-      </div>
+      <Settings />
     </HostScreenStyles>
   );
 };

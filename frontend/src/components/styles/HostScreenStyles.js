@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 const HostScreenStyles = styled.div`
   display: grid;
   grid-template-areas: 'qr game settings';
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr;
   margin: 1rem;
   grid-gap: 1rem;
   justify-content: center;
@@ -19,6 +19,12 @@ const HostScreenStyles = styled.div`
 
   .game {
     grid-area: game;
+    .content {
+      width: 100%;
+      max-width: 640px;
+      margin: 1em auto;
+      font-size: 25px;
+    }
   }
   .settings {
     grid-area: settings;

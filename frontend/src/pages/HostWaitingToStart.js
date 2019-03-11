@@ -9,11 +9,12 @@ const HostWaitingToStart = () => (
   <GameConsumer>
     {context => (
       <HostScreenStyles>
-        <QR className="qr" size={256} value={`${window.location.href.replace('#', '')}${context.state.name}`} />
+        <QR name={context.state.name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${context.state.name}`} />
         <div className="game">
           <h1>Waiting for players</h1>
-          <h1>{context.state.name}</h1>
-          <Players />
+          <div className="content">
+            <Players />
+          </div>
         </div>
       </HostScreenStyles>
     )}

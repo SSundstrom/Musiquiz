@@ -1,8 +1,6 @@
 import styled from '@emotion/styled';
 
 const ScoreStyles = styled.div`
-  margin-top: 15px;
-
   .score-row {
     display: flex;
     width: 100%;
@@ -10,7 +8,6 @@ const ScoreStyles = styled.div`
   }
 
   .score-name {
-    font-size: 17px;
     justify-content: left;
     flex-grow: 1;
   }
