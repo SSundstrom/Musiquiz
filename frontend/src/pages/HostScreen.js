@@ -22,7 +22,7 @@ const HostScreen = () => {
         <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
         {players && (
           <QueueStyles>
-            {leader > 0 && (
+            {leader && (
               <div className="queue-heading">
                 <div className="queue-label">Choosing now:</div>
                 <div className="queue-name">{leader.nickname}</div>
@@ -31,7 +31,7 @@ const HostScreen = () => {
             {players.length > 1 && (
               <div className="queue-heading">
                 <div className="queue-label">Next:</div>
-                <div className="queue-name">{players.sort(leaderSort)[1].nickname}</div>
+                <div className="queue-name">{players.filter(p => p.active).sort(leaderSort)[1].nickname}</div>
               </div>
             )}
             {players.length > 2 && (
@@ -39,8 +39,20 @@ const HostScreen = () => {
                 <hr />
                 <div>Queue:</div>
                 {players
+                  .filter((p, index) => p.active && index > 1)
                   .sort(leaderSort)
-                  .filter((p, index) => index > 1)
+                  .map(player => (
+                    <div className="queue-label">{player.nickname}</div>
+                  ))}
+              </React.Fragment>
+            )}
+            {players.filter(p => !p.active).length > 0 && (
+              <React.Fragment>
+                <hr />
+                <div>Inactive:</div>
+                {players
+                  .filter(p => !p.active)
+                  .sort()
                   .map(player => (
                     <div className="queue-label">{player.nickname}</div>
                   ))}
@@ -53,7 +65,7 @@ const HostScreen = () => {
         {gamestate === 'choose' && <h1>{`Waiting for ${leader.nickname}`}</h1>}
         {guessTimer > 0 && <h1>{`Time left: ${guessTimer}`}</h1>}
         <div className="content">
-          {gamestate !== 'midgame' && (
+          {gamestate !== 'midgame' && correctSong && (
             <div>
               <span>The correct song was...</span>
               <Track track={correctSong} />

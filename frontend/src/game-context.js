@@ -9,25 +9,26 @@ import { on, emit } from './api';
 
 export const GameContext = React.createContext();
 export const GameConsumer = GameContext.Consumer;
-
+const initialState = {
+  name: null,
+  players: [],
+  isHost: false,
+  nickname: null,
+  started: false,
+  guessTimer: null,
+  isLeader: false,
+  leader: null,
+  correctSong: null,
+  songToPlay: null,
+  guessed: false,
+  showSettings: false,
+};
 // Then create a provider Component
 class GameProvider extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      name: null,
-      players: [],
-      isHost: false,
-      nickname: null,
-      started: false,
-      guessTimer: null,
-      isLeader: false,
-      leader: null,
-      correctSong: null,
-      songToPlay: null,
-      guessed: false,
-      showSettings: false,
+      ...initialState,
     };
   }
 
@@ -45,23 +46,20 @@ class GameProvider extends Component {
     });
 
     on('playerDisconnected', player => {
-      const { players } = this.state;
       if (player) {
-        this.setState({ players: players.filter(p => p.nickname !== player.nickname) });
+        this.setState({ players: this.updatePlayers(player) });
       }
     });
 
     on('roomNotFound', () => {
       this.setState({
-        nickname: null,
-        name: null,
+        ...initialState,
       });
     });
 
     on('playerAlreadyExists', () => {
       this.setState({
-        nickname: null,
-        name: null,
+        ...initialState,
       });
     });
 
@@ -82,12 +80,12 @@ class GameProvider extends Component {
       const foundPlayer = players.find(p => p.nickname === player.nickname);
       if (foundPlayer) {
         this.setState({
-          players: this.updatePlayers(foundPlayer),
+          players: this.updatePlayers(player),
         });
       } else if (player.nickname !== nickname) {
         players.push(player);
+        this.setState({ players });
       }
-      this.setState({ players });
     });
 
     on('kick', data => {

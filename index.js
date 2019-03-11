@@ -132,19 +132,6 @@ function pickLeader(room) {
   room.leader = leader;
   io.to(room.name).emit('leader', leader);
   console.log('pickleader', room.name);
-  // if picked leader has disconnected recently give them 30 seconds to reconnect before picking new leader.
-  // if (!leader.connected) {
-  //   timeouts[room.name].players[leader.nickname] = setTimeout(
-  //     ({ leader, room }) => {
-  //       leader.active = false;
-  //       pickLeader(room);
-  //       io.to(room.name).emit('playerDisconnected', leader);
-  //       console.log(`${leader.nickname} disconnected from ${room.name}`);
-  //     },
-  //     30000,
-  //     { leader, room },
-  //   );
-  // }
 }
 
 function startChoose(room) {
@@ -183,21 +170,6 @@ function stopRound(room) {
 function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
-    // start timeout conter for players
-    // room.players.forEach(player => {
-    //   if (!player.connected) {
-    //     timeouts[room.name].players[player.nickname] = setTimeout(
-    //       ({ player, room }) => {
-    //         player.active = false;
-    //         io.to(room.name).emit('playerDisconnected', player);
-    //         console.log(`${player.nickname} disconnected from ${room.name}`);
-    //       },
-    //       120000,
-    //       { player, room },
-    //     );
-    //   }
-    //   player.rounds += 1;
-    // });
     room.players.forEach(player => (player.rounds += 1));
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
@@ -266,7 +238,7 @@ io.on('connection', socket => {
       io.to(foundRoom.name).emit('playerJoined', player);
     } else {
       console.log('join existing', nickname);
-      //clearTimeout(timeouts[name].players[nickname]);
+      clearTimeout(timeouts[name].players[nickname]);
       foundPlayer.sessionId = sessionId;
       foundPlayer.active = true;
       foundPlayer.connected = true;
@@ -277,9 +249,8 @@ io.on('connection', socket => {
     socket.join(name);
     if (foundRoom.gamestate === 'midgame') {
       foundRoom.guessTimer = calculateTime(foundRoom.roundStartTime, foundRoom.roundTime);
-    } else if (foundRoom.gamestate === 'finished') {
-      foundRoom.correctSong = foundRoom.selectedSong;
     }
+    foundRoom.correctSong = foundRoom.selectedSong;
     socket.emit('joinSuccess', { nickname, foundRoom });
     if (foundRoom && foundRoom.gamestate === 'lobby') {
       startChoose(foundRoom);
@@ -389,6 +360,16 @@ io.on('connection', socket => {
       const player = players.find(player => player.nickname === socket.nickname);
       if (player) {
         player.connected = false;
+        timeouts[foundRoom.name].players[player.nickname] = setTimeout(
+          (player, room) => {
+            player.active = false;
+            io.to(room.name).emit('playerDisconnected', player);
+            console.log(`${player.nickname} disconnected from ${room.name}`);
+          },
+          300000,
+          player,
+          foundRoom,
+        );
       }
     }
   });
