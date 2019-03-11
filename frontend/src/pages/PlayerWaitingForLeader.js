@@ -8,10 +8,10 @@ const PlayerWaitingForLeader = () => (
   <GameConsumer>
     {context => (
       <PlayerStyles>
-        <h2>{`Waiting for ${context.state.leader.nickname} to choose a song`}</h2>
+        <h2>{`Waiting for ${context.state.leader.nickname}`}</h2>
         {context.state.correctSong && (
           <div>
-            <h2>The correct song was...</h2>
+            <span>The correct song was...</span>
             <Track track={context.state.correctSong} />
           </div>
         )}

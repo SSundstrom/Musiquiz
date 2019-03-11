@@ -198,6 +198,7 @@ function startRound(room) {
     //   }
     //   player.rounds += 1;
     // });
+    room.players.forEach(player => (player.rounds += 1));
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', { roundTime: room.roundTime, gamestate: room.gamestate });

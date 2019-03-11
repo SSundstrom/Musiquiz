@@ -7,7 +7,7 @@ const LeaderChooseSong = () => (
   <GameConsumer>
     {context => (
       <PlayerStyles>
-        <h2>Dude, enter a song name</h2>
+        <h2>Pick a song</h2>
         <Search name={context.state.name} recommendations onSelectSong={context.onSelectSong} />
       </PlayerStyles>
     )}

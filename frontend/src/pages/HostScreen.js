@@ -9,6 +9,7 @@ import HostScreenStyles from '../components/styles/HostScreenStyles';
 import QR from '../components/QR';
 import QueueStyles from '../components/styles/QueueStyles';
 
+const leaderSort = (first, second) => first.leader / first.rounds - second.leader / second.rounds;
 const HostScreen = () => {
   const context = useContext(GameContext);
 
@@ -21,26 +22,27 @@ const HostScreen = () => {
         <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
         {players && (
           <QueueStyles>
-            {players.length > 0 && (
+            {leader > 0 && (
               <div className="queue-heading">
                 <div className="queue-label">Choosing now:</div>
-                <div className="queue-name">{players[0].nickname}</div>
+                <div className="queue-name">{leader.nickname}</div>
               </div>
             )}
             {players.length > 1 && (
               <div className="queue-heading">
                 <div className="queue-label">Next:</div>
-                <div className="queue-label">{players[1].nickname}</div>
+                <div className="queue-name">{players.sort(leaderSort)[1].nickname}</div>
               </div>
             )}
             {players.length > 2 && (
               <React.Fragment>
                 <hr />
+                <div>Queue:</div>
                 {players
-                  .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
+                  .sort(leaderSort)
                   .filter((p, index) => index > 1)
                   .map(player => (
-                    <div>{player.nickname}</div>
+                    <div className="queue-label">{player.nickname}</div>
                   ))}
               </React.Fragment>
             )}

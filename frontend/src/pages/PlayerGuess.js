@@ -10,7 +10,7 @@ const PlayerGuess = () => (
       <PlayerStyles>
         <h1>{context.state.guessTimer}</h1>
         {!context.state.guessed ? (
-          <Search title="Guess the song name" onSelectSong={context.onGuess} />
+          <Search title="Guess the song" onSelectSong={context.onGuess} />
         ) : (
           <div>
             <h2>Waiting for other players</h2>
