@@ -99,7 +99,7 @@ app.get('/recommendations/:name', (req, res) => {
 
 app.use('/', express.static('frontend/build'));
 
-http.listen(8888, () => {
+http.listen(process.env.PORT, () => {
   console.log('Example app listening on port 8888!');
 });
 

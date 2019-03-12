@@ -14,7 +14,9 @@ const HostScreen = () => {
   const context = useContext(GameContext);
 
   const { state } = context;
-  const { correctSong, players, name, gamestate, leader, guessTimer } = state;
+
+  const { correctSong, players, name, gamestate, leader, guessTimer, songToPlay } = state;
+
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
@@ -74,7 +76,7 @@ const HostScreen = () => {
           <Scores isHost players={players} onKickPlayer={onKickPlayer} />
         </div>
       </div>
-      <Settings />
+      <Settings songToPlay={songToPlay} />
     </HostScreenStyles>
   );
 };
