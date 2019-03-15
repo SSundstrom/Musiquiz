@@ -9,12 +9,12 @@ import HostScreenStyles from '../components/styles/HostScreenStyles';
 import QR from '../components/QR';
 import QueueStyles from '../components/styles/QueueStyles';
 
-const leaderSort = (first, second) => first.leader / first.rounds - second.leader / second.rounds;
 const HostScreen = () => {
   const context = useContext(GameContext);
 
   const { state } = context;
-  const { correctSong, players, name, gamestate, leader, guessTimer, songToPlay } = state;
+  const { correctSong, players, name, gamestate, leader, guessTimer, leaderTimer, songToPlay } = state;
+  const nonLeaders = players.filter(p => p.active && p.nickname !== leader.nickname);
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
@@ -28,19 +28,18 @@ const HostScreen = () => {
                 <div className="queue-name">{leader.nickname}</div>
               </div>
             )}
-            {players.length > 1 && (
+            {nonLeaders.length > 0 && (
               <div className="queue-heading">
                 <div className="queue-label">Next:</div>
-                <div className="queue-name">{players.filter(p => p.active).sort(leaderSort)[1].nickname}</div>
+                <div className="queue-name">{nonLeaders[0].nickname}</div>
               </div>
             )}
-            {players.length > 2 && (
+            {nonLeaders.length > 1 && (
               <React.Fragment>
                 <hr />
                 <div>Queue:</div>
-                {players
-                  .filter((p, index) => p.active && index > 1)
-                  .sort(leaderSort)
+                {nonLeaders
+                  .filter((p, index) => index > 0)
                   .map(player => (
                     <div className="queue-label">{player.nickname}</div>
                   ))}
@@ -63,6 +62,7 @@ const HostScreen = () => {
       </div>
       <div className="game">
         {gamestate === 'choose' && <h1>{`Waiting for ${leader.nickname}`}</h1>}
+        {leaderTimer > 0 && <h1>{`Reconnect within ${leaderTimer} seconds`}</h1>}
         {guessTimer > 0 && <h1>{`Time left: ${guessTimer}`}</h1>}
         <div className="content">
           {gamestate !== 'midgame' && correctSong && (
