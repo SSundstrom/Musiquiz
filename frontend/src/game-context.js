@@ -16,6 +16,7 @@ const initialState = {
   nickname: null,
   started: false,
   guessTimer: null,
+  leaderTimer: null,
   isLeader: false,
   leader: null,
   joined: false,
@@ -84,9 +85,13 @@ class GameProvider extends Component {
     });
 
     on('playerJoined', player => {
-      const { players, nickname } = this.state;
+      const { leader, players, nickname } = this.state;
       const foundPlayer = players.find(p => p.nickname === player.nickname);
       if (foundPlayer) {
+        if (leader.nickname === foundPlayer.nickname) {
+          clearInterval(this.leaderInterval);
+          this.setState({ leaderTimer: 0 });
+        }
         this.setState({
           players: this.updatePlayers(player),
         });
@@ -106,6 +111,7 @@ class GameProvider extends Component {
           nickname: null,
           started: false,
           guessTimer: null,
+          leaderTimer: null,
           isLeader: false,
           joined: false,
           leader: null,
@@ -186,7 +192,27 @@ class GameProvider extends Component {
         gamestate,
       });
     });
-
+    on('leaderTimeout', leaderTime => {
+      this.setState({
+        leaderTimer: leaderTime / 1000,
+      });
+      clearInterval(this.leaderInterval);
+      this.leaderInterval = undefined;
+      this.leaderInterval = setInterval(() => {
+        const { leaderTimer } = this.state;
+        if (leaderTimer < 1) {
+          clearInterval(this.leaderInterval);
+          this.leaderInterval = undefined;
+          this.setState({
+            leaderTimer: 0,
+          });
+          return;
+        }
+        this.setState({
+          leaderTimer: leaderTimer - 1,
+        });
+      }, 1000);
+    });
     on('startRound', ({ roundTime, gamestate }) => {
       this.setState({
         guessed: false,
@@ -218,9 +244,12 @@ class GameProvider extends Component {
 
   updatePlayers(player) {
     const { players } = this.state;
-    const newPlayers = players.filter(p => p.nickname !== player.nickname);
-    newPlayers.push(player);
-    return newPlayers;
+    return players.map(p => {
+      if (p.nickname === player.nickname) {
+        return player;
+      }
+      return p;
+    });
   }
 
   startGuessTimer() {
@@ -303,7 +332,7 @@ class GameProvider extends Component {
           onJoinAsHost: () => this.joinAsHost(),
           onGuess: song => this.guess(song),
           onSelectSong: song => this.selectSong(song),
-          onSaveSettings: time => this.sendSettings(time),
+          onSaveSettings: settings => this.sendSettings(settings),
           onShowSettings: () => this.onShowSettings(),
           lucky: name => this.lucky(name),
         }}

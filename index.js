@@ -126,13 +126,34 @@ function playSong(song, name) {
 }
 
 function pickLeader(room) {
-  const leader = room.players
-    .filter(player => player.active)
-    .sort((first, second) => first.leader / first.rounds - second.leader / second.rounds)
-    .find(p => p);
-  leader.leader += 1;
+  let leader = room.players.shift();
+  if (room.leader && room.leader.nickname === leader.nickname) {
+    room.players.push(leader);
+    leader = room.players.shift();
+  }
+  while (!leader.active) {
+    room.players.push(leader);
+    leader = room.players.shift();
+  }
+  room.players.push(leader);
+  if (!leader.connected) {
+    clearTimeout(timeouts[room.name].players[leader.nickname]);
+    timeouts[room.name].players[leader.nickname] = setTimeout(
+      (player, room) => {
+        player.active = false;
+        pickLeader(room);
+        io.to(room.name).emit('playerDisconnected', leader);
+        console.log(`${leader.nickname} disconnected from ${room.name}`);
+      },
+      room.leaderTime,
+      leader,
+      room,
+    );
+    io.to(room.name).emit('leaderTimeout', room.leaderTime);
+  }
   room.leader = leader;
   io.to(room.name).emit('leader', leader);
+  io.to(room.name).emit('updatePlayers', room.players);
   console.log('pickleader', room.name);
 }
 
@@ -172,7 +193,6 @@ function stopRound(room) {
 function startRound(room) {
   if (room.gamestate === 'choose') {
     room.gamestate = 'midgame';
-    room.players.forEach(player => (player.rounds += 1));
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
     io.to(room.name).emit('startRound', { roundTime: room.roundTime, gamestate: room.gamestate });
@@ -241,7 +261,6 @@ io.on('connection', socket => {
     }
   });
   socket.on('join', data => {
-    console.log('join', data);
     const { nickname, name, sessionId } = data;
     const foundRoom = rooms.find(r => r.name === name);
     const foundPlayer = foundRoom ? foundRoom.players.find(p => p.nickname === nickname) : null;
@@ -253,7 +272,7 @@ io.on('connection', socket => {
     }
     if (!foundPlayer) {
       console.log('join new', nickname);
-      player = { nickname, active: true, connected: true, score: 0, scoreUpdate: 0, rounds: 1, leader: 0, sessionId };
+      player = { nickname, active: true, connected: true, score: 0, scoreUpdate: 0, sessionId };
       foundRoom.players.push(player);
       io.to(foundRoom.name).emit('playerJoined', player);
     } else {
@@ -279,6 +298,7 @@ io.on('connection', socket => {
 
   socket.on('hostJoin', () => {
     const roundTime = 30000;
+    const leaderTime = 10000;
     const displayCorrectTime = 10000;
     socket.host = true;
     let creatingName = true;
@@ -292,6 +312,7 @@ io.on('connection', socket => {
     const room = {
       name: socket.name,
       roundTime,
+      leaderTime,
       displayCorrectTime,
       players: [],
       guesses: 0,
@@ -356,6 +377,7 @@ io.on('connection', socket => {
     if (foundRoom) {
       foundRoom.roundTime = settings.time * 1000;
       foundRoom.penalty = settings.penalty;
+      foundRoom.leaderTime = settings.leaderTime * 1000;
       //TODO send settings
     }
   });
@@ -386,7 +408,7 @@ io.on('connection', socket => {
             io.to(room.name).emit('playerDisconnected', player);
             console.log(`${player.nickname} disconnected from ${room.name}`);
           },
-          300000,
+          foundRoom.roundTime,
           player,
           foundRoom,
         );
