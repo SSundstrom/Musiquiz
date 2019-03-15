@@ -15,6 +15,7 @@ const HostScreen = () => {
   const { state } = context;
   const { correctSong, players, name, gamestate, leader, guessTimer, leaderTimer, songToPlay } = state;
   const nonLeaders = players.filter(p => p.active && p.nickname !== leader.nickname);
+
   const { onKickPlayer } = context;
   return (
     <HostScreenStyles>
