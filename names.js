@@ -15,8 +15,6 @@ const names = [
   'Quizling',
   'Carola HäggQuizt',
   'Jesus Quiztus',
-  
-  
 ];
 
 module.exports = names;
