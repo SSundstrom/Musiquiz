@@ -52,6 +52,7 @@ class GameProvider extends Component {
     });
 
     on('roomNotFound', () => {
+      cookies.remove('session');
       this.setState({
         ...initialState,
       });
