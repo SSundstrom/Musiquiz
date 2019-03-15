@@ -36,7 +36,9 @@ const JoinOrCreateRoom = () => {
   }, []);
 
   useEffect(() => {
-    setNickname(contextNickname);
+    if (contextNickname) {
+      setNickname(contextNickname);
+    }
   }, [contextNickname]);
   return (
     <PlayerStyles>
@@ -47,15 +49,6 @@ const JoinOrCreateRoom = () => {
           return false;
         }}
       >
-        <label htmlFor="nickname">
-          Nickname
-          <NicknameContainer>
-            <input id="nickname" value={nickname} onChange={event => setNickname(event.target.value)} type="text" name="nickname" />
-            <div>
-              <LuckyButton type="button" value="🍀" onClick={() => context.lucky(name)} />
-            </div>
-          </NicknameContainer>
-        </label>
         <label htmlFor="name">
           Room code
           <input
@@ -69,6 +62,15 @@ const JoinOrCreateRoom = () => {
             name="name"
           />
         </label>
+        <label htmlFor="nickname">
+          Nickname
+          <NicknameContainer>
+            <input id="nickname" value={nickname} onChange={event => setNickname(event.target.value)} type="text" name="nickname" />
+            <div>
+              <LuckyButton type="button" value="🍀" onClick={() => context.lucky(name)} />
+            </div>
+          </NicknameContainer>
+        </label>
         <Button type="submit" value="Join" />
       </form>
       <Button type="button" onClick={() => auth()} value="Start a new game" />
@@ -76,5 +78,4 @@ const JoinOrCreateRoom = () => {
   );
 };
 
-JoinOrCreateRoom.contextType = GameContext;
 export default JoinOrCreateRoom;
