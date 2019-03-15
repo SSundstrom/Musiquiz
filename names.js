@@ -10,6 +10,13 @@ const names = [
   'Quiztarina den Store',
   'Quizopatra',
   'Napoleon Quizoparte',
+  'Quiztiano Ronaldo',
+  'Quizius Ceasar',
+  'Quizling',
+  'Carola HäggQuizt',
+  'Jesus Quiztus',
+  
+  
 ];
 
 module.exports = names;
