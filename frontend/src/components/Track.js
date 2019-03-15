@@ -13,8 +13,8 @@ const Track = ({ onClick, track }) => (
         <div className="trackinfo">
           <div className="trackname">{track.name}</div>
           <div className="trackartists">
-            {track.artists.map(artist => (
-              <span key={artist.name}>{artist.name}</span>
+            {track.artists.map((artist, index) => (
+              <span key={artist.name}>{`${artist.name}${index !== track.artists.length - 1 ? ', ' : ''}`}</span>
             ))}
           </div>
         </div>
