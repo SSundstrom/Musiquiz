@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
 import SettingsStyles from './styles/SettingsStyles';
 import IconButton from './styles/IconButton';
 import { GameConsumer } from '../game-context';
@@ -12,9 +13,9 @@ class Settings extends Component {
     this.state = {
       devices: [],
       time: 30,
+      leaderTime: 10,
       penalty: 0,
       selectedDevice: SpotifyPlayer.device_id,
-      settings: false,
     };
   }
 
@@ -53,7 +54,7 @@ class Settings extends Component {
     return (
       <GameConsumer>
         {context => {
-          const { penalty, time } = this.state;
+          const { penalty, leaderTime, time } = this.state;
           return (
             <SettingsStyles>
               {context.state.showSettings ? (
@@ -75,7 +76,7 @@ class Settings extends Component {
                     className="settings-form"
                     onSubmit={e => {
                       e.preventDefault();
-                      context.onSaveSettings({ time, penalty });
+                      context.onSaveSettings({ time, leaderTime, penalty });
                       return false;
                     }}
                   >
@@ -90,6 +91,22 @@ class Settings extends Component {
                           this.setState({ time: event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value })
                         }
                         value={time}
+                        step="1"
+                        min="1"
+                        max="180"
+                      />
+                    </label>
+                    <label className="setting" htmlFor="time">
+                      Leader timeout:
+                      <input
+                        id="time"
+                        name="time"
+                        className="timer-input"
+                        type="number"
+                        onChange={event =>
+                          this.setState({ leaderTime: event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value })
+                        }
+                        value={leaderTime}
                         step="1"
                         min="1"
                         max="180"
@@ -126,5 +143,10 @@ class Settings extends Component {
     );
   }
 }
-
+Settings.propTypes = {
+  songToPlay: PropTypes.string,
+};
+Settings.defaultProps = {
+  songToPlay: '',
+};
 export default Settings;

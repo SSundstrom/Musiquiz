@@ -16,8 +16,10 @@ const initialState = {
   nickname: null,
   started: false,
   guessTimer: null,
+  leaderTimer: null,
   isLeader: false,
   leader: null,
+  joined: false,
   correctSong: null,
   songToPlay: null,
   guessed: false,
@@ -44,7 +46,9 @@ class GameProvider extends Component {
         emit('join', { ...session });
       }
     });
-
+    on('lucky', nickname => {
+      this.setState({ nickname });
+    });
     on('playerDisconnected', player => {
       if (player) {
         this.setState({ players: this.updatePlayers(player) });
@@ -52,6 +56,7 @@ class GameProvider extends Component {
     });
 
     on('roomNotFound', () => {
+      cookies.remove('session');
       this.setState({
         ...initialState,
       });
@@ -63,22 +68,30 @@ class GameProvider extends Component {
       });
     });
 
-    on('joinSuccess', ({ nickname, foundRoom }) => {
-      const { leader } = foundRoom;
+    on('joinSuccess', ({ nickname, room }) => {
+      const { leader } = room;
       this.setState({
         nickname,
+        joined: true,
         isLeader: leader ? leader.nickname === nickname : false,
-        ...foundRoom,
+        ...room,
       });
-      if (foundRoom.gamestate === 'midgame') {
+      const session = cookies.get('session');
+      session.nickname = nickname;
+      cookies.set('session', session);
+      if (room.gamestate === 'midgame') {
         this.startGuessTimer();
       }
     });
 
     on('playerJoined', player => {
-      const { players, nickname } = this.state;
+      const { leader, players, nickname } = this.state;
       const foundPlayer = players.find(p => p.nickname === player.nickname);
       if (foundPlayer) {
+        if (leader.nickname === foundPlayer.nickname) {
+          clearInterval(this.leaderInterval);
+          this.setState({ leaderTimer: 0 });
+        }
         this.setState({
           players: this.updatePlayers(player),
         });
@@ -98,7 +111,9 @@ class GameProvider extends Component {
           nickname: null,
           started: false,
           guessTimer: null,
+          leaderTimer: null,
           isLeader: false,
+          joined: false,
           leader: null,
           correctSong: null,
           songToPlay: null,
@@ -146,6 +161,7 @@ class GameProvider extends Component {
         started: false,
         guessTimer: null,
         isLeader: false,
+        joined: false,
         leader: null,
         correctSong: null,
         songToPlay: null,
@@ -176,7 +192,27 @@ class GameProvider extends Component {
         gamestate,
       });
     });
-
+    on('leaderTimeout', leaderTime => {
+      this.setState({
+        leaderTimer: leaderTime / 1000,
+      });
+      clearInterval(this.leaderInterval);
+      this.leaderInterval = undefined;
+      this.leaderInterval = setInterval(() => {
+        const { leaderTimer } = this.state;
+        if (leaderTimer < 1) {
+          clearInterval(this.leaderInterval);
+          this.leaderInterval = undefined;
+          this.setState({
+            leaderTimer: 0,
+          });
+          return;
+        }
+        this.setState({
+          leaderTimer: leaderTimer - 1,
+        });
+      }, 1000);
+    });
     on('startRound', ({ roundTime, gamestate }) => {
       this.setState({
         guessed: false,
@@ -208,9 +244,12 @@ class GameProvider extends Component {
 
   updatePlayers(player) {
     const { players } = this.state;
-    const newPlayers = players.filter(p => p.nickname !== player.nickname);
-    newPlayers.push(player);
-    return newPlayers;
+    return players.map(p => {
+      if (p.nickname === player.nickname) {
+        return player;
+      }
+      return p;
+    });
   }
 
   startGuessTimer() {
@@ -232,13 +271,18 @@ class GameProvider extends Component {
     }, 1000);
   }
 
+  lucky(name) {
+    console.log(name);
+    emit('lucky', name);
+  }
+
   joinAsPlayer(nickname, name) {
     const { cookies } = this.props;
     const session = cookies.get('session');
     if (!session || session.name !== name) {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      cookies.set('session', { sessionId: uuidv4(), nickname, name }, { path: '/', expires: tomorrow });
+      cookies.set('session', { sessionId: uuidv4(), name }, { path: '/', expires: tomorrow });
     }
     if (!nickname.length) {
       return;
@@ -288,8 +332,9 @@ class GameProvider extends Component {
           onJoinAsHost: () => this.joinAsHost(),
           onGuess: song => this.guess(song),
           onSelectSong: song => this.selectSong(song),
-          onSaveSettings: time => this.sendSettings(time),
+          onSaveSettings: settings => this.sendSettings(settings),
           onShowSettings: () => this.onShowSettings(),
+          lucky: name => this.lucky(name),
         }}
       >
         {children}
