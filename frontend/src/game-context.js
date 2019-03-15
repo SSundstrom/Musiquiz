@@ -18,6 +18,7 @@ const initialState = {
   guessTimer: null,
   isLeader: false,
   leader: null,
+  joined: false,
   correctSong: null,
   songToPlay: null,
   guessed: false,
@@ -44,7 +45,9 @@ class GameProvider extends Component {
         emit('join', { ...session });
       }
     });
-
+    on('lucky', nickname => {
+      this.setState({ nickname });
+    });
     on('playerDisconnected', player => {
       if (player) {
         this.setState({ players: this.updatePlayers(player) });
@@ -64,14 +67,18 @@ class GameProvider extends Component {
       });
     });
 
-    on('joinSuccess', ({ nickname, foundRoom }) => {
-      const { leader } = foundRoom;
+    on('joinSuccess', ({ nickname, room }) => {
+      const { leader } = room;
       this.setState({
         nickname,
+        joined: true,
         isLeader: leader ? leader.nickname === nickname : false,
-        ...foundRoom,
+        ...room,
       });
-      if (foundRoom.gamestate === 'midgame') {
+      const session = cookies.get('session');
+      session.nickname = nickname;
+      cookies.set('session', session);
+      if (room.gamestate === 'midgame') {
         this.startGuessTimer();
       }
     });
@@ -233,13 +240,18 @@ class GameProvider extends Component {
     }, 1000);
   }
 
+  lucky(name) {
+    console.log(name);
+    emit('lucky', name);
+  }
+
   joinAsPlayer(nickname, name) {
     const { cookies } = this.props;
     const session = cookies.get('session');
     if (!session || session.name !== name) {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      cookies.set('session', { sessionId: uuidv4(), nickname, name }, { path: '/', expires: tomorrow });
+      cookies.set('session', { sessionId: uuidv4(), name }, { path: '/', expires: tomorrow });
     }
     if (!nickname.length) {
       return;
@@ -291,6 +303,7 @@ class GameProvider extends Component {
           onSelectSong: song => this.selectSong(song),
           onSaveSettings: time => this.sendSettings(time),
           onShowSettings: () => this.onShowSettings(),
+          lucky: name => this.lucky(name),
         }}
       >
         {children}

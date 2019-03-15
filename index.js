@@ -1,4 +1,6 @@
 const SpotifyWebApi = require('spotify-web-api-node');
+const luckyNames = require('./names');
+
 require('dotenv').load();
 // credentials are optional
 const spotifyApi = new SpotifyWebApi({
@@ -220,6 +222,24 @@ function calculateTime(roundStartTime, roundTime) {
 // -------------- IO - Events --------------
 
 io.on('connection', socket => {
+  socket.on('lucky', name => {
+    const foundRoom = rooms.find(r => r.name === name);
+    if (foundRoom) {
+      let foundName = false;
+      const names = luckyNames;
+      while (!foundName && names.length > 0) {
+        const index = Math.floor(Math.random() * (names.length - 1));
+        const nickname = names[index];
+        const existingPlayer = foundRoom.players.find(player => player.nickname === nickname);
+        if (existingPlayer) {
+          names.splice(index, index);
+        } else {
+          foundName = true;
+          socket.emit('lucky', nickname);
+        }
+      }
+    }
+  });
   socket.on('join', data => {
     console.log('join', data);
     const { nickname, name, sessionId } = data;
@@ -251,7 +271,7 @@ io.on('connection', socket => {
       foundRoom.guessTimer = calculateTime(foundRoom.roundStartTime, foundRoom.roundTime);
     }
     foundRoom.correctSong = foundRoom.selectedSong;
-    socket.emit('joinSuccess', { nickname, foundRoom });
+    socket.emit('joinSuccess', { nickname, room: foundRoom });
     if (foundRoom && foundRoom.gamestate === 'lobby') {
       startChoose(foundRoom);
     }

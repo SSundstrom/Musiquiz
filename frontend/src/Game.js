@@ -9,8 +9,8 @@ const Game = () => (
   <ContentStyles>
     <GameConsumer>
       {context => {
-        const { nickname, isHost, started } = context.state;
-        if (!nickname && !isHost) {
+        const { joined, isHost, started } = context.state;
+        if (!joined && !isHost) {
           return <JoinOrCreateRoom />;
         }
         if (!started) {
