@@ -239,6 +239,14 @@ function calculateTime(roundStartTime, roundTime) {
   return roundScore;
 }
 
+function calculatePoints(roundStartTime, roundTime, minPoints, maxPoints) {
+  const current = new Date();
+  const div = maxPoints / (maxPoints - minPoints);
+  const diff = current.getTime() - roundStartTime.getTime();
+  const roundScore = Math.round(maxPoints * (1 - diff / roundTime / div));
+  return roundScore;
+}
+
 // -------------- IO - Events --------------
 
 io.on('connection', socket => {
@@ -337,7 +345,7 @@ io.on('connection', socket => {
       guessedSong.uri === selectedSong.uri ||
       (compareArtist(selectedSong.artists, guessedSong.artists) && compareSong(selectedSong.name, guessedSong.name))
     ) {
-      const roundScore = calculateTime(roundStartTime, roundTime);
+      const roundScore = calculatePoints(roundStartTime, roundTime, foundRoom.minPoints, foundRoom.maxPoints);
       player.scoreUpdate = roundScore;
       player.correct = true;
       foundRoom.totalPoints += roundScore;
@@ -378,6 +386,8 @@ io.on('connection', socket => {
       foundRoom.roundTime = settings.time * 1000;
       foundRoom.penalty = settings.penalty;
       foundRoom.leaderTime = settings.leaderTime * 1000;
+      foundRoom.maxPoints = settings.maxPoints;
+      foundRoom.minPoints = settings.minPoints;
       //TODO send settings
     }
   });
