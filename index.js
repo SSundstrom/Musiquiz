@@ -382,13 +382,13 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('kick', ({ player, name }) => {
+  socket.on('kick', ({ nickname, name }) => {
     const foundRoom = rooms.find(r => r.name === name);
-    foundRoom.players = foundRoom.players.filter(p => p.nickname !== player.nickname);
-    if (foundRoom.leader.nickname === player.nickname) {
+    foundRoom.players = foundRoom.players.filter(p => p.nickname !== nickname);
+    if (foundRoom.leader.nickname === nickname) {
       pickLeader(foundRoom);
     }
-    io.to(name).emit('kick', player.nickname);
+    io.to(name).emit('kick', nickname);
   });
 
   socket.on('disconnect', () => {

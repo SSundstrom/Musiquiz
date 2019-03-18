@@ -231,6 +231,7 @@ class GameProvider extends Component {
     on('hostJoin', data => {
       this.setState({
         ...data,
+        joined: true,
       });
     });
   }
@@ -271,11 +272,6 @@ class GameProvider extends Component {
     }, 1000);
   }
 
-  lucky(name) {
-    console.log(name);
-    emit('lucky', name);
-  }
-
   joinAsPlayer(nickname, name) {
     const { cookies } = this.props;
     const session = cookies.get('session');
@@ -299,9 +295,18 @@ class GameProvider extends Component {
     );
   }
 
-  kickPlayer(player) {
+  kickPlayer(nickname) {
     const { name } = this.state;
-    emit('kick', { name, player });
+    emit('kick', { name, nickname });
+  }
+
+  leave() {
+    const { name, nickname } = this.state;
+    emit('kick', { name, nickname });
+  }
+
+  lucky(name) {
+    emit('lucky', name);
   }
 
   guess(song) {
@@ -335,6 +340,7 @@ class GameProvider extends Component {
           onSaveSettings: settings => this.sendSettings(settings),
           onShowSettings: () => this.onShowSettings(),
           lucky: name => this.lucky(name),
+          leave: () => this.leave(),
         }}
       >
         {children}

@@ -1,13 +1,12 @@
 import React from 'react';
-import Scores from '../components/Scores';
-import Track from '../components/Track';
-import { GameConsumer } from '../game-context';
-import PlayerStyles from '../components/styles/PlayerStyles';
+import Scores from '../../components/Scores';
+import Track from '../../components/Track';
+import { GameConsumer } from '../../game-context';
 
-const PlayerWaitingForLeader = () => (
+const GuesserWaitingForLeader = () => (
   <GameConsumer>
     {context => (
-      <PlayerStyles>
+      <React.Fragment>
         <h2>{`Waiting for ${context.state.leader.nickname}`}</h2>
         {context.state.correctSong && (
           <div>
@@ -16,9 +15,9 @@ const PlayerWaitingForLeader = () => (
           </div>
         )}
         <Scores />
-      </PlayerStyles>
+      </React.Fragment>
     )}
   </GameConsumer>
 );
 
-export default PlayerWaitingForLeader;
+export default GuesserWaitingForLeader;
