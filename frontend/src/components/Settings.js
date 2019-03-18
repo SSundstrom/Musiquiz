@@ -16,6 +16,8 @@ class Settings extends Component {
       time: 30,
       leaderTime: 10,
       penalty: 0,
+      maxPoints: 50,
+      minPoints: 10,
       selectedDevice: SpotifyPlayer.device_id,
     };
   }
@@ -30,8 +32,8 @@ class Settings extends Component {
       });
       context.onSaveSettings(settings);
     } else {
-      const { penalty, leaderTime, time } = this.state;
-      cookies.set('settings', { time, leaderTime, penalty }, { path: '/' });
+      const { penalty, leaderTime, time, maxPoints, minPoints } = this.state;
+      cookies.set('settings', { time, leaderTime, penalty, maxPoints, minPoints }, { path: '/' });
     }
     this.updateDevices(SpotifyPlayer.device_id);
     this.playSong('spotify:track:1DCNcPA0Y9ukY5AlXAZKUm');
@@ -68,7 +70,7 @@ class Settings extends Component {
     return (
       <GameConsumer>
         {context => {
-          const { penalty, leaderTime, time } = this.state;
+          const { penalty, leaderTime, time, minPoints, maxPoints } = this.state;
           return (
             <SettingsStyles>
               {context.state.showSettings ? (
@@ -90,8 +92,8 @@ class Settings extends Component {
                     className="settings-form"
                     onSubmit={e => {
                       e.preventDefault();
-                      cookies.set('settings', { time, leaderTime, penalty }, { path: '/' });
-                      context.onSaveSettings({ time, leaderTime, penalty });
+                      cookies.set('settings', { time, leaderTime, penalty, minPoints, maxPoints }, { path: '/' });
+                      context.onSaveSettings({ time, leaderTime, penalty, minPoints, maxPoints });
                       return false;
                     }}
                   >
@@ -111,11 +113,11 @@ class Settings extends Component {
                         max="180"
                       />
                     </label>
-                    <label className="setting" htmlFor="time">
+                    <label className="setting" htmlFor="leaderTime">
                       Leader timeout:
                       <input
-                        id="time"
-                        name="time"
+                        id="leaderTime"
+                        name="leaderTime"
                         className="timer-input"
                         type="number"
                         onChange={event =>
@@ -138,6 +140,38 @@ class Settings extends Component {
                           this.setState({ penalty: event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value })
                         }
                         value={penalty}
+                        step="1"
+                        min="0"
+                        max="180"
+                      />
+                    </label>
+                    <label className="setting" htmlFor="minPoints">
+                      Min points:
+                      <input
+                        id="minPoints"
+                        name="minPoints"
+                        className="timer-input"
+                        type="number"
+                        onChange={event =>
+                          this.setState({ minPoints: event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value })
+                        }
+                        value={minPoints}
+                        step="1"
+                        min="0"
+                        max="180"
+                      />
+                    </label>
+                    <label className="setting" htmlFor="maxPoints">
+                      Max points:
+                      <input
+                        id="maxPoints"
+                        name="maxPoints"
+                        className="timer-input"
+                        type="number"
+                        onChange={event =>
+                          this.setState({ maxPoints: event.target.type === 'number' ? parseInt(event.target.value, 10) : event.target.value })
+                        }
+                        value={maxPoints}
                         step="1"
                         min="0"
                         max="180"
