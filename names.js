@@ -13,7 +13,7 @@ const names = [
   'Carola HäggQuizt',
   'Jesus Quiztus',
   'Quiz Pratt',
-  'Quizten Stweart',
+  'Quizten Stewart',
   
 ];
 
