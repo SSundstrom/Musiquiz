@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import SettingsStyles from './styles/SettingsStyles';
 import IconButton from './styles/IconButton';
-import { GameConsumer } from '../game-context';
+import { GameConsumer, GameContext } from '../game-context';
 import Button from './styles/Button';
 import SpotifyPlayer from '../playback';
 
@@ -20,6 +21,18 @@ class Settings extends Component {
   }
 
   componentDidMount() {
+    const { cookies } = this.props;
+    const { context } = this;
+    const settings = cookies.get('settings');
+    if (settings) {
+      this.setState({
+        ...settings,
+      });
+      context.onSaveSettings(settings);
+    } else {
+      const { penalty, leaderTime, time } = this.state;
+      cookies.set('settings', { time, leaderTime, penalty }, { path: '/' });
+    }
     this.updateDevices(SpotifyPlayer.device_id);
     this.playSong('spotify:track:1DCNcPA0Y9ukY5AlXAZKUm');
   }
@@ -51,6 +64,7 @@ class Settings extends Component {
 
   render() {
     const { devices, selectedDevice } = this.state;
+    const { cookies } = this.props;
     return (
       <GameConsumer>
         {context => {
@@ -76,6 +90,7 @@ class Settings extends Component {
                     className="settings-form"
                     onSubmit={e => {
                       e.preventDefault();
+                      cookies.set('settings', { time, leaderTime, penalty }, { path: '/' });
                       context.onSaveSettings({ time, leaderTime, penalty });
                       return false;
                     }}
@@ -143,10 +158,14 @@ class Settings extends Component {
     );
   }
 }
+Settings.contextType = GameContext;
 Settings.propTypes = {
   songToPlay: PropTypes.string,
+  cookies: PropTypes.instanceOf(Cookies).isRequired,
 };
+
 Settings.defaultProps = {
   songToPlay: '',
 };
-export default Settings;
+
+export default withCookies(Settings);
