@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unused-state */
-/* global alert */
 // first we will make a new context
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
