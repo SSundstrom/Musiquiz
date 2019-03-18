@@ -4,7 +4,7 @@ const HostScreenStyles = styled.div`
   display: grid;
   grid-template-areas: 'qr game settings';
   grid-template-columns: 1fr 2fr 1fr;
-  margin: 1rem;
+  margin-top: 3rem;
   grid-gap: 1rem;
   justify-content: center;
 

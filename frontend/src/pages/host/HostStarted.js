@@ -1,19 +1,20 @@
 /* global window */
 
 import React, { useContext } from 'react';
-import Scores from '../components/Scores';
-import Track from '../components/Track';
-import { GameContext } from '../game-context';
-import Settings from '../components/Settings';
-import HostScreenStyles from '../components/styles/HostScreenStyles';
-import QR from '../components/QR';
-import QueueStyles from '../components/styles/QueueStyles';
+import LogRocket from 'logrocket';
+import Scores from '../../components/Scores';
+import Track from '../../components/Track';
+import { GameContext } from '../../game-context';
+import Settings from '../../components/Settings';
+import HostScreenStyles from '../../components/styles/HostScreenStyles';
+import QR from '../../components/QR';
+import QueueStyles from '../../components/styles/QueueStyles';
 
-const HostScreen = () => {
+const HostStarted = () => {
   const context = useContext(GameContext);
-
   const { state } = context;
   const { correctSong, players, name, gamestate, leader, guessTimer, leaderTimer, songToPlay } = state;
+  LogRocket.identify('Host', { room: name });
   const nonLeaders = players.filter(p => p.active && p.nickname !== leader.nickname);
 
   const { onKickPlayer } = context;
@@ -80,4 +81,4 @@ const HostScreen = () => {
   );
 };
 
-export default HostScreen;
+export default HostStarted;

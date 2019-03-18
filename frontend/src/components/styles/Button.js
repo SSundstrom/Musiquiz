@@ -10,6 +10,7 @@ const Button = styled.input`
   padding: 10px;
   margin: auto;
   max-width: 50%;
+  text-align: center;
   min-width: 250px;
   margin-bottom: 20px;
   font-family: inherit;

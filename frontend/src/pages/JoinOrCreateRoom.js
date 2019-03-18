@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import SpotifyPlayer, { auth } from '../playback';
 import Button from '../components/styles/Button';
-import PlayerStyles from '../components/styles/PlayerStyles';
+import ContentStyles from '../components/styles/ContentStyles';
 import { GameContext } from '../game-context';
 
 const NicknameContainer = styled.div`
@@ -41,7 +41,7 @@ const JoinOrCreateRoom = () => {
     }
   }, [contextNickname]);
   return (
-    <PlayerStyles>
+    <ContentStyles>
       <form
         onSubmit={e => {
           e.preventDefault();
@@ -74,7 +74,7 @@ const JoinOrCreateRoom = () => {
         <Button type="submit" value="Join" />
       </form>
       <Button type="button" onClick={() => auth()} value="Start a new game" />
-    </PlayerStyles>
+    </ContentStyles>
   );
 };
 

@@ -1,13 +1,12 @@
 import React from 'react';
-import Scores from '../components/Scores';
-import Search from '../components/Search';
-import { GameConsumer } from '../game-context';
-import PlayerStyles from '../components/styles/PlayerStyles';
+import Scores from '../../components/Scores';
+import Search from '../../components/Search';
+import { GameConsumer } from '../../game-context';
 
-const PlayerGuess = () => (
+const Guess = () => (
   <GameConsumer>
     {context => (
-      <PlayerStyles>
+      <React.Fragment>
         <h1>{context.state.guessTimer}</h1>
         {!context.state.guessed ? (
           <Search title="Guess the song" onSelectSong={context.onGuess} />
@@ -17,9 +16,9 @@ const PlayerGuess = () => (
             <Scores />
           </div>
         )}
-      </PlayerStyles>
+      </React.Fragment>
     )}
   </GameConsumer>
 );
 
-export default PlayerGuess;
+export default Guess;

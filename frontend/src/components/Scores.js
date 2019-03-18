@@ -15,7 +15,7 @@ const Scores = () => (
             <div key={player.nickname}>
               <div className="score-row">
                 {context.state.isHost && context.state.showSettings && (
-                  <IconButton onClick={() => context.onKickPlayer(player)} type="button">
+                  <IconButton onClick={() => context.onKickPlayer(player.nickname)} type="button">
                     <FontAwesomeIcon icon="times" />
                   </IconButton>
                 )}
