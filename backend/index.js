@@ -23,9 +23,6 @@ function getToken() {
     data => {
       console.log(`The access token expires in ${data.body.expires_in}`);
       console.log(`The access token is ${data.body.access_token}`);
-
-      // Save the access token so that it's used in future calls
-      spotifyApi.setAccessToken(data.body.access_token);
     },
     err => {
       console.log('Something went wrong when retrieving an access token', err);
@@ -102,7 +99,7 @@ app.get('/recommendations/:name', (req, res) => {
 app.use('/', express.static('frontend/build'));
 
 http.listen(process.env.PORT, () => {
-  console.log('Example app listening on port ' + process.env.PORT  + '!');
+  console.log('Example app listening on port ' + process.env.PORT + '!');
 });
 
 // --------------------------- Functions ---------------------------------
