@@ -10,7 +10,7 @@ const LuckyButton = styled(Button)`
   border: none;
   font-size: 30px;
   margin: 0;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   align-self: end;
 `;
 const Input = styled.input`
@@ -38,7 +38,7 @@ const Join = () => {
           return false;
         }}
       >
-        <label className="input" htmlFor="nickname">
+        <label htmlFor="nickname" className="input">
           Enter a nickname
           <Input
             placeholder="Nickname"

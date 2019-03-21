@@ -1,55 +1,41 @@
-const SpotifyWebApi = require('spotify-web-api-node');
-const luckyNames = require('./names');
-
-require('dotenv').load();
-// credentials are optional
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: '',
-});
-
 const express = require('express');
 
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+require('dotenv').load();
+
+const luckyNames = require('./names');
 
 let rooms = [];
 const timeouts = {};
 
-function getToken() {
-  spotifyApi.clientCredentialsGrant().then(
-    data => {
-      console.log(`The access token expires in ${data.body.expires_in}`);
-      console.log(`The access token is ${data.body.access_token}`);
-    },
-    err => {
-      console.log('Something went wrong when retrieving an access token', err);
-    },
-  );
-}
+const searchApi = require('./searchApi');
+const spotifyPlayerApi = require('./playerApi');
 
-getToken();
+app.get('/callback', (req, res) => {
+  console.log(req);
+});
 
-// Refresh token before 1h.
-setInterval(getToken, 3598000);
-
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
 app.get('/search/:name', (req, res) => {
-  spotifyApi.searchTracks(req.params.name, { market: 'SE' }).then(
-    data => {
-      res.send(data);
-    },
-    err => {
-      console.error(err);
-    },
-  );
+  searchApi
+    .searchTracks(req.params.name, {
+      market: 'SE',
+    })
+    .then(
+      data => {
+        res.send(data);
+      },
+      err => {
+        console.error(err);
+      },
+    );
 });
 let averageDanceability = 0.5;
 let averageEnergy = 0.5;
@@ -81,7 +67,7 @@ app.get('/recommendations/:name', (req, res) => {
       averageEnergy = 0.8;
     }
 
-    spotifyApi
+    searchApi
       .getRecommendations({
         /* min_danceability: averageDanceability-0.2, max_danceability: averageDanceability+0.2,
        min_energy: averageEnergy-0.2, max_energy: averageEnergy+0.2, */
@@ -91,15 +77,15 @@ app.get('/recommendations/:name', (req, res) => {
         res.send(rec);
       })
       .catch(e => {
-        console.log(e);
+        console.log('77: ', e);
       });
   }
 });
 
-app.use('/', express.static('frontend/build'));
+app.use('/', express.static('../frontend/build'));
 
 http.listen(process.env.PORT, () => {
-  console.log('Example app listening on port ' + process.env.PORT + '!');
+  console.log(`Example app listening on port ${process.env.PORT}!`);
 });
 
 // --------------------------- Functions ---------------------------------
@@ -108,6 +94,7 @@ function resetRoom(room) {
   rooms = rooms.filter(r => r.name !== room.name);
   io.to(room.name).emit('reset');
 }
+
 function applyUpdates(room) {
   room.players.forEach(player => {
     player.score += player.scoreUpdate;
@@ -162,7 +149,9 @@ function startChoose(room) {
     room.started = true;
     room.selectedSong = null;
     pickLeader(room);
-    io.to(room.name).emit('startChoose', { gamestate: room.gamestate });
+    io.to(room.name).emit('startChoose', {
+      gamestate: room.gamestate,
+    });
   }
 }
 
@@ -181,7 +170,10 @@ function stopRound(room) {
     room.guesses = 0;
     room.gamestate = 'finished';
     room.guessTimer = 0;
-    io.to(room.name).emit('stopRound', { correctSong: selectedSong, gamestate: room.gamestate });
+    io.to(room.name).emit('stopRound', {
+      correctSong: selectedSong,
+      gamestate: room.gamestate,
+    });
     setTimeout(applyUpdates, displayCorrectTime / 2, room);
     setTimeout(startChoose, displayCorrectTime, room);
   }
@@ -192,12 +184,15 @@ function startRound(room) {
     room.gamestate = 'midgame';
     timeouts[room.name].round = setTimeout(stopRound, room.roundTime, room);
     room.roundStartTime = new Date();
-    io.to(room.name).emit('startRound', { roundTime: room.roundTime, gamestate: room.gamestate });
+    io.to(room.name).emit('startRound', {
+      roundTime: room.roundTime,
+      gamestate: room.gamestate,
+    });
   }
 }
 
 function analyzeSong(id, room) {
-  spotifyApi.getAudioFeaturesForTrack(id).then(
+  searchApi.getAudioFeaturesForTrack(id).then(
     data => {
       room.danceabilityArray.push(data.body.danceability);
       room.energyArray.push(data.body.energy);
@@ -277,7 +272,14 @@ io.on('connection', socket => {
     }
     if (!foundPlayer) {
       console.log('join new', nickname);
-      player = { nickname, active: true, connected: true, score: 0, scoreUpdate: 0, sessionId };
+      player = {
+        nickname,
+        active: true,
+        connected: true,
+        score: 0,
+        scoreUpdate: 0,
+        sessionId,
+      };
       foundRoom.players.push(player);
       io.to(foundRoom.name).emit('playerJoined', player);
     } else {
@@ -295,27 +297,39 @@ io.on('connection', socket => {
       foundRoom.guessTimer = calculateTime(foundRoom.roundStartTime, foundRoom.roundTime);
     }
     foundRoom.correctSong = foundRoom.selectedSong;
-    socket.emit('joinSuccess', { nickname, room: foundRoom });
+    socket.emit('joinSuccess', {
+      nickname,
+      room: foundRoom,
+    });
     if (foundRoom && foundRoom.gamestate === 'lobby') {
       startChoose(foundRoom);
     }
   });
 
-  socket.on('hostJoin', () => {
-    const roundTime = 30000;
-    const leaderTime = 10000;
-    const displayCorrectTime = 10000;
-    socket.host = true;
+  socket.on('hostJoin', ({ uri }) => {
     let creatingName = true;
     let name;
     while (creatingName) {
       name = Math.floor(Math.random() * (9999 - 1000) + 1000);
       creatingName = rooms.find(r => r.name === name);
     }
-    timeouts[name] = { round: {}, players: {} };
+    const redirectUri = `http://localhost:8888/callback`;
+    const auth = spotifyPlayerApi.getAuthUri(redirectUri, { name, user: socket });
+    socket.emit('hostJoin', auth);
+
+    return;
+    const roundTime = 30000;
+    const leaderTime = 10000;
+    const displayCorrectTime = 10000;
+
+    timeouts[name] = {
+      round: {},
+      players: {},
+    };
     socket.name = name;
     const room = {
       name: socket.name,
+      spotifyPlayer: undefined,
       roundTime,
       leaderTime,
       displayCorrectTime,
@@ -385,7 +399,7 @@ io.on('connection', socket => {
       foundRoom.leaderTime = settings.leaderTime * 1000;
       foundRoom.maxPoints = settings.maxPoints;
       foundRoom.minPoints = settings.minPoints;
-      //TODO send settings
+      // TODO send settings
     }
   });
 

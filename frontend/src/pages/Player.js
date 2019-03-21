@@ -36,6 +36,6 @@ const Player = ({ match }) => {
   );
 };
 Player.propTypes = {
-  match: PropTypes.object.isRequired;
+  match: PropTypes.object.isRequired,
 };
 export default Player;

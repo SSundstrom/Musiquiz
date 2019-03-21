@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unused-state */
+/* global window */
 // first we will make a new context
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -228,6 +229,7 @@ class GameProvider extends Component {
     });
 
     on('hostJoin', data => {
+      window.location = data;
       this.setState({
         ...data,
         joined: true,
@@ -285,12 +287,17 @@ class GameProvider extends Component {
     emit('join', { nickname, name, sessionId: cookies.get('session').sessionId });
   }
 
+  joinRoom(name) {
+    const { cookies } = this.props;
+    emit('joinRoom', name);
+  }
+
   joinAsHost() {
     this.setState(
       {
         isHost: true,
       },
-      () => emit('hostJoin'),
+      () => emit('hostJoin', { uri: window.location.origin }),
     );
   }
 
