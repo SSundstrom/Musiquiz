@@ -1,6 +1,6 @@
 module.exports = {
   extends: ['airbnb', 'prettier'],
-  plugins: ['emotion', 'prettier'],
+  plugins: ['prettier'],
   rules: {
     'no-console': 'off',
     'object-curly-newline': 'off',
