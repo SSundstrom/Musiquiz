@@ -19,6 +19,8 @@ const initialState = {
   isLeader: false,
   leader: null,
   joined: false,
+  roomNotFound: false,
+  playerAlreadyExists: false,
   correctSong: null,
   songToPlay: null,
   guessed: false,
@@ -58,12 +60,14 @@ class GameProvider extends Component {
       cookies.remove('session');
       this.setState({
         ...initialState,
+        roomNotFound: true,
       });
     });
 
     on('playerAlreadyExists', () => {
       this.setState({
         ...initialState,
+        playerAlreadyExists: true,
       });
     });
 
@@ -153,18 +157,7 @@ class GameProvider extends Component {
 
     on('reset', () => {
       this.setState({
-        name: null,
-        players: [],
-        isHost: false,
-        nickname: null,
-        started: false,
-        guessTimer: null,
-        isLeader: false,
-        joined: false,
-        leader: null,
-        correctSong: null,
-        songToPlay: null,
-        guessed: false,
+        ...initialState,
       });
     });
 
@@ -279,9 +272,6 @@ class GameProvider extends Component {
       tomorrow.setDate(tomorrow.getDate() + 1);
       cookies.set('session', { sessionId: uuidv4(), name }, { path: '/', expires: tomorrow });
     }
-    if (!nickname.length) {
-      return;
-    }
     emit('join', { nickname, name, sessionId: cookies.get('session').sessionId });
   }
 
@@ -325,6 +315,14 @@ class GameProvider extends Component {
     emit('selectedSong', { song, name });
   }
 
+  clearRoomNotFound() {
+    this.setState({ roomNotFound: false });
+  }
+
+  clearPlayerAlreadyExists() {
+    this.setState({ playerAlreadyExists: false });
+  }
+
   render() {
     const { children } = this.props;
     return (
@@ -340,6 +338,8 @@ class GameProvider extends Component {
           onShowSettings: () => this.onShowSettings(),
           lucky: name => this.lucky(name),
           leave: () => this.leave(),
+          clearRoomNotFound: () => this.clearRoomNotFound(),
+          clearPlayerAlreadyExists: () => this.clearPlayerAlreadyExists(),
         }}
       >
         {children}

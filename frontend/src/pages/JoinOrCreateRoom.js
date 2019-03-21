@@ -6,10 +6,8 @@ import Button from '../components/styles/Button';
 import ContentStyles from '../components/styles/ContentStyles';
 import { GameContext } from '../game-context';
 
-const NicknameContainer = styled.div`
-  display: grid;
-  grid-template-columns: 9fr 1fr;
-`;
+import Field from '../components/Field';
+import useField from './hooks/useField';
 
 const LuckyButton = styled(Button)`
   max-width: 100%;
@@ -17,62 +15,103 @@ const LuckyButton = styled(Button)`
   padding: 0;
   border: none;
   font-size: 30px;
+  margin-bottom: 0;
   margin-top: 10px;
 `;
 const JoinOrCreateRoom = () => {
-  const [nickname, setNickname] = useState('');
-  const [name, setName] = useState('');
   const context = useContext(GameContext);
   const { state } = context;
-  const { nickname: contextNickname } = state;
+  const { nickname: contextNickname, roomNotFound, playerAlreadyExists } = state;
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const nicknameField = useField('nickname', {
+    defaultValue: '',
+    validations: [value => value.length === 0 && 'Nickname required', () => playerAlreadyExists && 'Player already exists'],
+  });
+  const nameField = useField('name', {
+    defaultValue: '',
+    validations: [value => value.length === 0 && 'Room code required', () => roomNotFound && 'Room not found'],
+  });
   useEffect(() => {
     const roomName = parseInt(window.location.pathname.replace('/', ''), 10);
     if (roomName) {
-      setName(roomName);
+      nameField.setValue(roomName);
     }
     if (SpotifyPlayer.access_token) {
       context.onJoinAsHost();
     }
   }, []);
-
   useEffect(() => {
     if (contextNickname) {
-      setNickname(contextNickname);
+      nicknameField.setValue(contextNickname);
     }
   }, [contextNickname]);
+
+  useEffect(() => {
+    if (nameField.pristine) return;
+    nameField.validate();
+  }, [roomNotFound]);
+
+  useEffect(() => {
+    if (nicknameField.pristine) return;
+    nicknameField.validate();
+  }, [playerAlreadyExists]);
+
+  const luckyButton = (
+    <LuckyButton
+      type="button"
+      value="🍀"
+      onClick={() => {
+        nicknameField.validate();
+        nameField.validate();
+        context.lucky(parseInt(nameField.value, 10));
+      }}
+    />
+  );
   return (
     <ContentStyles>
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          context.onJoinAsPlayer(nickname, name);
-          return false;
-        }}
-      >
-        <label htmlFor="name">
-          Room code
-          <input
+      <div>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            context.onJoinAsPlayer(nicknameField.value, parseInt(nameField.value, 10));
+            setFormSubmitted(true);
+            nameField.validate();
+            nicknameField.validate();
+          }}
+        >
+          <Field
             id="name"
-            value={name}
-            onChange={event => setName(parseInt(event.target.value, 10))}
-            onPaste={event => setName(parseInt(event.target.value, 10))}
+            label="Enter room code"
+            placeholder="Room code"
             type="number"
             min="1000"
             max="9999"
             name="name"
+            formSubmitted={formSubmitted}
+            onChange={event => {
+              context.clearRoomNotFound();
+              nameField.onChange(event);
+            }}
+            {...nameField}
           />
-        </label>
-        <label htmlFor="nickname">
-          Nickname
-          <NicknameContainer>
-            <input id="nickname" value={nickname} onChange={event => setNickname(event.target.value)} type="text" name="nickname" />
-            <div>
-              <LuckyButton type="button" value="🍀" onClick={() => context.lucky(name)} />
-            </div>
-          </NicknameContainer>
-        </label>
-        <Button type="submit" value="Join" />
-      </form>
+
+          <Field
+            label="Choose a nickname"
+            placeholder="Nickname"
+            id="nickname"
+            type="text"
+            name="nickname"
+            button={luckyButton}
+            onChange={event => {
+              context.clearPlayerAlreadyExists();
+              nicknameField.onChange(event);
+            }}
+            formSubmitted={formSubmitted}
+            {...nicknameField}
+          />
+          <Button type="submit" value="Join" />
+        </form>
+      </div>
       <Button type="button" onClick={() => auth()} value="Start a new game" />
     </ContentStyles>
   );

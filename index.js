@@ -266,6 +266,8 @@ io.on('connection', socket => {
           socket.emit('lucky', nickname);
         }
       }
+    } else {
+      socket.emit('roomNotFound');
     }
   });
   socket.on('join', data => {

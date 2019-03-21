@@ -8,6 +8,7 @@ export const theme = {
   green: '#66bf39',
   orange: '#eb670f',
   red: '#f35',
+  lightRed: '#fff2f4',
   purple: '#864cbf',
 };
 
@@ -18,7 +19,6 @@ export const GlobalSyles = () => (
       body {
         margin: 0;
         padding: 0;
-
         font-weight: 700;
         font-size: 20px;
         color: #fff;
@@ -27,7 +27,6 @@ export const GlobalSyles = () => (
       * {
         font-family: 'Montserrat';
         box-sizing: border-box;
-        text-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
       }
 
       *:focus {
@@ -68,15 +67,13 @@ export const GlobalSyles = () => (
       label {
         margin-bottom: 10px;
       }
-      input[type='text'],
-      input[type='number'] {
+      input {
         border: none;
         border-radius: 7px;
         padding: 0.5em;
         font-size: 18px;
         display: block;
         width: 100%;
-        margin-bottom: 20px;
         margin-top: 10px;
         text-shadow: none;
       }
