@@ -65,9 +65,6 @@ export const GlobalSyles = () => (
         margin-bottom: 30px;
         text-shadow: none;
       }
-      label {
-        margin-bottom: 10px;
-      }
       input[type='text'],
       input[type='number'] {
         border: none;

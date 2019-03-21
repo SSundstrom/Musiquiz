@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 const BackgroundStyles = styled.div`
   display: grid;
-  grid-template-rows: minmax(calc(100% - 50vh), auto) 50px;
+  grid-template-rows: 1fr auto;
   background-color: ${({ isLeader, guessed, correct, theme }) => {
     if (isLeader) {
       return theme.purple;

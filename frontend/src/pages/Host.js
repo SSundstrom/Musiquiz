@@ -2,15 +2,15 @@
 
 import React, { useContext } from 'react';
 import LogRocket from 'logrocket';
-import Scores from '../../components/Scores';
-import Track from '../../components/Track';
-import { GameContext } from '../../game-context';
-import Settings from '../../components/Settings';
-import HostScreenStyles from '../../components/styles/HostScreenStyles';
-import QR from '../../components/QR';
-import QueueStyles from '../../components/styles/QueueStyles';
+import Scores from '../components/Scores';
+import Track from '../components/Track';
+import { GameContext } from '../game-context';
+import Settings from '../components/Settings';
+import HostScreenStyles from '../components/styles/HostScreenStyles';
+import QR from '../components/QR';
+import QueueStyles from '../components/styles/QueueStyles';
 
-const HostStarted = () => {
+const Host = () => {
   const context = useContext(GameContext);
   const { state } = context;
   const { correctSong, players, name, gamestate, leader, guessTimer, leaderTimer, songToPlay } = state;
@@ -81,4 +81,4 @@ const HostStarted = () => {
   );
 };
 
-export default HostStarted;
+export default Host;

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Scores from '../../components/Scores';
+import Scores from '../components/Scores';
 
 const LeaderWaitingForGuessers = ({ guessTimer }) => (
   <React.Fragment>

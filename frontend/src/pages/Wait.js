@@ -1,7 +1,7 @@
 import React from 'react';
-import Scores from '../../components/Scores';
-import Track from '../../components/Track';
-import { GameConsumer } from '../../game-context';
+import Scores from '../components/Scores';
+import Track from '../components/Track';
+import { GameConsumer } from '../game-context';
 
 const GuesserWaitingForLeader = () => (
   <GameConsumer>

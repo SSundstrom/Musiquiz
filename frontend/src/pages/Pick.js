@@ -1,6 +1,6 @@
 import React from 'react';
-import Search from '../../components/Search';
-import { GameConsumer } from '../../game-context';
+import Search from '../components/Search';
+import { GameConsumer } from '../game-context';
 
 const LeaderChooseSong = () => (
   <GameConsumer>
