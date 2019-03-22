@@ -27,7 +27,14 @@ function emit(event, data) {
   console.log('sending', event, data);
   socket.emit(event, data);
 }
-
+function connectToSpotify(code, callback) {
+  fetch(`${api}/auth/${code}`)
+    .then(response => {
+      return response.json();
+    })
+    .then(res => callback(res))
+    .catch(e => console.log(e));
+}
 function search(song, callback) {
   song = encodeURIComponent(song);
   console.log('search');
@@ -55,4 +62,4 @@ function getAudioAnalysis(name, callback) {
     });
 }
 
-export { on, emit, search, getAudioAnalysis };
+export { on, emit, search, getAudioAnalysis, connectToSpotify };

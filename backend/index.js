@@ -23,6 +23,10 @@ app.use((_req, res, next) => {
   next();
 });
 
+app.get('/auth/:code', (req, res) => {
+  res.send({ code: req.params.code });
+});
+
 app.get('/search/:name', (req, res) => {
   searchApi
     .searchTracks(req.params.name, {

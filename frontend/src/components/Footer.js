@@ -1,21 +1,22 @@
-import React, { useContext } from 'react';
-import styled from '@emotion/styled';
+/* global window */
+import React, { useState, useEffect } from 'react';
+
+import SpotifyWebApi from 'spotify-web-api-node';
 import FooterStyles from './styles/FooterStyles';
-import Button from './styles/Button';
-import { GameContext } from '../game-context';
 
-const StartButton = styled(Button)`
-  border: none;
-  padding: 0;
-
-  margin: 0;
-`;
-
+const scopes = ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state'];
 const Footer = () => {
-  const context = useContext(GameContext);
+  const [url, setUrl] = useState('');
+  useEffect(() => {
+    const api = new SpotifyWebApi({
+      redirectUri: `${window.location.origin}/callback`,
+      clientId: process.env.REACT_APP_CLIENT_ID,
+    });
+    setUrl(api.createAuthorizeURL(scopes));
+  }, []);
   return (
     <FooterStyles>
-      <StartButton type="button" onClick={() => context.onJoinAsHost()} value="Start a new game" />
+      <a href={url}>Start a new game</a>
       <a href="https://github.com/SSundstrom/DWIMS/issues" target="blank">
         Found an issue? Submit it here.
       </a>

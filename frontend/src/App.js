@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Join from './pages/Join';
 import Player from './pages/Player';
 import Host from './pages/Host';
+import Start from './pages/Start';
 import GameProvider from './game-context';
 import Footer from './components/Footer';
 import Background from './components/Background';
@@ -28,6 +29,7 @@ const App = () => (
         <Background>
           <Switch>
             <Route path="/" exact component={Home} />
+            <Route path="/callback" exact component={Start} />
             <Route path="/join" component={Join} />
             <Route path="/host" component={Host} />
             <Route path="/play" component={Player} />
