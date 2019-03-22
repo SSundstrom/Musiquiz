@@ -28,7 +28,6 @@ async function completeAuth(code) {
       spotifyApi.refreshAccessToken().then(
         refreshData => {
           console.log('The access token has been refreshed!');
-
           // Save the access token so that it's used in future calls
           spotifyApi.setAccessToken(refreshData.body.access_token);
         },
@@ -37,8 +36,10 @@ async function completeAuth(code) {
         },
       );
     }, data.body.expires_in * 900);
+    return true;
   } catch (err) {
     console.log(err);
+    return false;
   }
 }
 

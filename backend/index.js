@@ -23,9 +23,9 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.get('/auth/:code', (req, res) => {
-  spotifyPlayerApi.completeAuth(req.params.code);
-  res.send({ code: req.params.code });
+app.get('/auth/:code', async (req, res) => {
+  const success = await spotifyPlayerApi.completeAuth(req.params.code);
+  res.send({ success });
 });
 
 app.get('/search/:name', (req, res) => {
