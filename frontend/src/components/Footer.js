@@ -9,9 +9,10 @@ const Footer = () => {
   const [url, setUrl] = useState('');
   useEffect(() => {
     const api = new SpotifyWebApi({
-      redirectUri: `${window.location.origin}/callback`,
+      redirectUri: process.env.REACT_APP_CALLBACK_URL,
       clientId: process.env.REACT_APP_CLIENT_ID,
     });
+
     setUrl(api.createAuthorizeURL(scopes));
   }, []);
   return (
