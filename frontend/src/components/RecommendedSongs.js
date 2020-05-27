@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getAudioAnalysis } from '../api';
 import Track from './Track';
-import { GameContext, GameConsumer } from '../game-context';
+import { PlayerContext, PlayerContextConsumer } from '../context/playerContext';
 
 class RecommendedSongs extends Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class RecommendedSongs extends Component {
   render() {
     const { results } = this.state;
     return (
-      <GameConsumer>
+      <PlayerContextConsumer>
         {context => (
           <div>
             <div> Suggestions </div>
@@ -32,10 +32,10 @@ class RecommendedSongs extends Component {
             ))}
           </div>
         )}
-      </GameConsumer>
+      </PlayerContextConsumer>
     );
   }
 }
 
-RecommendedSongs.contextType = GameContext;
+RecommendedSongs.contextType = PlayerContext;
 export default RecommendedSongs;

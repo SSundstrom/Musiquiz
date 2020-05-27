@@ -8,8 +8,8 @@ const SpotifyPlayer = {
   config: {
     player_name: "Dude, what's my song",
     client_id: process.env.REACT_APP_CLIENT_ID,
-    redirect_uri: window.location.origin,
-    scopes: ['streaming', 'user-read-birthdate', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state'],
+    redirect_uri: `${window.location.origin}/callback`,
+    scopes: ['streaming', 'user-read-email', 'user-read-private', 'user-read-playback-state', 'user-modify-playback-state'],
   },
   access_token: null,
   player: null,
@@ -21,14 +21,14 @@ const SpotifyPlayer = {
       `&redirect_uri=${this.config.redirect_uri}`,
       `&scope=${this.config.scopes.join('%20')}`,
       '&response_type=token',
-      '&show_dialog=true',
+      '&show_dialog=false',
     ].join('');
   },
 };
 
 // V2: Added playback controls
 SpotifyPlayer.controls = {
-  _request(method, endpoint, params) {
+  async _request(method, endpoint, params) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open(method, SpotifyPlayer.base_config.api_endpoint + endpoint, true);
@@ -71,31 +71,15 @@ SpotifyPlayer.controls = {
     this._request('POST', '/v1/me/player/next');
   },
   searchAndPlay(query) {
-    this._request('GET', `/v1/search?type=track&q=${query}*&market=from_token`, {}).then(results => {
+    this._request('GET', `/v1/search?type=track&q=${query}*&market=from_token`, {}).then((results) => {
       SpotifyPlayer.controls.play([results.tracks.items[0].uri]);
     });
   },
-  getDevices(callback) {
-    this._request('GET', '/v1/me/player/devices').then(results => {
-      callback(results.devices);
-    });
+  async getDevices() {
+    const result = await this._request('GET', '/v1/me/player/devices');
+    return result.devices;
   },
 };
-
-const hash = window.location.hash
-  .substring(1)
-  .split('&')
-  .reduce((initial, item) => {
-    if (item) {
-      const parts = item.split('=');
-      initial[parts[0]] = decodeURIComponent(parts[1]);
-    }
-    return initial;
-  }, {});
-
-// Make our window URL hash empty.
-SpotifyPlayer.access_token = hash.access_token;
-window.location.hash = '';
 
 export function auth() {
   // If there is no token, redirect to Spotify authorization
@@ -115,28 +99,28 @@ window.onSpotifyPlayerAPIReady = () => {
   });
 
   // Player is ready and can be issued commands
-  SpotifyPlayer.player.on('ready', e => {
+  SpotifyPlayer.player.on('ready', (e) => {
     console.log('Ready to rock!', e);
     SpotifyPlayer.device_id = e.device_id;
   });
 
   // Player state changed
   // The event contains information about the current player state
-  SpotifyPlayer.player.on('player_state_changed', e => {
+  SpotifyPlayer.player.on('player_state_changed', (e) => {
     console.log('Player state changed', (window.e = e));
   });
 
   // Handle errors
-  SpotifyPlayer.player.on('initialization_failed', e => {
+  SpotifyPlayer.player.on('initialization_failed', (e) => {
     console.log('Initialization Failed', e);
   });
-  SpotifyPlayer.player.on('authentication_error', e => {
+  SpotifyPlayer.player.on('authentication_error', (e) => {
     console.log('Authentication Error', e);
   });
-  SpotifyPlayer.player.on('account_error', e => {
+  SpotifyPlayer.player.on('account_error', (e) => {
     console.log('Account Error', e);
   });
-  SpotifyPlayer.player.on('playback_error', e => {
+  SpotifyPlayer.player.on('playback_error', (e) => {
     console.log('Playback Error', e);
   });
 

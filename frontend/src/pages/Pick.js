@@ -1,16 +1,16 @@
 import React from 'react';
 import Search from '../components/Search';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 
 const LeaderChooseSong = () => (
-  <GameConsumer>
+  <PlayerContextConsumer>
     {context => (
       <React.Fragment>
         <h2>Pick a song</h2>
         <Search name={context.state.name} recommendations onSelectSong={context.onSelectSong} />
       </React.Fragment>
     )}
-  </GameConsumer>
+  </PlayerContextConsumer>
 );
 
 export default LeaderChooseSong;

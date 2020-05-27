@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 
 const Players = () => (
-  <GameConsumer>
+  <PlayerContextConsumer>
     {context =>
       context.state.players.map(player => (
         <div key={player.nickname}>
@@ -11,6 +11,6 @@ const Players = () => (
         </div>
       ))
     }
-  </GameConsumer>
+  </PlayerContextConsumer>
 );
 export default Players;

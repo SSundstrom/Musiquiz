@@ -1,5 +1,4 @@
-import React from 'react';
-import { Global, css } from '@emotion/core';
+import { createGlobalStyle } from 'styled-components';
 
 export const theme = {
   blue: '#45a3e5',
@@ -11,10 +10,7 @@ export const theme = {
   purple: '#864cbf',
 };
 
-export const GlobalSyles = () => (
-  <Global
-    styles={css`
-      @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+export const GlobalSyle = createGlobalStyle`
       body {
         margin: 0;
         padding: 0;
@@ -77,6 +73,4 @@ export const GlobalSyles = () => (
         margin-top: 10px;
         text-shadow: none;
       }
-    `}
-  />
-);
+    `;

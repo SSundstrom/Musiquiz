@@ -1,9 +1,9 @@
 import React from 'react';
 import Scores from '../components/Scores';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 
 const Wait = () => (
-  <GameConsumer>
+  <PlayerContextConsumer>
     {context => (
       <React.Fragment>
         <h1>{context.state.guessTimer}</h1>
@@ -13,7 +13,7 @@ const Wait = () => (
         </div>
       </React.Fragment>
     )}
-  </GameConsumer>
+  </PlayerContextConsumer>
 );
 
 export default Wait;

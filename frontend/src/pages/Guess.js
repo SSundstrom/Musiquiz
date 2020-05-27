@@ -1,16 +1,16 @@
 import React from 'react';
 import Search from '../components/Search';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 
 const Guess = () => (
-  <GameConsumer>
+  <PlayerContextConsumer>
     {context => (
       <React.Fragment>
         <h1>{context.state.guessTimer}</h1>
         <Search title="Guess the song" onSelectSong={context.onGuess} />
       </React.Fragment>
     )}
-  </GameConsumer>
+  </PlayerContextConsumer>
 );
 
 export default Guess;

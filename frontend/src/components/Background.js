@@ -1,23 +1,25 @@
-import * as React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 import BackgroundStyles from './styles/BackgroundStyles';
 
-const Background = ({ children }) => (
-  <GameConsumer>
-    {context => (
-      <BackgroundStyles
-        isLeader={context.state.isLeader}
-        isHost={context.state.isHost}
-        started={context.state.started}
-        correct={context.state.correct}
-        guessed={context.state.guessed}
-      >
-        {children}
-      </BackgroundStyles>
-    )}
-  </GameConsumer>
-);
+const Background = ({ children }) => {
+  return (
+    <PlayerContextConsumer>
+      {context => (
+        <BackgroundStyles
+          isLeader={context.state.isLeader}
+          isHost={context.state.isHost}
+          started={context.state.started}
+          correct={context.state.correct}
+          guessed={context.state.guessed}
+        >
+          {children}
+        </BackgroundStyles>
+      )}
+    </PlayerContextConsumer>
+  );
+};
 Background.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
 };

@@ -1,8 +1,9 @@
-import React, { useEffect, useContext, useState } from 'react';
-import styled from '@emotion/styled';
+import React, { useEffect, useState } from 'react';
+import { Redirect } from 'react-router-dom';
+import styled from 'styled-components';
 import Button from '../components/styles/Button';
 import JoinStyles from '../components/styles/JoinStyles';
-import { GameContext } from '../game-context';
+import usePlayer from '../hooks/usePlayer';
 
 const LuckyButton = styled(Button)`
   min-width: 0px;
@@ -18,24 +19,29 @@ const Input = styled.input`
 `;
 const Join = () => {
   const [nickname, setNickname] = useState('');
-
-  const context = useContext(GameContext);
+  const player = usePlayer();
   const {
-    state: { nickname: contextNickname, name },
-  } = context;
+    state: { nickname: contextNickname, name, joined },
+  } = player;
 
   useEffect(() => {
     if (contextNickname) {
       setNickname(contextNickname);
     }
   }, [contextNickname]);
+  console.log(player);
+  if (!name) {
+    return <Redirect to="/" />;
+  }
+  if (joined) {
+    return <Redirect to="/play" />;
+  }
   return (
     <JoinStyles>
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
           e.preventDefault();
-          context.onJoinAsPlayer(nickname, name);
-          return false;
+          player.onJoinAsPlayer(nickname, name);
         }}
       >
         <label htmlFor="nickname" className="input">
@@ -44,12 +50,12 @@ const Join = () => {
             placeholder="Nickname"
             id="nickname"
             value={nickname}
-            onChange={event => setNickname(event.target.value)}
+            onChange={(event) => setNickname(event.target.value)}
             type="text"
             name="nickname"
           />
         </label>
-        <LuckyButton className="lucky" type="button" value="🍀" onClick={() => context.lucky(name)} />
+        <LuckyButton className="lucky" type="button" value="🍀" onClick={() => player.lucky(name)} />
         <Button className="input" type="submit" value="Join" />
       </form>
     </JoinStyles>

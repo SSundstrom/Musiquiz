@@ -3,10 +3,10 @@ import AnimatedNumber from 'react-animated-number';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ScoreStyles from './styles/ScoreStyles';
 import IconButton from './styles/IconButton';
-import { GameConsumer } from '../game-context';
+import { HostConsumer } from '../context/hostContext';
 
 const Scores = () => (
-  <GameConsumer>
+  <HostConsumer>
     {context => (
       <ScoreStyles>
         {context.state.players
@@ -45,6 +45,6 @@ const Scores = () => (
           ))}
       </ScoreStyles>
     )}
-  </GameConsumer>
+  </HostConsumer>
 );
 export default Scores;

@@ -1,27 +1,33 @@
 /* global window */
 
-import React, { useContext } from 'react';
 import LogRocket from 'logrocket';
+import React, { useEffect } from 'react';
+import QR from '../components/QR';
 import Scores from '../components/Scores';
-import Track from '../components/Track';
-import { GameContext } from '../game-context';
 import Settings from '../components/Settings';
 import HostScreenStyles from '../components/styles/HostScreenStyles';
-import QR from '../components/QR';
 import QueueStyles from '../components/styles/QueueStyles';
+import Track from '../components/Track';
+import useHost from '../hooks/useHost';
+import { auth } from '../playback';
+import { GameState } from '../types';
 
 const Host = () => {
-  const context = useContext(GameContext);
+  const context = useHost();
   const { state } = context;
   const { correctSong, players, name, gamestate, leader, guessTimer, leaderTimer, songToPlay } = state;
   LogRocket.identify('Host', { room: name });
-  const nonLeaders = players.filter(p => p.active && p.nickname !== leader.nickname);
-
+  const nonLeaders = leader ? players.filter((p) => p.active && p.nickname !== leader.nickname) : players;
   const { onKickPlayer } = context;
+  useEffect(() => {
+    auth();
+    context.onJoinAsHost();
+  }, []);
+
   return (
     <HostScreenStyles>
       <div className="qr">
-        <QR name={name} className="qr" size={256} value={`${window.location.href.replace('#', '')}${state.name}`} />
+        {name && <QR name={name} className="qr" size={256} value={`${state.name}`} />}
         {players && (
           <QueueStyles>
             {leader && (
@@ -42,19 +48,19 @@ const Host = () => {
                 <div>Queue:</div>
                 {nonLeaders
                   .filter((p, index) => index > 0)
-                  .map(player => (
+                  .map((player) => (
                     <div className="queue-label">{player.nickname}</div>
                   ))}
               </React.Fragment>
             )}
-            {players.filter(p => !p.active).length > 0 && (
+            {players.filter((p) => !p.active).length > 0 && (
               <React.Fragment>
                 <hr />
                 <div>Inactive:</div>
                 {players
-                  .filter(p => !p.active)
+                  .filter((p) => !p.active)
                   .sort()
-                  .map(player => (
+                  .map((player) => (
                     <div className="queue-label">{player.nickname}</div>
                   ))}
               </React.Fragment>
@@ -67,7 +73,7 @@ const Host = () => {
         {leaderTimer > 0 && <h1>{`Reconnect within ${leaderTimer} seconds`}</h1>}
         {guessTimer > 0 && <h1>{`Time left: ${guessTimer}`}</h1>}
         <div className="content">
-          {gamestate !== 'midgame' && correctSong && (
+          {gamestate !== GameState.MIDGAME && correctSong && (
             <div>
               <span>The correct song was...</span>
               <Track track={correctSong} />

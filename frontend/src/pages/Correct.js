@@ -1,10 +1,10 @@
 import React from 'react';
 import Scores from '../components/Scores';
 import Track from '../components/Track';
-import { GameConsumer } from '../game-context';
+import { PlayerContextConsumer } from '../context/playerContext';
 
 const ShowCorrectSong = () => (
-  <GameConsumer>
+  <PlayerContextConsumer>
     {context => (
       <React.Fragment>
         <div>
@@ -14,7 +14,7 @@ const ShowCorrectSong = () => (
         </div>
       </React.Fragment>
     )}
-  </GameConsumer>
+  </PlayerContextConsumer>
 );
 
 export default ShowCorrectSong;

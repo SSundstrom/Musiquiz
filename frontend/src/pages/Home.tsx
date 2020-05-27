@@ -1,37 +1,36 @@
 /* global window */
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import styled from '@emotion/styled';
-import SpotifyPlayer from '../playback';
+import styled from 'styled-components';
 import Button from '../components/styles/Button';
 import HomeStyles from '../components/styles/HomeStyles';
-import { GameContext } from '../game-context';
+import useHost from '../hooks/useHost';
+import usePlayer from '../hooks/usePlayer';
+import SpotifyPlayer from '../playback';
 
 const Input = styled.input`
   text-align: center;
 `;
 const Home = () => {
-  const [name, setName] = useState('');
-  const context = useContext(GameContext);
+  const [name, setName] = useState<string>('');
+  const host = useHost();
+  const player = usePlayer();
 
-  useEffect(() => {
-    const roomName = parseInt(window.location.pathname.replace('/', ''), 10);
-    if (roomName) {
-      setName(roomName);
-    }
-    if (SpotifyPlayer.access_token) {
-      context.onJoinAsHost();
-    }
-  }, []);
   if (SpotifyPlayer.access_token) {
     return <Redirect to="/host" />;
   }
+
+  if (player.state.name) {
+    return <Redirect to="/join" />;
+  }
+
   return (
     <HomeStyles>
+      {player.state.roomNotFound && <div>Room not found</div>}
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
           e.preventDefault();
-          context.onJoinAsPlayer(name);
+          player.onJoinRoom(name);
           return false;
         }}
       >
@@ -41,8 +40,8 @@ const Home = () => {
             placeholder="Room code"
             id="name"
             value={name}
-            onChange={event => setName(parseInt(event.target.value, 10))}
-            onPaste={event => setName(parseInt(event.target.value, 10))}
+            onChange={(event) => setName(event.target.value)}
+            // onPaste={event => setName(event.target.value)}
             type="number"
             min="1000"
             max="9999"

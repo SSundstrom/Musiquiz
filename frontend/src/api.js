@@ -1,4 +1,5 @@
-/* global window fetch */
+/* global window */
+import axios from 'axios';
 import io from 'socket.io-client';
 
 const api = window.location.origin.replace(process.env.REACT_APP_PORT, process.env.REACT_APP_BACKEND_PORT);
@@ -17,7 +18,7 @@ window.disconnect = disconnect;
 window.reconnect = reconnect;
 
 function on(event, callback) {
-  socket.on(event, data => {
+  socket.on(event, (data) => {
     console.log('receiving', event, data);
     callback(data);
   });
@@ -27,39 +28,28 @@ function emit(event, data) {
   console.log('sending', event, data);
   socket.emit(event, data);
 }
-function connectToSpotify(code, callback) {
-  fetch(`${api}/auth/${code}`)
-    .then(response => {
-      return response.json();
-    })
-    .then(res => callback(res))
-    .catch(e => console.log(e));
-}
-function search(song, callback) {
-  song = encodeURIComponent(song);
+
+const search = async (song) => {
   console.log('search');
-  fetch(`${api}/search/${song}`)
-    .then(response => {
-      console.log('fetch');
-      return response.json();
-    })
-    .then(res => callback(res.body.tracks.items))
-    .catch(e => {
-      console.log(e);
-    });
-}
+  song = encodeURIComponent(song);
+  try {
+    const url = `${api}/search/${song}`;
+    const result = await axios.get(url);
+    return result.data.body.tracks.items;
+  } catch (err) {
+    throw err;
+  }
+};
 
-function getAudioAnalysis(name, callback) {
+const getAudioAnalysis = async (name) => {
   console.log('getAudioAnalysis');
-  fetch(`${api}/recommendations/${name}`)
-    .then(response => {
-      console.log('fetch audio analysis');
-      return response.json();
-    })
-    .then(res => callback(res.body.tracks))
-    .catch(e => {
-      console.log(e);
-    });
-}
+  try {
+    const url = `${api}/recommendations/${name}`;
+    const result = axios.get(url);
+    return result.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
-export { on, emit, search, getAudioAnalysis, connectToSpotify };
+export { on, emit, search, getAudioAnalysis };
