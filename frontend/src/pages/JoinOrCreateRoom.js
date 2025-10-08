@@ -1,4 +1,3 @@
-/* global window */
 import React, { useEffect, useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import SpotifyPlayer, { auth } from '../playback';
@@ -33,7 +32,7 @@ const JoinOrCreateRoom = () => {
     if (SpotifyPlayer.access_token) {
       context.onJoinAsHost();
     }
-  }, []);
+  }, [context]);
 
   useEffect(() => {
     if (contextNickname) {
