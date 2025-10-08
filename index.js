@@ -1,7 +1,7 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 const luckyNames = require('./names');
 
-require('dotenv').load();
+require('dotenv').config();
 // credentials are optional
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
@@ -13,7 +13,12 @@ const express = require('express');
 
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 let rooms = [];
 const timeouts = {};
