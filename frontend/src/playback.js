@@ -1,5 +1,3 @@
-/* global window XMLHttpRequest */
-
 const SpotifyPlayer = {
   base_config: {
     api_endpoint: 'https://api.spotify.com',

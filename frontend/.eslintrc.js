@@ -1,6 +1,5 @@
 module.exports = {
-  extends: ['airbnb', 'prettier'],
-  plugins: ['prettier'],
+  extends: ['react-app'],
   rules: {
     'no-underscore-dangle': 'off',
     'comma-dangle': ['error', 'always-multiline'],

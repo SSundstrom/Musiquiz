@@ -1,5 +1,3 @@
-/* global window */
-
 import React, { useContext } from 'react';
 import Scores from '../components/Scores';
 import Track from '../components/Track';

@@ -1,4 +1,3 @@
-/* global window fetch */
 import io from 'socket.io-client';
 
 const api = window.location.origin.replace(process.env.REACT_APP_PORT, process.env.REACT_APP_BACKEND_PORT);
